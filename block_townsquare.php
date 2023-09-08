@@ -23,7 +23,7 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_townsquare extends block_base {
-    
+
     /**
      * Initialises the block.
      *
@@ -45,13 +45,13 @@ class block_townsquare extends block_base {
             return $this->content;
         }
 
-        $this->content = new stdClass();
-        $this->content->footer = '';
-
+        // TODO: Use a mustache template to render the page. E.g.: .
         // Add logic here to define your template data or any other content.
-        $data = ['YOUR DATA GOES HERE'];
-
-        $this->content->text = $OUTPUT->render_from_template('block_townsquare/content', $data);
+        // $data = ['YOUR DATA GOES HERE'];.
+        // $this->content->text = $OUTPUT->render_from_template('block_yourplugin/content', $data);.
+        $this->content = new stdClass;
+        $this->content->text = get_string('loremipsum', 'block_townsquare');
+        $this->content->footer = 'Footer here...';
 
         return $this->content;
     }
@@ -64,7 +64,7 @@ class block_townsquare extends block_base {
     public function applicable_formats() {
         return [
             'admin' => false,
-            'site-index' => true,
+            'site-index' => false,
             'course-view' => true,
             'mod' => false,
             'my' => true,
