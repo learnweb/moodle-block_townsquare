@@ -27,3 +27,5 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'Townsquare block';
 $string['pluginname'] = 'Town Square';
+$string['pluginname:addinstance'] = 'Add a new Town Square block';
+$string['pluginname:myaddinstance'] = 'Add a new Town Square block to the My Moodle page';

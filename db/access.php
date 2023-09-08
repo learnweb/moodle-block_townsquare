@@ -23,7 +23,7 @@
  */
 
 $capabilities = [
-    'block/pluginname:myaddinstance' => [
+    'block/townsquare:myaddinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
@@ -31,7 +31,7 @@ $capabilities = [
         ],
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
     ],
-    'block/pluginname:addinstance' => [
+    'block/towwnsquare:addinstance' => [
         'riskbitmask' => RISK_SPAM | RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
