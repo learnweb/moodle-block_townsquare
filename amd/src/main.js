@@ -1,4 +1,3 @@
-<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,33 +14,31 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Townsquare block renderer.
+ * Main Javascript functions for the townsquare block.
  *
- * @package    block_townsquare
+ * @module     block_townsquare/main
  * @copyright  2023 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace block_townsquare\output;
-defined('MOODLE_INTERNAL') || die;
+//import Ajax from 'core/ajax';
+//import Prefetch from 'core/prefetch';
+//import {get_string as getString} from 'core/str';
 
-use plugin_renderer_base;
-use renderable;
+// Define const.
 
 /**
- * Class to call different mustache templates.
- *
- * @package    block_townsquare
- * @copyright  2023 Tamaro Walter
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Init function
  */
-class renderer extends plugin_renderer_base {
-    /**
-     * Return the main content for the block townsquare.
-     *
-     * @param main $main The main renderable
-     * @return string HTML string
-     */
-    public function render_main($data) {
-        return $this->render_from_template('block_townsquare/main', $data);
-    }
+export function init() {
+    getTime();
+    setInterval(getTime, 1000);
+}
+
+/**
+ * Function that shows the current Time.
+ */
+function getTime() {
+    var today = new Date();
+    var time = today.getUTCHours() + ":" + today.getUTCMinutes() + ":" + today.getUTCSeconds();
+    document.getElementById('townsquare_time').innerHTML = time;
 }

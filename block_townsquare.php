@@ -45,13 +45,8 @@ class block_townsquare extends block_base {
             return $this->content;
         }
 
-        // TODO: Use a mustache template to render the page. E.g.: .
-        // Add logic here to define your template data or any other content.
-        // $data = ['YOUR DATA GOES HERE'];.
-        // $this->content->text = $OUTPUT->render_from_template('block_yourplugin/content', $data);.
         $this->content = new stdClass;
-        $this->content->text = get_string('loremipsum', 'block_townsquare');
-        $this->content->footer = 'Footer here...';
+        $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', new stdClass());
 
         return $this->content;
     }
