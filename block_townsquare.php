@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+require_once('calendar/lib.php');
+
 /**
  * Plugin strings are defined here.
  *
@@ -40,14 +42,15 @@ class block_townsquare extends block_base {
      */
     public function get_content() {
         global $OUTPUT;
-
+    
+        public $events = calender_get_events();
         if ($this->content !== null) {
             return $this->content;
         }
 
         $this->content = new stdClass;
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', new stdClass());
-
+        $this->content->text = $events;
         return $this->content;
     }
 

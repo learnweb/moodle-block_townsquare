@@ -19,12 +19,13 @@
 
     This template renders the main content area for the townsquare block.
 }}
-<div id="townsquare_main" class="grid block_townsquare_main">
-    <div class="g-col-4 block_townsquare_sidepanel">
-        {{!TODO: klassen benutzen, die es schon gibt (bootstrap) }}
+<div class="container-fluid">
+<div class="row block_townsquare_main">
+    <div class="col-md-4 townsquare_sidepanel">
         {{#str}} seitenpanel, block_townsquare {{/str}}
     </div>
-    <div class="g-col-6 block_townsquare_content">
+
+    <div class="col-md-8 townsquare_content">
         {{#str}} hauptseite, block_townsquare {{/str}}
         <div id="townsquare_time" >
             {{#js}}
@@ -36,4 +37,5 @@
             {{/js}}
         </div>
     </div>
+</div>
 </div>

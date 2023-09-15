@@ -1,3 +1,10 @@
-/**
- * General Settings
- */
+.townsquare_sidepanel {
+  background-color: #eeeeee;
+  border-radius: 5px;
+}
+
+.townsquare_content {
+  border-radius: 5px;
+}
+
+/*# sourceMappingURL=styles.css.map */
