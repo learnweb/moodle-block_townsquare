@@ -75,20 +75,19 @@ class townsquareevents {
         // Get all course ids from the courses where the current user is enrolled.
         $courses = $this->townsquare_get_courses();
         
-        //TODO: valitdate copilot code.
+        //TODO: validate copilot code.
         // Get all posts from the given courses and sort them after the creation time.
         $sql = 'SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
-                       forum.id AS forumid,
+                       discuss.forum AS forumid,
                        posts.id AS postid,
                        posts.discussion AS postdiscussion,
                        posts.parent AS postparent,
                        posts.userid AS postuserid,
-                       post.created AS postcreated,
-                       post.message AS postmessage
+                       posts.created AS postcreated,
+                       posts.message AS postmessage
                 FROM {forum_posts} posts
                 LEFT JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
-                LEFT JOIN {forum} forum ON forum.id = discuss.forum
-                WHERE forum.course IN (' . implode(';', $courses) . ')
+                WHERE discuss.course IN (' . implode(';', $courses) . ')
                     AND posts.created > ' . $starttime . '
                 ORDER BY posts.created DESC ;';
     }
@@ -114,17 +113,17 @@ class townsquareevents {
         
         // Get all posts from the given courses and sort them after the creation time.
         $sql = 'SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
-                       moodleoverflow.id AS moodleoverflowid,
+                       discuss.moodleoverflow AS moodleoverflowid,
                        posts.id AS postid,
                        posts.discussion AS postdiscussion,
                        posts.parent AS postparent,
                        posts.userid AS postuserid,
-                       post.created AS postcreated,
-                       post.message AS postmessage
+                       posts.created AS postcreated,
+                       discuss.name AS discussionsubject,
+                       posts.message AS postmessage
                 FROM {moodleoverflow_posts} posts
                 LEFT JOIN {moodleoverflow_discussions} discuss ON discuss.id = posts.discussion
-                LEFT JOIN {moodleoverflow} moodleoverflow ON moodleoverflow.id = discuss.moodleoverflow
-                WHERE moodleoverflow.course IN (' . implode(';', $courses) . ')
+                WHERE discuss.course IN (' . implode(';', $courses) . ')
                     AND posts.created > ' . $starttime . '
                 ORDER BY posts.created DESC ;';
 
