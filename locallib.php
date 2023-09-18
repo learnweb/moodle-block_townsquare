@@ -15,26 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class to get calendar events.
- * TODO: Use the calender API.
+ * Internal library of functions for block_townsquare
  *
- * @package     block_townsquare
- * @copyright   2023 Tamaro Walter
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * All the townsquare specific functions, needed to implement the block
+ * logic, should go here. Never include this file from your lib.php!
+ *
+ * @package   block_townsquare
+ * @copyright 2023 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_townsquare\calenderevents;
+defined('MOODLE_INTERNAL') || die();
 
-use block_townsquare\letter;
+global $CFG;
+require_once($CFG->dirroot . '/calendar/lib.php');
+require_once($CFG->dirroot . '/lib/enrollib.php');
 
-/**
- * Class to get calendar events.
- * TODO: Use the calender API.
- *
- * @package     block_townsquare
- * @copyright   2023 Tamaro Walter
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class calenderevents {
-
-}
