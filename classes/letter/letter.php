@@ -30,7 +30,7 @@ namespace block_townsquare\letter;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Class to show the latest activities and other new things in moodle
+ * Abstract Class to show the latest activities and other new things in moodle
  *
  * A Letter represents one notification, the notification can be:
  * - an activity that is due
@@ -47,11 +47,11 @@ abstract class letter {
     /** @var int The course from the letter */
     protected $course;
 
-    /** @var int The ID of the course module */
-    protected $coursemoduleid;
+    /** @var string The ID of the course module */
+    protected $modulename;
 
     /** @var int When the activity was created */
-    protected $age;
+    protected $created;
 
     /** @var \moodle_url */
     protected $linktomodule;
@@ -64,10 +64,10 @@ abstract class letter {
      * @param $coursemoduleid
      * @param $age
      */
-    public function __construct($course, $coursemoduleid, $age) {
+    public function __construct($course, $modulename, $created) {
         $this->course = $course;
-        $this->coursemoduleid = $coursemoduleid;
-        $this->age = $age;
+        $this->modulename = $modulename;
+        $this->created = $created;
     }
 
     /**
@@ -122,13 +122,13 @@ class assessment_letter extends letter {
 
     /**
      * @param $course
-     * @param $coursemoduleid
+     * @param $modulename
      * @param $age
      * @param $opendate
      * @param $duedate
      */
-    public function __construct($course, $coursemoduleid, $age, $opendate = false, $closedate = false) {
-        parent::__construct($course, $coursemoduleid, $age);
+    public function __construct($course, $modulename, $age, $opendate = false, $closedate = false) {
+        parent::__construct($course, $modulename, $age);
         $this->opendate = $opendate;
         $this->closedate = $closedate;
     }
@@ -137,7 +137,7 @@ class assessment_letter extends letter {
      * Getter for the opendate.
      * @return false|mixed
      */
-    public function get_opendate() {
+    protected function get_opendate() {
         return $this->opendate;
     }
 
@@ -145,7 +145,7 @@ class assessment_letter extends letter {
      * Getter for the closedate.
      * @return false|int|mixed
      */
-    public function get_closedate() {
+    protected function get_closedate() {
         return $this->closedate;
     }
 }

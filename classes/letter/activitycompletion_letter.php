@@ -15,16 +15,28 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Class to show information to the user
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_townsquare\letter;
+
 defined('MOODLE_INTERNAL') || die();
-$plugin->component = 'block_townsquare';
-$plugin->release = '0.1.0';
-$plugin->version = 2023092002;
-$plugin->requires = 2022041900;
-$plugin->maturity = MATURITY_ALPHA;
+
+/**
+ * Class that represents an activity completion.
+ * Subclass from letter.
+ *
+ * @package     block_townsquare
+ * @copyright   2023 Tamaro Walter
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class activitycompletion_letter extends letter {
+
+    public function __construct($course, $modulename, $created) {
+        parent::__construct($course, $modulename, $created);
+    }
+}
