@@ -35,8 +35,19 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class activitycompletion_letter extends letter {
-
-    public function __construct($course, $modulename, $created) {
-        parent::__construct($course, $modulename, $created);
+    
+    private $name;
+    private $author;
+    private $linktoactivity;
+    private $linktocourse;
+    
+    /**
+     * @param $calendarevent
+     */
+    public function __construct($calendarevent) {
+        parent::__construct($calendarevent->courseid, $calendarevent->modulename, $calendarevent->timestart);
+        $this->name = $calendarevent->name;
+        $this->author = $calendarevent->userid;
+        $this->linktoactivity = new \moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $calendarevent->]);
     }
 }

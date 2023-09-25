@@ -25,6 +25,7 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
+use mod_moodleoverflow\anonymous;
 require_once($CFG->dirroot . '/calendar/lib.php');
 
 /**
@@ -51,7 +52,7 @@ class townsquareevents {
     public function __construct() {
         $this->events = [];
         $this->starttime = time() - 15768000;
-        $this->starttime = 1690000000;
+        //$this->starttime = 1690000000;
         $this->endtime = time() + 15768000;
         $this->courses = $this->townsquare_get_courses();
     }
@@ -64,7 +65,15 @@ class townsquareevents {
         global $USER;
 
         // Get all events from the last six months and the next six months.
-        return calendar_get_events($this->starttime, $this->endtime, true, true, $courses);
+        $calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses);
+
+        // Add the course module id to every event.
+        foreach ($calendarevents as $calendarevent) {
+            // TODO: Check if this is the right way to get the course module id.
+            $calendarevent->coursemoduleid = get_course_and_cm_from_instance($calendarevent->instance)->cm->id;
+        }
+
+        return $calendarevents;
     }
 
     /**
@@ -132,9 +141,15 @@ class townsquareevents {
             }
         }
 
-        // Add an event type to the posts.
+        // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts.
         foreach ($posts as $post) {
             $post->eventtype = 'post';
+            
+            if ($post->modulename == 'moodleoverflow') {
+                $moodleoverflow = $DB->get_record('moodleoverflow', ['id' => $post->moodleoverflowid]);
+                $discussion = $DB->get_record('moodleoverflow_discussions', ['id' => $post->postdiscussion]);
+                $post->anonymous = anonymous::is_post_anonymous($discussion, $moodleoverflow, $post->postuserid);
+            }
         }
 
         // Return the posts.
