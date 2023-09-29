@@ -37,9 +37,6 @@ require_once($CFG->dirroot . '/calendar/lib.php');
  */
 class townsquareevents {
 
-    /** @var array events from the moodle database */
-    public $events;
-
     /** @var int timestamp from where the events should be searched */
     public $starttime;
 
@@ -50,35 +47,68 @@ class townsquareevents {
     public $courses;
 
     public function __construct() {
-        $this->events = [];
         $this->starttime = time() - 15768000;
-        //$this->starttime = 1690000000;
+        $this->starttime = 1690000000;
         $this->endtime = time() + 15768000;
         $this->courses = $this->townsquare_get_courses();
+
+    }
+
+    /**
+     * Retrieves calendar and post events, merges and sorts them
+     * @return array
+     */
+    public function townsquare_get_all_events_sorted() {
+        $calendarevents = $this->townsquare_get_calendarevents();
+        $postevents = $this->townsquare_get_postevents();
+
+        // Merge the events in a sorted order.
+        $events = [];
+        $numberofevents = count($calendarevents) + count($postevents);
+        for ($i = 0; $i < $numberofevents; $i++) {
+            if (current($calendarevents) && current($postevents)) {
+                if (current($calendarevents)->timestart > current($postevents)->postcreated) {
+                    $events[$i] = current($calendarevents);
+                    next($calendarevents);
+                } else {
+                    $events[$i] = current($postevents);
+                    next($postevents);
+                }
+            } else if (current($calendarevents)) {
+                $events[$i] = current($calendarevents);
+                next($calendarevents);
+            } else {
+                $events[$i] = current($postevents);
+                next($postevents);
+            }
+        }
+
+        return $events;
     }
 
     /**
      * Function to get events from that are in the calendar for the current user.
-     * @return array $events
+     *
+     * The events are sorted in descending order by time created (newest event first)
+     * @return array
      */
     public function townsquare_get_calendarevents() {
-        global $USER;
-
         // Get all events from the last six months and the next six months.
         $calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses);
 
         // Add the course module id to every event.
         foreach ($calendarevents as $calendarevent) {
-            // TODO: Check if this is the right way to get the course module id.
-            $calendarevent->coursemoduleid = get_course_and_cm_from_instance($calendarevent->instance)->cm->id;
+            $calendarevent->coursemoduleid = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance,
+                                                                            $calendarevent->courseid)->id;
         }
 
-        return $calendarevents;
+        return array_reverse($calendarevents, true);
     }
 
     /**
      * Function to get the newest posts from modules like the forum or moodleoverflow.
      *
+     * The events are sorted in descending order by time created (newest event first)
      * @return array | false;
      */
     public function townsquare_get_postevents() {
@@ -87,13 +117,16 @@ class townsquareevents {
         $forumposts = false;
         $moodleoverflowposts = false;
 
-        // Check first which modules are installed.
+        // Check which modules are installed and get their data.
         if ($DB->get_record('modules', ['name' => 'forum'])) {
-            $forumposts = true;
+            $forumposts = $this->townsquare_search_posts('forum', 'discuss.forum', 'forumid', 'forum_posts',
+                'forum_discussions', $this->courses, $this->starttime);
         }
 
         if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
-            $moodleoverflowposts = true;
+            $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', 'discuss.moodleoverflow',
+                'moodleoverflowid', 'moodleoverflow_posts',
+                'moodleoverflow_discussions', $this->courses, $this->starttime);
         }
 
         // If no module is installed, return false.
@@ -101,29 +134,21 @@ class townsquareevents {
             return false;
         }
 
-        // Get the posts from the modules and return it directly if no other module exists.
-        if ($forumposts) {
-            $forumposts = $this->townsquare_search_posts('forum', 'discuss.forum', 'forumid', 'forum_posts',
-                                                        'forum_discussions', $this->courses, $this->starttime);
-            if (!$moodleoverflowposts) {
-                return $forumposts;
-            }
+        // Return directly the posts if no other module exists.
+        if (!$moodleoverflowposts) {
+            return $forumposts;
         }
 
-        if ($moodleoverflowposts) {
-            $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', 'discuss.moodleoverflow',
-                                                                  'moodleoverflowid', 'moodleoverflow_posts',
-                                                                  'moodleoverflow_discussions', $this->courses, $this->starttime);
-            if (!$forumposts) {
-                return $moodleoverflowposts;
-            }
+        if (!$forumposts) {
+            return $moodleoverflowposts;
         }
 
         // Merge the posts in a sorted order.
         $posts = [];
+        $numberofposts = count($forumposts) + count($moodleoverflowposts);
         reset($forumposts);
         reset($moodleoverflowposts);
-        for ($i = 0; $i < (count($forumposts) + count($moodleoverflowposts)); $i++) {
+        for ($i = 0; $i < $numberofposts; $i++) {
             if (current($forumposts) && current($moodleoverflowposts)) {
                 if (current($forumposts)->postcreated > current($moodleoverflowposts)->postcreated) {
                     $posts[$i] = current($forumposts);
@@ -132,23 +157,26 @@ class townsquareevents {
                     $posts[$i] = current($moodleoverflowposts);
                     next($moodleoverflowposts);
                 }
-            } else if (!current($forumposts)) {
-                $posts[$i] = current($moodleoverflowposts);
-                next($moodleoverflowposts);
-            } else {
+            } else if (current($forumposts)) {
                 $posts[$i] = current($forumposts);
                 next($forumposts);
+            } else {
+                $posts[$i] = current($moodleoverflowposts);
+                next($moodleoverflowposts);
             }
         }
 
         // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts.
         foreach ($posts as $post) {
             $post->eventtype = 'post';
-            
             if ($post->modulename == 'moodleoverflow') {
                 $moodleoverflow = $DB->get_record('moodleoverflow', ['id' => $post->moodleoverflowid]);
                 $discussion = $DB->get_record('moodleoverflow_discussions', ['id' => $post->postdiscussion]);
                 $post->anonymous = anonymous::is_post_anonymous($discussion, $moodleoverflow, $post->postuserid);
+                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->moodleoverflowid,
+                                                                       $post->courseid)->id;
+            } else {
+                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->forumid, $post->courseid)->id;
             }
         }
 

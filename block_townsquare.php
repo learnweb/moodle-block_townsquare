@@ -44,15 +44,16 @@ class block_townsquare extends block_base {
             return $this->content;
         }
 
-        // $events = new \block_townsquare\townsquareevents();
-        // $forumposts = $events->townsquare_get_postevents();
+        $controller = new \block_townsquare\lettercontroller();
+        $letters = $controller->get_letters();
 
-        // $courses = townsquare_get_calendarevents();
-        // ob_start();
-        // var_export($forumposts);
+        ob_start();
+        var_dump($letters);
+
         $this->content = new stdClass;
-        $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', new stdClass());
-        // $this->content->text = ob_get_clean();
+        // Print: $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', new stdClass());.
+        $this->content->text = ob_get_clean();
+
         return $this->content;
     }
 

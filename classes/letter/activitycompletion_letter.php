@@ -35,19 +35,56 @@ defined('MOODLE_INTERNAL') || die();
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class activitycompletion_letter extends letter {
-    
-    private $name;
+
+    /** @var int The id of the author of the post */
     private $author;
+
+    /** @var \moodle_url The url to the activity */
     private $linktoactivity;
+
+    /** @var \moodle_url The url to the course */
     private $linktocourse;
-    
+
     /**
-     * @param $calendarevent
+     * @param $calendarevent object a calendar event with information, for more see classes/townsquareevents.php
      */
     public function __construct($calendarevent) {
-        parent::__construct($calendarevent->courseid, $calendarevent->modulename, $calendarevent->timestart);
-        $this->name = $calendarevent->name;
+        parent::__construct($calendarevent->courseid, $calendarevent->modulename, $calendatevent->name, $calendarevent->timestart);
+        $this->lettertype = 'activitycompletion';
         $this->author = $calendarevent->userid;
-        $this->linktoactivity = new \moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $calendarevent->]);
+        $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
+        $this->linktoactivity = new \moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
+        $this->linktocourse = new \moodle_url('/course/view.php', ['id' => $calendarevent->courseid]);
+    }
+
+    // Getter.
+
+    /**
+     * Overrides function from superclass.
+     * @return string
+     */
+    public function get_lettertype() {
+        return $this->lettertype;
+    }
+
+    /**
+     * @return int
+     */
+    public function get_author() {
+        return $this->author;
+    }
+
+    /**
+     * @return \moodle_url
+     */
+    public function get_linktoactivity() {
+        return $this->linktoactivity;
+    }
+
+    /**
+     * @return \moodle_url
+     */
+    public function get_linktocourse() {
+        return $this->linktocourse;
     }
 }

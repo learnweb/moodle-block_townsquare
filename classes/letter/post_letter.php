@@ -38,7 +38,10 @@ class post_letter extends letter {
 
     // Attributes.
 
-    // From parent class: $course, $modulename, $created, $linktomodule.
+    // From parent class: lettertype, course, modulename, created.
+
+    /** @var int The course module id */
+    private $coursemoduleid;
 
     /** @var int The local ID of the module  instance, is the forumid or moodleoverflowid*/
     private $localmoduleid;
@@ -78,11 +81,12 @@ class post_letter extends letter {
     // Constructor.
 
     /**
-     * @param $postevent object a post event with important information, see classes/townsquareevents.php.
+     * @param $postevent object a post event with information,for more see classes/townsquareevents.php.
      * @throws \moodle_exception
      */
     public function __construct($postevent) {
-        parent::__construct($postevent->courseid, $postevent->modulename, $postevent->postcreated);
+        parent::__construct($postevent->courseid, $postevent->modulename, $postevent->message, $postevent->postcreated);
+        $this->lettertype = 'post';
         if ($postevent->modulename == 'forum') {
             $this->localmoduleid = $postevent->forumid;
         } else if ($postevent->modulename == 'moodleoverflow') {
@@ -90,6 +94,7 @@ class post_letter extends letter {
         } else {
             throw new \moodle_exception('invalidmodulename', 'block_townsquare');
         }
+        $this->coursemoduleid = get_coursemodule_from_instance($postevent->modulename, $this->localmoduleid);
         $this->discussionid = $postevent->discussionid;
         $this->author = $postevent->author;
         $this->postid = $postevent->postid;
@@ -106,6 +111,15 @@ class post_letter extends letter {
     }
 
     // Getter for every attribute.
+
+    /**
+     * Overrides function from superclass.
+     * @param $
+     * @return string
+     */
+    public function get_lettertype() {
+        return $this->lettertype;
+    }
 
     /**
      * @return int
@@ -188,11 +202,11 @@ class post_letter extends letter {
         $this->linktoauthor = new \moodle_url('/user/view.php', array('id' => $this->author));
 
         if ($this->modulename == 'forum') {
-            $this->linktomoduleinstance = new \moodle_url('mod/forum/view.php', array('id' => $this->localmoduleid));
+            $this->linktomoduleinstance = new \moodle_url('mod/forum/view.php', array('id' => $this->coursemoduleid));
             $this->linktopost = new \moodle_url('/mod/forum/discuss.php',
                 array('d' => $this->discussionid), 'p' . $this->postid);
         } else {
-            $this->linktomoduleinstance = new \moodle_url('mod/moodleoverflow/view.php', array('id' => $this->localmoduleid));
+            $this->linktomoduleinstance = new \moodle_url('mod/moodleoverflow/view.php', array('id' => $this->coursemoduleid));
             $this->linktopost = new \moodle_url('/mod/moodleoverflow/discussion.php',
                 array('d' => $this->discussionid), 'p' . $this->postid);
 

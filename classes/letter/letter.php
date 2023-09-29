@@ -41,8 +41,11 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class letter {
+class letter {
     // Attributes.
+
+    /** @var string Every Letter must save its letter type */
+    protected $lettertype;
 
     /** @var int The course from the letter */
     protected $courseid;
@@ -50,27 +53,38 @@ abstract class letter {
     /** @var string The Name of the plugin */
     protected $modulename;
 
+    /** @var string The content of the letter */
+    protected $content;
+
     /** @var int When the activity was created */
     protected $created;
-
-    /** @var \moodle_url */
-    protected $linktomodule;
 
     // Constructor.
 
     /**
      * Constructor for a letter
-     * @param $course
-     * @param $coursemoduleid
-     * @param $age
+     * @param $courseid
+     * @param $modulename
+     * @param $content
+     * @param $created
      */
-    public function __construct($courseid, $modulename, $created) {
+    public function __construct($courseid, $modulename, $content, $created) {
+        $this->lettertype = 'basic';
         $this->courseid = $courseid;
         $this->modulename = $modulename;
+        $this->content = $content;
         $this->created = $created;
     }
-    
+
     // Getter.
+
+    /**
+     * Getter for the letter type
+     * @return string
+     */
+    public function get_lettertype() {
+        return $this->lettertype;
+    }
 
     /**
      * Getter for the course.
@@ -85,7 +99,11 @@ abstract class letter {
      * @return string
      */
     public function get_modulename() {
-        return $this->coursemoduleid;
+        return $this->modulename;
+    }
+
+    public function get_content() {
+        return $this->content;
     }
 
     /**
@@ -96,5 +114,3 @@ abstract class letter {
         return $this->created;
     }
 }
-
-// Subclasses.

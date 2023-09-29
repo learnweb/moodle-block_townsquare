@@ -34,6 +34,8 @@ $string['pluginname:myaddinstance'] = 'Add a new Town Square block to the My Moo
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
 
+// Letter Controller strings.
+$string['eventsempty'] = 'Events need to be retrieved before working with them';
 // Test strings.
 $string['seitenpanel'] = 'Ich bin das Seitenpanel';
 $string['hauptseite'] = 'Ich bin die hauptseite';
