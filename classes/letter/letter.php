@@ -49,6 +49,9 @@ class letter {
 
     /** @var int The course from the letter */
     protected $courseid;
+    
+    /** @var string The name of the course */
+    protected $coursename;
 
     /** @var string The Name of the plugin */
     protected $modulename;
@@ -56,8 +59,15 @@ class letter {
     /** @var string The content of the letter */
     protected $content;
 
-    /** @var int When the activity was created */
+    /** @var int Timestamp When the activity was created */
     protected $created;
+    
+    /** @var bool variable for the mustache template */
+    public $isbasic = true;
+    
+    // Url attributes.
+    
+    protected $linktocourse;
 
     // Constructor.
 
@@ -71,11 +81,31 @@ class letter {
     public function __construct($courseid, $modulename, $content, $created) {
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
+        $this->coursename = get_course($courseid)->fullname;
         $this->modulename = $modulename;
         $this->content = $content;
         $this->created = $created;
+        $this->linktocourse = new \moodle_url('/course/view.php', array('id' => $this->courseid));
     }
 
+    /**
+     * Export function for the mustache template.
+     * @return array
+     */
+    public function export_letter() {
+        // Change the timestamp to a date.
+        $date = date('d.m.Y', $this->created);
+        
+        return [
+            'lettertype' => $this->lettertype,
+            'coursename' => $this->coursename,
+            'modulename' => $this->modulename,
+            'content' => $this->content,
+            'created' => $date,
+            'isbasic' => $this->isbasic,
+            'linktocourse' => $this->linktocourse->out(),
+        ];
+    }
     // Getter.
 
     /**
@@ -105,9 +135,13 @@ class letter {
     public function get_content() {
         return $this->content;
     }
+    
+    public function get_linktocourse() {
+        return $this->linktocourse;
+    }
 
     /**
-     * Getter for the age of the assessment activity.
+     * Getter for the age of the activity.
      * @return int
      */
     public function get_created() {

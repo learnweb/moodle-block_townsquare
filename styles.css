@@ -1,10 +1,24 @@
 .townsquare_sidepanel {
-  background-color: #eeeeee;
-  border-radius: 5px;
+    background-color: #eee;
+    border-radius: 5px;
 }
 
 .townsquare_content {
-  border-radius: 5px;
+    border-radius: 5px;
+}
+
+.townsquare_letter {
+    border-radius: 5px;
+    border-width: 5px;
+    border-color: red;
+}
+
+.postletter {
+    border-color: red;
+}
+
+.completionletter {
+    border-color: red;
 }
 
 /*# sourceMappingURL=styles.css.map */

@@ -47,7 +47,6 @@ class lettercontroller {
 
     public function __construct() {
         $this->townsquareevents = new townsquareevents();
-        $this->eventsready = false;
         $this->events = [];
         $this->letters = [];
     }
@@ -62,23 +61,29 @@ class lettercontroller {
         $this->events = $this->townsquareevents->townsquare_get_all_events_sorted();
         return $this->events;
     }
-
+    
+    /**
+     * Builds the letters for the events.
+     * @return array
+     * @throws \moodle_exception
+     */
     public function build_letters() {
         $this->retrieve_events();
 
         $lettersindex = 0;
-        $this->letters = [];
 
         // Build a letter for each event.
         foreach ($this->events as $event) {
             if ($event->eventtype == 'post') {
-                $this->letters[$lettersindex] = new letter\post_letter($event);
+                $templetter = new letter\post_letter($event);
 
             } else if ($event->eventtype == 'expectcompletionon') {
-                $this->letters[$lettersindex] = new letter\activitycompletion_letter($event);
+                $templetter = new letter\activitycompletion_letter($event);
+                
             } else {
-                $this->letters[$lettersindex] = new letter\letter($events->courseid, $event->modulename, $event->timestart);
+                $templetter = new letter\letter($event->courseid, $event->modulename, $event->name, $event->timestart);
             }
+            $this->letters[$lettersindex] = $templetter->export_letter();
             $lettersindex++;
         }
 

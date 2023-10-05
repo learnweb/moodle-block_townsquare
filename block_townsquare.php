@@ -45,14 +45,13 @@ class block_townsquare extends block_base {
         }
 
         $controller = new \block_townsquare\lettercontroller();
-        $letters = $controller->get_letters();
-
-        ob_start();
-        var_dump($letters);
+        $letters = $controller->build_letters();
+        $mustachedata = new stdClass();
+        
+        $mustachedata->letters = $letters;
 
         $this->content = new stdClass;
-        // Print: $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', new stdClass());.
-        $this->content->text = ob_get_clean();
+        $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', $mustachedata);
 
         return $this->content;
     }

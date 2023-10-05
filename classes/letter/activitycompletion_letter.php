@@ -38,25 +38,50 @@ class activitycompletion_letter extends letter {
 
     /** @var int The id of the author of the post */
     private $author;
+    
+    /** @var string The name of the author */
+    private $authorname;
 
     /** @var \moodle_url The url to the activity */
     private $linktoactivity;
 
-    /** @var \moodle_url The url to the course */
-    private $linktocourse;
+    /** @var bool variable for the mustache template */
+    public $isactivitycompletion = true;
 
     /**
      * @param $calendarevent object a calendar event with information, for more see classes/townsquareevents.php
      */
     public function __construct($calendarevent) {
-        parent::__construct($calendarevent->courseid, $calendarevent->modulename, $calendatevent->name, $calendarevent->timestart);
+        global $DB;
+        parent::__construct($calendarevent->courseid, $calendarevent->modulename, $calendarevent->name, $calendarevent->timestart);
         $this->lettertype = 'activitycompletion';
         $this->author = $calendarevent->userid;
+        $author = $DB->get_record('user', ['id' => $calendarevent->userid]);
+        $this->authorname = $author->firstname . ' ' . $author->lastname;
         $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
         $this->linktoactivity = new \moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
-        $this->linktocourse = new \moodle_url('/course/view.php', ['id' => $calendarevent->courseid]);
     }
+    
+    /**
+     * Export function for the mustache template.
+     * return array
+     */
+    public function export_letter() {
+        // Change the timestamp to a date.
+        $date = date('d.m.Y', $this->created);
 
+        return [
+            'lettertype' => $this->lettertype,
+            'coursename' => $this->coursename,
+            'modulename' => $this->modulename,
+            'content' => $this->content,
+            'created' => $date,
+            'authorname' => $this->authorname,
+            'linktoactivity' => $this->linktoactivity->out(),
+            'linktocourse' => $this->linktocourse->out(),
+        ];
+    }
+    
     // Getter.
 
     /**
@@ -81,10 +106,4 @@ class activitycompletion_letter extends letter {
         return $this->linktoactivity;
     }
 
-    /**
-     * @return \moodle_url
-     */
-    public function get_linktocourse() {
-        return $this->linktocourse;
-    }
 }

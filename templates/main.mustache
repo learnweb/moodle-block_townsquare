@@ -21,7 +21,7 @@
 }}
 <div class="container-fluid">
 <div class="row block_townsquare_main">
-    <div class="col-md-4 townsquare_sidepanel">
+    <div class="col-md-2 townsquare_sidepanel">
         {{#str}} seitenpanel, block_townsquare {{/str}}
     </div>
 
@@ -35,6 +35,21 @@
                 }
                 );
             {{/js}}
+        </div>
+        <div class="townsquare_letters">
+            {{#letters}}
+                <div class="townsquare_letter">
+                    {{#isbasic}}
+                        {{> block_townsquare/basicletter}}
+                    {{/isbasic}}
+                    {{#iscompletion}}
+                        {{> block_townsquare/activitycompletionletter}}
+                    {{/iscompletion}}
+                    {{#ispost}}
+                        {{> block_townsquare/postletter}}
+                    {{/ispost}}
+                </div>
+            {{/letters}}
         </div>
     </div>
 </div>
