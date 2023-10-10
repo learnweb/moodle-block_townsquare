@@ -1,3 +1,5 @@
+/* Style for the main template*/
+
 .townsquare_sidepanel {
     background-color: #eee;
     border-radius: 5px;
@@ -8,17 +10,17 @@
 }
 
 .townsquare_letter {
-    border-radius: 5px;
-    border-width: 5px;
-    border-color: red;
+    background-color: #eee;
+    margin-bottom: 10px
 }
 
-.postletter {
-    border-color: red;
+/* Style for the letter templates */
+.basicletter_top, .postletter_top, .completionletter_top {
+    display: flex;
 }
 
-.completionletter {
-    border-color: red;
+.basicletter_course, .postletter_course, .completionletter_course {
+    flex: 1;
 }
 
 /*# sourceMappingURL=styles.css.map */

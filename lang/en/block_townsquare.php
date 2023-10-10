@@ -32,6 +32,12 @@ $string['pluginname:addinstance'] = 'Add a new Town Square block';
 $string['pluginname:myaddinstance'] = 'Add a new Town Square block to the My Moodle page';
 
 // Mustache strings.
+$string['lettercourse'] = 'Course: {$a->course}';
+
+$string['completionletterorigin'] = 'A completion is required by {$a->modulename}:';
+
+$string['postletternotification'] = 'New {$a->modulename} post!';
+$string['postletterorigin'] = '{$a->authorname} posted in {$a->localname} -> {$a->discussionname}';
 
 
 // Letter strings.

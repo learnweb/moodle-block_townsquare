@@ -46,6 +46,9 @@ class post_letter extends letter {
     /** @var int The local ID of the module  instance, is the forumid or moodleoverflowid*/
     private $localmoduleid;
 
+    /** @var string The name of the module instance */
+    private $localname;
+
     /** @var int The id of the discussion */
     private $discussionid;
 
@@ -66,10 +69,10 @@ class post_letter extends letter {
 
     /** @var int the id of the parent post */
     private $postparentid;
-    
+
     /** @var bool variable for the mustache template */
     public $ispost = true;
-    
+
     /** @var bool if the post is anonymous or not */
     private $anonymous;
 
@@ -104,6 +107,7 @@ class post_letter extends letter {
         }
         $this->coursemoduleid = get_coursemodule_from_instance($postevent->modulename, $this->localmoduleid)->id;
         $this->discussionid = $postevent->postdiscussion;
+        $this->localname = $postevent->localname;
         $this->author = $postevent->postuserid;
         $author = $DB->get_record('user', ['id' => $postevent->postuserid]);
         $this->authorname = $author->firstname . ' ' . $author->lastname;
@@ -119,7 +123,7 @@ class post_letter extends letter {
 
         $this->build_links();
     }
-    
+
     /**
      * Export Function for the mustache template.
      * @return array
@@ -132,8 +136,10 @@ class post_letter extends letter {
             'lettertype' => $this->lettertype,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,
+            'localname' => $this->localname,
             'created' => $date,
             'ispost' => $this->ispost,
+            'author' => $this->author,
             'authorname' => $this->authorname,
             'message' => $this->message,
             'subject' => $this->subject,
@@ -143,7 +149,7 @@ class post_letter extends letter {
             'linktoauthor' => $this->linktoauthor->out(),
         ];
     }
-    
+
     // Getter for every attribute.
 
     /**
@@ -247,6 +253,7 @@ class post_letter extends letter {
             if ($this->anonymous) {
                 $this->linktoauthor = new \moodle_url('');
                 $this->author = false;
+                $this->authorname = 'anonymous';
             }
         }
     }

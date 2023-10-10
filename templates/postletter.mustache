@@ -19,17 +19,42 @@
 
     This template renders a post letter.
 }}
-<div class = "container-fluid postletter">
-    <div class = "row postletterinformation">
-        <div class = "col-md-3 postletter_date">
-            {{created}}
+<div class="postletter card text-dark bg-warning mb-3">
+    <div class=" postletter_header card-header">
+        <div class = "postletter_top">
+            <div class = "postletter_course">
+                {{#str}} lettercourse, block_townsquare, {"course":
+                    {{#quote}} <a href='{{linktocourse}}'>{{coursename}}</a> {{/quote}} } {{/str}}
+            </div>
+            <div class = " postletter_date">
+                {{created}}
+            </div>
         </div>
-        <div class =col-md-8 postletter_origin>
-            From <a href='{{linktocourse}}'>{{coursename}}</a> -> <a href='{{linktomoduleinstance}}'>{{modulename}}</a>:
+        <div class = postletter_notification>
+            {{#str}} postletternotification, block_townsquare, {"modulename": {{#quote}} {{modulename}} {{/quote}} } {{/str}}
         </div>
     </div>
-    <div class = "postlettercontent">
-        <a href='{{linktoauthor}}'>{{authorname}}</a> in <a href='{{linktopost}}'>{{subject}}</a>:
-        {{message}}
+    <div class="postletter_body card-body">
+        <div class = "postletter_origin">
+            <h6>
+                {{#author}}
+                    {{#str}} postletterorigin, block_townsquare,
+                        {"authorname": {{#quote}} <a href='{{linktoauthor}}'>{{authorname}}</a> {{/quote}},
+                         "localname": {{#quote}} <a href='{{linktomoduleinstance}}'>{{localname}}</a> {{/quote}},
+                         "discussionname": {{#quote}} <a href='{{linktopost}}'>{{subject}}</a> {{/quote}} }
+                    {{/str}}
+                {{/author}}
+                {{^author}}
+                    {{#str}} postletterorigin, block_townsquare,
+                        {"authorname": {{#quote}} <i> anonymous </i> {{/quote}},
+                        "localname": {{#quote}} <a href='{{linktomoduleinstance}}'>{{localname}}</a> {{/quote}},
+                        "discussionname": {{#quote}} <a href='{{linktopost}}'>{{subject}}</a> {{/quote}} }
+                    {{/str}}
+                {{/author}}
+            </h6>
+        </div>
+        <div class = "postletter_content">
+            {{{message}}}
+        </div>
     </div>
 </div>

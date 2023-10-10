@@ -191,7 +191,7 @@ class townsquareevents {
      * This is a helper function for townsquare_get_postevents().
      * @param string $modulename  The name of the module, is 'forum' or 'moodleoverflow'.
      * @param string $localid     The internal id of the modules instance.
-     * @param string $localidname The name of the module instances id, if 'forumid' or 'moodleoverflowid'.
+     * @param string $localidname The name of the module instances id, i 'forumid' or 'moodleoverflowid'.
      * @param string $posts The name of the posts table, is 'forum_posts' or 'moodleoverflow_posts'.
      * @param string $discussions The name of the discussions table, is 'forum_discussions' or 'moodleoverflow_discussions'.
      * @param array  $courses The ids of the courses where the posts should be searched.
@@ -205,7 +205,8 @@ class townsquareevents {
         $sql = 'SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
                        "' . $modulename . '" AS modulename,
                        discuss.course AS courseid,
-                       ' . $localid . ' AS ' . $localidname . ',
+                       module.id AS ' . $localidname . ',
+                       module.name AS localname,
                        posts.id AS postid,
                        posts.discussion AS postdiscussion,
                        posts.parent AS postparent,
@@ -215,6 +216,7 @@ class townsquareevents {
                        posts.message AS postmessage
                 FROM {' . $posts .  '} posts
                 JOIN {' . $discussions . '} discuss ON discuss.id = posts.discussion
+                JOIN {' . $modulename . '} module ON module.id = discuss.' . $modulename . '
                 WHERE discuss.course IN (' . implode(',', $courses) . ')
                     AND posts.created > ' . $starttime . '
                 ORDER BY posts.created DESC ;';

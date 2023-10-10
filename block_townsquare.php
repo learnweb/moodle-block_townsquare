@@ -47,9 +47,8 @@ class block_townsquare extends block_base {
         $controller = new \block_townsquare\lettercontroller();
         $letters = $controller->build_letters();
         $mustachedata = new stdClass();
-        
+        // TODO: check the letters, there is something wrong with completion letters.
         $mustachedata->letters = $letters;
-
         $this->content = new stdClass;
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', $mustachedata);
 

@@ -38,7 +38,7 @@ class activitycompletion_letter extends letter {
 
     /** @var int The id of the author of the post */
     private $author;
-    
+
     /** @var string The name of the author */
     private $authorname;
 
@@ -61,7 +61,7 @@ class activitycompletion_letter extends letter {
         $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
         $this->linktoactivity = new \moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
     }
-    
+
     /**
      * Export function for the mustache template.
      * return array
@@ -77,11 +77,12 @@ class activitycompletion_letter extends letter {
             'content' => $this->content,
             'created' => $date,
             'authorname' => $this->authorname,
+            'isactivitycompletion' => $this->isactivitycompletion,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),
         ];
     }
-    
+
     // Getter.
 
     /**

@@ -61,7 +61,7 @@ class lettercontroller {
         $this->events = $this->townsquareevents->townsquare_get_all_events_sorted();
         return $this->events;
     }
-    
+
     /**
      * Builds the letters for the events.
      * @return array
@@ -76,10 +76,8 @@ class lettercontroller {
         foreach ($this->events as $event) {
             if ($event->eventtype == 'post') {
                 $templetter = new letter\post_letter($event);
-
             } else if ($event->eventtype == 'expectcompletionon') {
                 $templetter = new letter\activitycompletion_letter($event);
-                
             } else {
                 $templetter = new letter\letter($event->courseid, $event->modulename, $event->name, $event->timestart);
             }

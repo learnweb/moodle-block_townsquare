@@ -19,17 +19,22 @@
 
     This template renders a basic letter.
 }}
-<div class = "container-fluid basicletter">
-    <div class = "row letterinformation">
-        <div class = "col-md-3 basicletter_date">
-            {{created}}
-        </div>
-        <div class =col-md-8 basicletter_origin>
-            In <a href='{{linktocourse}}'>{{coursename}}</a>:
-                {{modulename}}:
+<div class="basicletter card text-dark bg-light mb-3">
+    <div class="basicletter_head card-header">
+        <div class = "basicletter_top">
+            <div class = "basicletter_course">
+                {{#str}} lettercourse, block_townsquare, {"course":
+                    {{#quote}} <a href='{{linktocourse}}'>{{coursename}}</a> {{/quote}} } {{/str}}
+            </div>
+            <div class = "basicletter_date">
+                {{created}}
+            </div>
         </div>
     </div>
-    <div class = "lettercontent">
-        {{content}}
+    <div class="basicletter_body card-body">
+        <div class="basicletter_content">
+            {{content}}
+        </div>
+
     </div>
 </div>

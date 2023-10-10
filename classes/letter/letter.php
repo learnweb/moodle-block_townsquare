@@ -49,7 +49,7 @@ class letter {
 
     /** @var int The course from the letter */
     protected $courseid;
-    
+
     /** @var string The name of the course */
     protected $coursename;
 
@@ -61,12 +61,12 @@ class letter {
 
     /** @var int Timestamp When the activity was created */
     protected $created;
-    
+
     /** @var bool variable for the mustache template */
     public $isbasic = true;
-    
+
     // Url attributes.
-    
+
     protected $linktocourse;
 
     // Constructor.
@@ -95,7 +95,7 @@ class letter {
     public function export_letter() {
         // Change the timestamp to a date.
         $date = date('d.m.Y', $this->created);
-        
+
         return [
             'lettertype' => $this->lettertype,
             'coursename' => $this->coursename,
@@ -135,7 +135,7 @@ class letter {
     public function get_content() {
         return $this->content;
     }
-    
+
     public function get_linktocourse() {
         return $this->linktocourse;
     }

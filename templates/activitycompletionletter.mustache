@@ -19,16 +19,29 @@
 
     This template renders a activity completion letter.
 }}
-<div class = "container-fluid completionletter">
-    <div class = "row completionletterinformation">
-        <div class = "col-md-3 postletter_date">
-            {{created}}
+<div class="completionletter card text-dark bg-danger mb-3">
+    <div class="completionletter_head card-header">
+        <div class = "completionletter_top">
+            <div class = "completionletter_course">
+                {{#str}} lettercourse, block_townsquare, {"course":
+                    {{#quote}} <a href='{{linktocourse}}'>{{coursename}}</a> {{/quote}} } {{/str}}
+            </div>
+            <div class = " completionletter_date">
+                {{created}}
+            </div>
         </div>
-        <div class =col-md-8 completionletter_origin>
-            In <a href='{{linktocourse}}'>{{coursename}}</a> is a completion required by
-                <a href='{{linktoactivity}}'>{{modulename}}</a>:
     </div>
-    <div class = "completionlettercontent">
-    {{content}}
+    <div class="completionletter_body card-body">
+        <div class="completionletter_origin">
+            <h6>
+                {{#str}} completionletterorigin, block_townsquare,
+                    { "modulename": {{#quote}} <a href='{{linktoactivity}}'>{{modulename}}</a> {{/quote}} }
+                {{/str}}
+            </h6>
+        </div>
+        <div class="completionletter_content">
+            {{content}}
+        </div>
+
     </div>
 </div>
