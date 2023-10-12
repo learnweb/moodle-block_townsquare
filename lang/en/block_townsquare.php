@@ -33,11 +33,11 @@ $string['pluginname:myaddinstance'] = 'Add a new Town Square block to the My Moo
 
 // Mustache strings.
 $string['lettercourse'] = 'Course: {$a->course}';
-
 $string['completionletterorigin'] = 'A completion is required by {$a->modulename}:';
-
 $string['postletternotification'] = 'New {$a->modulename} post!';
 $string['postletterorigin'] = '{$a->authorname} posted in {$a->localname} -> {$a->discussionname}';
+
+$string['showmore'] = 'Show more';
 
 
 // Letter strings.

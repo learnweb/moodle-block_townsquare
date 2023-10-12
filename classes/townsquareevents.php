@@ -26,6 +26,7 @@ namespace block_townsquare;
 defined('MOODLE_INTERNAL') || die();
 
 use mod_moodleoverflow\anonymous;
+global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 
 /**
@@ -48,7 +49,6 @@ class townsquareevents {
 
     public function __construct() {
         $this->starttime = time() - 15768000;
-        $this->starttime = 1690000000;
         $this->endtime = time() + 15768000;
         $this->courses = $this->townsquare_get_courses();
 
@@ -217,8 +217,8 @@ class townsquareevents {
                 FROM {' . $posts .  '} posts
                 JOIN {' . $discussions . '} discuss ON discuss.id = posts.discussion
                 JOIN {' . $modulename . '} module ON module.id = discuss.' . $modulename . '
-                WHERE discuss.course IN (' . implode(',', $courses) . ')
-                    AND posts.created > ' . $starttime . '
+                WHERE discuss.course IN (' . implode(",", $courses) . ')
+                      AND posts.created > ' . $starttime . ' 
                 ORDER BY posts.created DESC ;';
 
         // Get all posts.

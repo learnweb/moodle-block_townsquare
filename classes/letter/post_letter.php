@@ -24,6 +24,8 @@
 
 namespace block_townsquare\letter;
 
+use moodle_url;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -55,6 +57,9 @@ class post_letter extends letter {
     /** @var int the id of the author of the post */
     private $author;
 
+    /** @var \stdClass the profile picture of the author */
+    private $authorpicture;
+
     /** @var string the name of the author */
     private $authorname;
 
@@ -78,13 +83,13 @@ class post_letter extends letter {
 
     // Urls Attributes.
 
-    /** @var \moodle_url url to the module instance*/
+    /** @var moodle_url url to the module instance*/
     private $linktomoduleinstance;
 
-    /** @var \moodle_url url to the discussion */
+    /** @var moodle_url url to the discussion */
     private $linktopost;
 
-    /** @var \moodle_url url to the user that wrote the post */
+    /** @var moodle_url url to the user that wrote the post */
     private $linktoauthor;
 
     // Constructor.
@@ -116,12 +121,8 @@ class post_letter extends letter {
         $this->subject = $postevent->discussionsubject;
         $this->postparentid = $postevent->postparent;
 
-        // If the post is an answer post, add an 'RE' to the subject.
-        if ($this->postparentid == 0) {
-            $this->subject = 'RE: ' . $this->subject;
-        }
-
         $this->build_links();
+        $this->retrieve_profilepicture();
     }
 
     /**
@@ -140,6 +141,7 @@ class post_letter extends letter {
             'created' => $date,
             'ispost' => $this->ispost,
             'author' => $this->author,
+            'authorpicture' => $this->authorpicture,
             'authorname' => $this->authorname,
             'message' => $this->message,
             'subject' => $this->subject,
@@ -211,21 +213,21 @@ class post_letter extends letter {
     }
 
     /**
-     * @return \moodle_url
+     * @return moodle_url
      */
     public function get_linktomoduleinstance() {
         return $this->linktomoduleinstance;
     }
 
     /**
-     * @return \moodle_url
+     * @return moodle_url
      */
     public function get_linktopost() {
         return $this->linktopost;
     }
 
     /**
-     * @return \moodle_url
+     * @return moodle_url
      */
     public function get_linktoauthor() {
         return $this->linktoauthor;
@@ -238,24 +240,44 @@ class post_letter extends letter {
      * @return void
      */
     private function build_links() {
-        $this->linktoauthor = new \moodle_url('/user/view.php', array('id' => $this->author));
+        $this->linktoauthor = new moodle_url('/user/view.php', array('id' => $this->author));
 
         if ($this->modulename == 'forum') {
-            $this->linktomoduleinstance = new \moodle_url('/mod/forum/view.php', array('id' => $this->coursemoduleid));
-            $this->linktopost = new \moodle_url('/mod/forum/discuss.php',
+            $this->linktomoduleinstance = new moodle_url('/mod/forum/view.php', array('id' => $this->coursemoduleid));
+            $this->linktopost = new moodle_url('/mod/forum/discuss.php',
                 array('d' => $this->discussionid), 'p' . $this->postid);
         } else {
-            $this->linktomoduleinstance = new \moodle_url('/mod/moodleoverflow/view.php', array('id' => $this->coursemoduleid));
-            $this->linktopost = new \moodle_url('/mod/moodleoverflow/discussion.php',
+            $this->linktomoduleinstance = new moodle_url('/mod/moodleoverflow/view.php', array('id' => $this->coursemoduleid));
+            $this->linktopost = new moodle_url('/mod/moodleoverflow/discussion.php',
                 array('d' => $this->discussionid), 'p' . $this->postid);
 
             // If the post in the moodleoverflow is anonymous, the user should not be visible.
             if ($this->anonymous) {
-                $this->linktoauthor = new \moodle_url('');
+                $this->linktoauthor = new moodle_url('');
                 $this->author = false;
                 $this->authorname = 'anonymous';
             }
         }
+    }
+
+    /**
+     * Method to retrieve the profile picture of the author.
+     * @return void
+     */
+    private function retrieve_profilepicture() {
+        global $DB, $OUTPUT;
+
+        // If the author is anonymous, the profile picture should not be visible.
+        if ($this->author) {
+            $user = new \stdClass();
+
+            $picturefields = \core_user\fields::get_picture_fields();
+
+            $user = username_load_fields_from_object($user, $DB->get_record('user', ['id' => $this->author]),null, $picturefields);
+            $user->id = $this->author;
+            $this->authorpicture = $OUTPUT->user_picture($user, array('courseid' => $this->courseid, 'link' => false));
+        }
+
     }
 
 }

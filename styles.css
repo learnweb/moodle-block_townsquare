@@ -10,8 +10,8 @@
 }
 
 .townsquare_letter {
-    background-color: #eee;
-    margin-bottom: 10px
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 /* Style for the letter templates */
