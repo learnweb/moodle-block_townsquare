@@ -38,7 +38,7 @@ class block_townsquare extends block_base {
      * @return string The block HTML.
      */
     public function get_content() {
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
 
         if ($this->content !== null) {
             return $this->content;
@@ -51,7 +51,7 @@ class block_townsquare extends block_base {
         $mustachedata->letters = $letters;
         $this->content = new stdClass;
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', $mustachedata);
-
+        $PAGE->requires->js_call_amd('block_townsquare/postletter', 'init');
         return $this->content;
     }
 

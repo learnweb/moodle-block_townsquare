@@ -15,12 +15,25 @@
 }
 
 /* Style for the letter templates */
-.basicletter_top, .postletter_top, .completionletter_top {
+.basicletter_top,
+.postletter_top,
+.completionletter_top {
     display: flex;
 }
 
-.basicletter_course, .postletter_course, .completionletter_course {
+.basicletter_course,
+.postletter_course,
+.completionletter_course {
     flex: 1;
+}
+
+.townsquare_showmore {
+    cursor: pointer;
+}
+
+.postletter,
+.postletter_body {
+    padding-bottom: 0;
 }
 
 /*# sourceMappingURL=styles.css.map */

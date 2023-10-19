@@ -24,6 +24,8 @@
 namespace block_townsquare;
 
 use block_townsquare\letter;
+use moodle_exception;
+use stdClass;
 
 /**
  * Letter Controller Class.
@@ -36,7 +38,7 @@ use block_townsquare\letter;
  */
 class lettercontroller {
 
-    /** @var \stdClass Class to retrieve events */
+    /** @var stdClass Class to retrieve events */
     public $townsquareevents;
 
     /** @var array events that are relevant for the townsquare */
@@ -65,24 +67,23 @@ class lettercontroller {
     /**
      * Builds the letters for the events.
      * @return array
-     * @throws \moodle_exception
+     * @throws moodle_exception
      */
     public function build_letters() {
         $this->retrieve_events();
 
-        $lettersindex = 0;
-
+        $index = 0;
         // Build a letter for each event.
         foreach ($this->events as $event) {
             if ($event->eventtype == 'post') {
-                $templetter = new letter\post_letter($event);
+                $templetter = new letter\post_letter($index, $event);
             } else if ($event->eventtype == 'expectcompletionon') {
-                $templetter = new letter\activitycompletion_letter($event);
+                $templetter = new letter\activitycompletion_letter($index, $event);
             } else {
-                $templetter = new letter\letter($event->courseid, $event->modulename, $event->name, $event->timestart);
+                $templetter = new letter\letter($index, $event->courseid, $event->modulename, $event->name, $event->timestart);
             }
-            $this->letters[$lettersindex] = $templetter->export_letter();
-            $lettersindex++;
+            $this->letters[$index] = $templetter->export_letter();
+            $index++;
         }
 
         return $this->letters;

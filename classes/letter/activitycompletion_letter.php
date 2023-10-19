@@ -51,9 +51,9 @@ class activitycompletion_letter extends letter {
     /**
      * @param $calendarevent object a calendar event with information, for more see classes/townsquareevents.php
      */
-    public function __construct($calendarevent) {
+    public function __construct($letterid, $calendarevent) {
         global $DB;
-        parent::__construct($calendarevent->courseid, $calendarevent->modulename, $calendarevent->name, $calendarevent->timestart);
+        parent::__construct($letterid, $calendarevent->courseid, $calendarevent->modulename, $calendarevent->name, $calendarevent->timestart);
         $this->lettertype = 'activitycompletion';
         $this->author = $calendarevent->userid;
         $author = $DB->get_record('user', ['id' => $calendarevent->userid]);
@@ -71,6 +71,7 @@ class activitycompletion_letter extends letter {
         $date = date('d.m.Y', $this->created);
 
         return [
+            'letterid' => $this->letterid,
             'lettertype' => $this->lettertype,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,

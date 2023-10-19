@@ -44,6 +44,9 @@ defined('MOODLE_INTERNAL') || die();
 class letter {
     // Attributes.
 
+    /** @var int A ID to identify  every letter */
+    protected $letterid;
+
     /** @var string Every Letter must save its letter type */
     protected $lettertype;
 
@@ -78,7 +81,8 @@ class letter {
      * @param $content
      * @param $created
      */
-    public function __construct($courseid, $modulename, $content, $created) {
+    public function __construct($letterid, $courseid, $modulename, $content, $created) {
+        $this->letterid = $letterid;
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
         $this->coursename = get_course($courseid)->fullname;
@@ -97,6 +101,7 @@ class letter {
         $date = date('d.m.Y', $this->created);
 
         return [
+            'letterid' => $this->letterid,
             'lettertype' => $this->lettertype,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,

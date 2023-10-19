@@ -17,7 +17,7 @@
 /**
  * Plugin capabilities for the block_townsquare plugin.
  *
- * @package   block_townsqaure
+ * @package   block_townsquare
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

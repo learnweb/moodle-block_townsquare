@@ -98,9 +98,9 @@ class post_letter extends letter {
      * @param $postevent object a post event with information,for more see classes/townsquareevents.php.
      * @throws \moodle_exception
      */
-    public function __construct($postevent) {
+    public function __construct($letterid, $postevent) {
         global $DB;
-        parent::__construct($postevent->courseid, $postevent->modulename, $postevent->postmessage, $postevent->postcreated);
+        parent::__construct($letterid, $postevent->courseid, $postevent->modulename, $postevent->postmessage, $postevent->postcreated);
         $this->lettertype = 'post';
         if ($postevent->modulename == 'forum') {
             $this->localmoduleid = $postevent->forumid;
@@ -134,6 +134,7 @@ class post_letter extends letter {
         // Change the created timestamp to a date.
         $date = date('d.m.Y', $this->created);
         return [
+            'letterid' => $this->letterid,
             'lettertype' => $this->lettertype,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,
@@ -270,9 +271,7 @@ class post_letter extends letter {
         // If the author is anonymous, the profile picture should not be visible.
         if ($this->author) {
             $user = new \stdClass();
-
             $picturefields = \core_user\fields::get_picture_fields();
-
             $user = username_load_fields_from_object($user, $DB->get_record('user', ['id' => $this->author]),null, $picturefields);
             $user->id = $this->author;
             $this->authorpicture = $OUTPUT->user_picture($user, array('courseid' => $this->courseid, 'link' => false));

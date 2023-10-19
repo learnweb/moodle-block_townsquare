@@ -19,7 +19,7 @@
 
     This template renders a post letter.
 }}
-<div class="postletter card text-dark border-warning mb-3">
+<div class="postletter card text-dark border-warning mb-3" id="letter-nr-{{letterid}}">
     <div class=" postletter_header card-header">
         <div class = "postletter_top">
             <div class = "postletter_course">
@@ -51,15 +51,15 @@
                 {{/author}}
             </bold>
         </div>
-        {{#js}}
-            require(['block_townsquare/postletter'],
-            function(main) {
-            main.init();
-            }
-            );
-        {{/js}}
-        <div class = "postletter_content" id="postletter_content">
-            <p> {{{message}}} </p>
+        <p></p>
+        <div class = "postletter_content">
+                <span class ="postletter_message" id="letter-nr-{{letterid}}" >
+                    {{{message}}}
+                </span>
+                <span class="townsquare_showmore badge rounded-pill bg-light text-dark" id="letter-nr-{{letterid}}"
+                      data-action="block_townsquare/showmore_button">
+                    {{#str}} showmore, block_townsquare {{/str}}
+                </span>
         </div>
     </div>
 </div>
