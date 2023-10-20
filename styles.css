@@ -15,6 +15,20 @@
 }
 
 /* Style for the letter templates */
+.basicletter_header,
+.postletter_header,
+.completionletter_header {
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+}
+
+.basicletter_body,
+.postletter_body,
+.completionletter_body {
+    padding-top: 0.6rem !important;
+    padding-bottom: 0rem !important;
+}
+
 .basicletter_top,
 .postletter_top,
 .completionletter_top {
@@ -29,11 +43,6 @@
 
 .townsquare_showmore {
     cursor: pointer;
-}
-
-.postletter,
-.postletter_body {
-    padding-bottom: 0;
 }
 
 /*# sourceMappingURL=styles.css.map */

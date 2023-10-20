@@ -51,7 +51,6 @@ class townsquareevents {
         $this->starttime = time() - 15768000;
         $this->endtime = time() + 15768000;
         $this->courses = $this->townsquare_get_courses();
-
     }
 
     /**

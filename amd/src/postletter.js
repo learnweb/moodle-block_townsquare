@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 import {getString} from "core/str";
-//import Prefetch from "../../../../lib/amd/src/prefetch";
+import {prefetchStrings} from 'core/prefetch';
 
 /**
  * Javascript for the post letter
@@ -32,8 +32,6 @@ const Selectors = {
         seemorebutton: '[data-action="block_townsquare/showmore_button"]',
     },
 };
-
-// TODO: The <p> parameter gets lost with this method. Search for a better solution.
 // TODO: Don't cut within a word or after a space.
 /**
  * Init function
@@ -47,7 +45,8 @@ export function init() {
             if (element.textContent.length >= 250) {
                 // If the text is too long, cut it.
                 originalTexts[element.id] = element.textContent;
-                element.textContent = element.textContent.substring(0,250) + "...";
+                cutString(element);
+                element.parentElement.insertAdjacentHTML('beforeend', '<p>');
                 buttons[element.id].setAttribute('showmore', 'true');
             } else {
                 // If the text is not too long, hide the show more button.
@@ -55,13 +54,33 @@ export function init() {
             }
         }
     );
-    registerEventListener();
+
+    // Get the strings for the show more/show less button.
+    prefetchStrings('block_townsquare', ['showmore', 'showless',]);
+
+    // Add event listeners for the show more Button.
+    addEventListener();
+}
+
+/**
+ * Function to cut a String at a certain length.
+ * The function does not cut within a word or after a space.
+ * If the cutting point is within a word, the function searches for the next space and cuts there.
+ * @param {object} element
+ */
+function cutString(element) {
+    let text = element.textContent;
+    let index = 250;
+    while (text.charAt(index) != " ") {
+        index++;
+    }
+    element.textContent = text.substring(0,index);
 }
 
 /**
  * Event listener for the show more/show less button.
  */
-const registerEventListener = () => {
+const addEventListener = () => {
     document.addEventListener('click', e => {
         if (e.target.closest(Selectors.actions.seemorebutton)) {
             // Get the id of the clicked element.
@@ -69,14 +88,12 @@ const registerEventListener = () => {
             contentElements.forEach(
                 (element) => {
                     if (element.id == letterid) {
-                        if (buttons[letterid].getAttribute('showmore')) {
+                        if (buttons[letterid].getAttribute('showmore') == 'true') {
                             element.textContent = originalTexts[letterid];
-                            buttons[letterid].textContent = getString('showless', 'block_townsquare');
-                            buttons[letterid].setAttribute('showmore', 'false');
+                            changeButtonString(letterid, false);
                         } else {
-                            element.textContent = element.textContent.substring(0,250) + "...";
-                            buttons[letterid].textContent = getString('showmore', 'block_townsquare');
-                            buttons[letterid].setAttribute('showmore', 'true');
+                            cutString(element);
+                            changeButtonString(letterid, true);
                         }
                     }
                 }
@@ -84,3 +101,18 @@ const registerEventListener = () => {
         }
     });
 };
+
+/**
+ * Change the button strings.
+ * @param {string} index Which button should be changed
+ * @param {boolean} toshowmore a boolean that indicates if the button should show more or less
+ */
+async function changeButtonString(index, toshowmore) {
+    if (toshowmore == true) {
+        buttons[index].textContent = await getString('showmore', 'block_townsquare');
+        buttons[index].setAttribute('showmore', 'true');
+    } else {
+        buttons[index].textContent = await getString('showless', 'block_townsquare');
+        buttons[index].setAttribute('showmore', 'false');
+    }
+}
