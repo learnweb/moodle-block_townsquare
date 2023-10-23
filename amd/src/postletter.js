@@ -32,7 +32,7 @@ const Selectors = {
         seemorebutton: '[data-action="block_townsquare/showmore_button"]',
     },
 };
-// TODO: Don't cut within a word or after a space.
+
 /**
  * Init function
  *

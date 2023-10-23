@@ -22,10 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_townsquare\output;
-defined('MOODLE_INTERNAL') || die;
 
 use plugin_renderer_base;
-use renderable;
 
 /**
  * Class to call different mustache templates.

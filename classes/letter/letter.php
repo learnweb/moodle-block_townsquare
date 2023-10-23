@@ -24,10 +24,7 @@
 
 namespace block_townsquare\letter;
 
-// Import other namespaces.
-
-// Moodle internal check to prevent calling this file from the url.
-defined('MOODLE_INTERNAL') || die();
+use moodle_url;
 
 /**
  * Abstract Class to show the latest activities and other new things in moodle
@@ -44,8 +41,8 @@ defined('MOODLE_INTERNAL') || die();
 class letter {
     // Attributes.
 
-    /** @var int A ID to identify  every letter */
-    protected $letterid;
+    /** @var int an ID to identify every content in townsquare */
+    protected $contentid;
 
     /** @var string Every Letter must save its letter type */
     protected $lettertype;
@@ -81,15 +78,15 @@ class letter {
      * @param $content
      * @param $created
      */
-    public function __construct($letterid, $courseid, $modulename, $content, $created) {
-        $this->letterid = $letterid;
+    public function __construct($contentid, $courseid, $modulename, $content, $created) {
+        $this->contentid = $contentid;
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
         $this->coursename = get_course($courseid)->fullname;
         $this->modulename = $modulename;
         $this->content = $content;
         $this->created = $created;
-        $this->linktocourse = new \moodle_url('/course/view.php', array('id' => $this->courseid));
+        $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
     }
 
     /**
@@ -101,16 +98,18 @@ class letter {
         $date = date('d.m.Y', $this->created);
 
         return [
-            'letterid' => $this->letterid,
+            'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
+            'isbasic' => $this->isbasic,
+            'courseid' => $this->courseid,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,
             'content' => $this->content,
             'created' => $date,
-            'isbasic' => $this->isbasic,
             'linktocourse' => $this->linktocourse->out(),
         ];
     }
+
     // Getter.
 
     /**
@@ -137,10 +136,18 @@ class letter {
         return $this->modulename;
     }
 
+    /**
+     * Getter for the content
+     * @return string
+     */
     public function get_content() {
         return $this->content;
     }
 
+    /**
+     * Getter for the link to the course
+     * @return moodle_url
+     */
     public function get_linktocourse() {
         return $this->linktocourse;
     }

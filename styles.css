@@ -9,40 +9,52 @@
     border-radius: 5px;
 }
 
-.townsquare_letter {
-    border-radius: 5px;
-    margin-bottom: 10px;
+/* Style for all letter or content templates */
+
+.townsquareletter_header.card-header {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
 }
 
-/* Style for the letter templates */
-.basicletter_header,
-.postletter_header,
-.completionletter_header {
-    padding-top: 0.6rem !important;
-    padding-bottom: 0.6rem !important;
+.townsquareletter_body.card-body {
+    padding-top: 0.7rem;
+    padding-bottom: 0rem;
 }
 
-.basicletter_body,
-.postletter_body,
-.completionletter_body {
-    padding-top: 0.6rem !important;
-    padding-bottom: 0rem !important;
+.orientationmarker_body.card-body {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
 }
 
-.basicletter_top,
-.postletter_top,
-.completionletter_top {
+.townsquareletter_top {
     display: flex;
 }
 
-.basicletter_course,
-.postletter_course,
-.completionletter_course {
+.townsquareletter_course {
     flex: 1;
 }
 
 .townsquare_showmore {
     cursor: pointer;
+}
+
+/* Styles for individual letters */
+
+/* postletter Style */
+
+.postletter.card {
+    /*border-color: #FFA500 !important;*/
+    border-color: #f7634d; /*forum and moodleoverflow sign color*/
+}
+
+.postletter_header.card-header {
+    background-color: #f7634d;
+}
+
+/* actvitiycompletionletter Style*/
+
+.completionletter {
+    /*border-color: #ced4da !important;*/
 }
 
 /*# sourceMappingURL=styles.css.map */

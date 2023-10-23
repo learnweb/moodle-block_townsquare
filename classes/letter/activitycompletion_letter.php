@@ -24,8 +24,6 @@
 
 namespace block_townsquare\letter;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class that represents an activity completion.
  * Subclass from letter.
@@ -51,9 +49,10 @@ class activitycompletion_letter extends letter {
     /**
      * @param $calendarevent object a calendar event with information, for more see classes/townsquareevents.php
      */
-    public function __construct($letterid, $calendarevent) {
+    public function __construct($contentid, $calendarevent) {
         global $DB;
-        parent::__construct($letterid, $calendarevent->courseid, $calendarevent->modulename, $calendarevent->name, $calendarevent->timestart);
+        parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename,
+                            $calendarevent->name, $calendarevent->timestart);
         $this->lettertype = 'activitycompletion';
         $this->author = $calendarevent->userid;
         $author = $DB->get_record('user', ['id' => $calendarevent->userid]);
@@ -71,14 +70,16 @@ class activitycompletion_letter extends letter {
         $date = date('d.m.Y', $this->created);
 
         return [
-            'letterid' => $this->letterid,
+            'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
+            'isactivitycompletion' => $this->isactivitycompletion,
+            'courseid' => $this->courseid,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,
+            'author' => $this->author,
+            'authorname' => $this->authorname,
             'content' => $this->content,
             'created' => $date,
-            'authorname' => $this->authorname,
-            'isactivitycompletion' => $this->isactivitycompletion,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),
         ];

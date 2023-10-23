@@ -26,8 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    // E.g.: $settings = new admin_settingpage('block_townsquare_settings', new lang_string('pluginname', 'block_townsquare'));.
-
     if ($ADMIN->fulltree) {
         // TODO: Define actual plugin settings page and add it to the tree - {@link https://docs.moodle.org/dev/Admin_settings}.
         return true;

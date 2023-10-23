@@ -38,7 +38,7 @@ $string['postletternotification'] = 'New {$a->modulename} post!';
 $string['postletterorigin'] = '{$a->authorname} posted in {$a->localname} -> {$a->discussionname}';
 $string['showmore'] = 'Show more';
 $string['showless'] = 'Show less';
-
+$string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare! Today is the {$a->date}';
 
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
@@ -49,11 +49,3 @@ $string['eventsempty'] = 'Events need to be retrieved before working with them';
 // Test strings.
 $string['seitenpanel'] = 'Ich bin das Seitenpanel';
 $string['hauptseite'] = 'Ich bin die hauptseite';
-
-// Miscellaneous.
-$string['loremipsum'] = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore 
-                         et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. 
-                         Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit 
-                         amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna 
-                         aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd 
-                         gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.";

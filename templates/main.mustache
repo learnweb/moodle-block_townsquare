@@ -20,16 +20,17 @@
     This template renders the main content area for the townsquare block.
 }}
 <div id="townsquare_root" class="container-fluid">
-    <div class="row block_townsquare_main">
-
+    <div class="row townsquare_main">
         <div class="col-md-3 townsquare_sidepanel">
             {{#str}} seitenpanel, block_townsquare {{/str}}
         </div>
 
         <div class="col-md-9 townsquare_content">
             <div class="townsquare_letters">
-                {{#letters}}
-                    <div class="townsquare_letter">
+                {{#content}}
+                        {{#isorientationmarker}}
+                            {{> block_townsquare/orientationmarker}}
+                        {{/isorientationmarker}}
                         {{#isbasic}}
                             {{> block_townsquare/basicletter}}
                         {{/isbasic}}
@@ -39,10 +40,8 @@
                         {{#ispost}}
                             {{> block_townsquare/postletter}}
                         {{/ispost}}
-                    </div>
-                {{/letters}}
+                {{/content}}
             </div>
         </div>
-
     </div>
 </div>

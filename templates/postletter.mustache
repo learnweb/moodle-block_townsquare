@@ -19,44 +19,45 @@
 
     This template renders a post letter.
 }}
-<div class="postletter card text-dark border-warning mb-3" id="letter-nr-{{letterid}}">
-    <div class=" postletter_header card-header">
-        <div class = "postletter_top">
-            <div class = "postletter_course">
-                {{#str}} lettercourse, block_townsquare, {"course":
-                    {{#quote}} <a href='{{linktocourse}}'>{{coursename}}</a> {{/quote}} } {{/str}}
+<div class="townsquare_letter postletter card text-dark mb-3" id="content-nr-{{contentid}}">
+    <div class="townsquareletter_header postletter_header card-header">
+        <div class = "townsquareletter_top postletter_top">
+            <div class = "townsquareletter_course postletter_course">
+                {{#str}} lettercourse, block_townsquare, {
+                    "course": {{#quote}} <a href='{{linktocourse}}'>{{coursename}}</a> {{/quote}} }
+                {{/str}}
             </div>
-            <div class = " postletter_date">
+            <div class = "postletter_date">
                 {{created}}
             </div>
         </div>
     </div>
-    <div class="postletter_body card-body">
+    <div class="townsquareletter_body postletter_body card-body">
         <div class = "postletter_origin">
             <bold>
                 {{#author}}
                     {{{authorpicture}}}
-                    {{#str}} postletterorigin, block_townsquare,
-                        {"authorname": {{#quote}} <a href='{{linktoauthor}}'>{{authorname}}</a> {{/quote}},
+                    {{#str}} postletterorigin, block_townsquare, {
+                         "authorname": {{#quote}} <a href='{{linktoauthor}}'>{{authorname}}</a> {{/quote}},
                          "localname": {{#quote}} <a href='{{linktomoduleinstance}}'>{{localname}}</a> {{/quote}},
-                         "discussionname": {{#quote}} <a href='{{linktopost}}'>{{subject}}</a> {{/quote}} }
+                         "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
                     {{/str}}
                 {{/author}}
                 {{^author}}
-                    {{#str}} postletterorigin, block_townsquare,
-                        {"authorname": {{#quote}} <i> anonymous </i> {{/quote}},
+                    {{#str}} postletterorigin, block_townsquare, {
+                        "authorname": {{#quote}} <i> anonymous </i> {{/quote}},
                         "localname": {{#quote}} <a href='{{linktomoduleinstance}}'>{{localname}}</a> {{/quote}},
-                        "discussionname": {{#quote}} <a href='{{linktopost}}'>{{subject}}</a> {{/quote}} }
+                        "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
                     {{/str}}
                 {{/author}}
             </bold>
         </div>
         <p></p>
         <div class = "postletter_content">
-                <span class ="postletter_message" id="letter-nr-{{letterid}}" >
+                <span class ="postletter_message" id="content-nr-{{contentid}}" >
                     {{{message}}}
                 </span>
-                <span class="townsquare_showmore badge rounded-pill bg-light text-dark" id="letter-nr-{{letterid}}"
+                <span class="townsquare_showmore badge rounded-pill bg-light text-dark" id="content-nr-{{contentid}}"
                       data-action="block_townsquare/showmore_button">
                     {{#str}} showmore, block_townsquare {{/str}}
                 </span>

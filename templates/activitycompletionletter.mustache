@@ -19,10 +19,10 @@
 
     This template renders a activity completion letter.
 }}
-<div class="completionletter card text-dark border-gray mb-3" id="letter-nr-{{letterid}}">
-    <div class="completionletter_header card-header">
-        <div class = "completionletter_top">
-            <div class = "completionletter_course">
+<div class="townsquare_letter completionletter card text-dark mb-3" id="content-nr-{{contentid}}">
+    <div class="townsquareletter_header completionletter_header card-header">
+        <div class = "townsquareletter_top completionletter_top">
+            <div class = "townsquareletter_course completionletter_course">
                 {{#str}} lettercourse, block_townsquare, {"course":
                     {{#quote}} <a href='{{linktocourse}}'>{{coursename}}</a> {{/quote}} } {{/str}}
             </div>
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="completionletter_body card-body">
+    <div class="townsquareletter_body completionletter_body card-body">
         <div class="completionletter_origin">
             <bold>
                 {{#str}} completionletterorigin, block_townsquare,

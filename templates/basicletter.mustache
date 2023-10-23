@@ -19,10 +19,10 @@
 
     This template renders a basic letter.
 }}
-<div class="basicletter card text-dark border-info mb-3" id="letter-nr-{{letterid}}">
-    <div class="basicletter_header card-header">
-        <div class = "basicletter_top">
-            <div class = "basicletter_course">
+<div class="townsquare_letter basicletter card text-dark mb-3" id="content-nr-{{contentid}}">
+    <div class="townsquareletter_header basicletter_header card-header">
+        <div class = "townsquareletter_top basicletter_top">
+            <div class = "townsquareletter_course basicletter_course">
                 {{#str}} lettercourse, block_townsquare, {"course":
                     {{#quote}} <a href='{{linktocourse}}'>{{coursename}}</a> {{/quote}} } {{/str}}
             </div>
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="basicletter_body card-body">
+    <div class="townsquareletter_body basicletter_body card-body">
         <div class="basicletter_content">
             <p> {{content}} </p>
         </div>

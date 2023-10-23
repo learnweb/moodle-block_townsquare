@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+use block_townsquare\contentcontroller;
 
 /**
  * Plugin strings are defined here.
@@ -35,24 +36,23 @@ class block_townsquare extends block_base {
     /**
      * Gets the block contents.
      *
-     * @return string The block HTML.
+     * @return stdClass|null The block HTML.
      */
     public function get_content() {
-        global $OUTPUT, $PAGE;
+        global $OUTPUT;
 
         if ($this->content !== null) {
             return $this->content;
         }
 
-        $controller = new \block_townsquare\lettercontroller();
-        $letters = $controller->build_letters();
+        $controller = new contentcontroller();
+        $townsquarecontent = $controller->build_content();
         $mustachedata = new stdClass();
+        $mustachedata->content = $townsquarecontent;
 
-        $mustachedata->letters = $letters;
         $this->content = new stdClass;
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', $mustachedata);
-        $PAGE->requires->js_call_amd('block_townsquare/postletter', 'init');
-        $PAGE->requires->strings_for_js(['showmore', 'showless'], 'block_townsquare');
+        $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         return $this->content;
     }
 

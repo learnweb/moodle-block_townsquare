@@ -217,7 +217,7 @@ class townsquareevents {
                 JOIN {' . $discussions . '} discuss ON discuss.id = posts.discussion
                 JOIN {' . $modulename . '} module ON module.id = discuss.' . $modulename . '
                 WHERE discuss.course IN (' . implode(",", $courses) . ')
-                      AND posts.created > ' . $starttime . ' 
+                      AND posts.created > ' . $starttime . '
                 ORDER BY posts.created DESC ;';
 
         // Get all posts.

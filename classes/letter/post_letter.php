@@ -26,8 +26,6 @@ namespace block_townsquare\letter;
 
 use moodle_url;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class that represents a post from the forum or moodleoverflow.
  * Subclass from letter.
@@ -45,7 +43,7 @@ class post_letter extends letter {
     /** @var int The course module id */
     private $coursemoduleid;
 
-    /** @var int The local ID of the module  instance, is the forumid or moodleoverflowid*/
+    /** @var int The local ID of the module instance, is the forumid or moodleoverflowid*/
     private $localmoduleid;
 
     /** @var string The name of the module instance */
@@ -70,7 +68,7 @@ class post_letter extends letter {
     private $message;
 
     /** @var string the subject of the discussion */
-    private $subject;
+    private $discussionsubject;
 
     /** @var int the id of the parent post */
     private $postparentid;
@@ -98,9 +96,10 @@ class post_letter extends letter {
      * @param $postevent object a post event with information,for more see classes/townsquareevents.php.
      * @throws \moodle_exception
      */
-    public function __construct($letterid, $postevent) {
+    public function __construct($contentid, $postevent) {
         global $DB;
-        parent::__construct($letterid, $postevent->courseid, $postevent->modulename, $postevent->postmessage, $postevent->postcreated);
+        parent::__construct($contentid, $postevent->courseid, $postevent->modulename,
+                            $postevent->postmessage, $postevent->postcreated);
         $this->lettertype = 'post';
         if ($postevent->modulename == 'forum') {
             $this->localmoduleid = $postevent->forumid;
@@ -118,7 +117,7 @@ class post_letter extends letter {
         $this->authorname = $author->firstname . ' ' . $author->lastname;
         $this->postid = $postevent->postid;
         $this->message = $postevent->postmessage;
-        $this->subject = $postevent->discussionsubject;
+        $this->discussionsubject = $postevent->discussionsubject;
         $this->postparentid = $postevent->postparent;
 
         $this->build_links();
@@ -134,18 +133,24 @@ class post_letter extends letter {
         // Change the created timestamp to a date.
         $date = date('d.m.Y', $this->created);
         return [
-            'letterid' => $this->letterid,
+            'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
+            'ispost' => $this->ispost,
+            'coursemoduleid' => $this->coursemoduleid,
+            'courseid' => $this->courseid,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,
+            'localmoduleid' => $this->localmoduleid,
             'localname' => $this->localname,
-            'created' => $date,
-            'ispost' => $this->ispost,
+            'discussionid' => $this->discussionid,
+            'discussionsubject' => $this->discussionsubject,
             'author' => $this->author,
-            'authorpicture' => $this->authorpicture,
             'authorname' => $this->authorname,
+            'authorpicture' => $this->authorpicture,
+            'postid' => $this->postid,
             'message' => $this->message,
-            'subject' => $this->subject,
+            'postparentid' => $this->postparentid,
+            'created' => $date,
             'linktocourse' => $this->linktocourse->out(),
             'linktomoduleinstance' => $this->linktomoduleinstance->out(),
             'linktopost' => $this->linktopost->out(),
@@ -202,8 +207,8 @@ class post_letter extends letter {
     /**
      * @return string
      */
-    public function get_subject() {
-        return $this->subject;
+    public function get_discussionsubject() {
+        return $this->discussionsubject;
     }
 
     /**
@@ -241,16 +246,15 @@ class post_letter extends letter {
      * @return void
      */
     private function build_links() {
-        $this->linktoauthor = new moodle_url('/user/view.php', array('id' => $this->author));
+        $this->linktoauthor = new moodle_url('/user/view.php', ['id' => $this->author]);
 
         if ($this->modulename == 'forum') {
-            $this->linktomoduleinstance = new moodle_url('/mod/forum/view.php', array('id' => $this->coursemoduleid));
-            $this->linktopost = new moodle_url('/mod/forum/discuss.php',
-                array('d' => $this->discussionid), 'p' . $this->postid);
+            $this->linktomoduleinstance = new moodle_url('/mod/forum/view.php', ['id' => $this->coursemoduleid]);
+            $this->linktopost = new moodle_url('/mod/forum/discuss.php', ['d' => $this->discussionid], 'p' . $this->postid);
         } else {
-            $this->linktomoduleinstance = new moodle_url('/mod/moodleoverflow/view.php', array('id' => $this->coursemoduleid));
+            $this->linktomoduleinstance = new moodle_url('/mod/moodleoverflow/view.php', ['id' => $this->coursemoduleid]);
             $this->linktopost = new moodle_url('/mod/moodleoverflow/discussion.php',
-                array('d' => $this->discussionid), 'p' . $this->postid);
+                ['d' => $this->discussionid], 'p' . $this->postid);
 
             // If the post in the moodleoverflow is anonymous, the user should not be visible.
             if ($this->anonymous) {
@@ -272,9 +276,10 @@ class post_letter extends letter {
         if ($this->author) {
             $user = new \stdClass();
             $picturefields = \core_user\fields::get_picture_fields();
-            $user = username_load_fields_from_object($user, $DB->get_record('user', ['id' => $this->author]),null, $picturefields);
+            $user = username_load_fields_from_object($user,
+                                                     $DB->get_record('user', ['id' => $this->author]), null, $picturefields);
             $user->id = $this->author;
-            $this->authorpicture = $OUTPUT->user_picture($user, array('courseid' => $this->courseid, 'link' => false));
+            $this->authorpicture = $OUTPUT->user_picture($user, ['courseid' => $this->courseid, 'link' => false]);
         }
 
     }

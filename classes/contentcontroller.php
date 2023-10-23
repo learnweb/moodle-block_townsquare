@@ -23,7 +23,6 @@
  */
 namespace block_townsquare;
 
-use block_townsquare\letter;
 use moodle_exception;
 use stdClass;
 
@@ -36,7 +35,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lettercontroller {
+class contentcontroller {
 
     /** @var stdClass Class to retrieve events */
     public $townsquareevents;
@@ -44,13 +43,13 @@ class lettercontroller {
     /** @var array events that are relevant for the townsquare */
     public $events;
 
-    /** @var array letters that will be shown to the user */
-    public $letters;
+    /** @var array letters and other content that will be shown to the user */
+    public $content;
 
     public function __construct() {
         $this->townsquareevents = new townsquareevents();
         $this->events = [];
-        $this->letters = [];
+        $this->content = [];
     }
 
     // Core functions.
@@ -65,16 +64,25 @@ class lettercontroller {
     }
 
     /**
-     * Builds the letters for the events.
+     * Builds the content from events.
      * @return array
      * @throws moodle_exception
      */
-    public function build_letters() {
+    public function build_content() {
         $this->retrieve_events();
 
+        $orientationmarkerset = false;
         $index = 0;
+        $time = time();
         // Build a letter for each event.
         foreach ($this->events as $event) {
+            // Push a "today" letter on the current date between the other events.
+            if (!$orientationmarkerset && ($event->timestart <= $time)) {
+                $orientationmarkerset = true;
+                $tempcontent = new orientation_marker($index, $time);
+                $this->content[$index] = $tempcontent->export_data();
+                $index++;
+            }
             if ($event->eventtype == 'post') {
                 $templetter = new letter\post_letter($index, $event);
             } else if ($event->eventtype == 'expectcompletionon') {
@@ -82,23 +90,19 @@ class lettercontroller {
             } else {
                 $templetter = new letter\letter($index, $event->courseid, $event->modulename, $event->name, $event->timestart);
             }
-            $this->letters[$index] = $templetter->export_letter();
+            $this->content[$index] = $templetter->export_letter();
             $index++;
         }
-
-        return $this->letters;
+        return $this->content;
     }
 
     // Getter.
 
     /**
-     * Getter for the letters
+     * Getter for the content
      * @return array
      */
-    public function get_letters() {
-        return $this->letters;
+    public function get_content() {
+        return $this->content;
     }
-
-    // Helper functions.
-
 }
