@@ -67,16 +67,19 @@ class letter {
 
     // Url attributes.
 
+    /** @var moodle_url Link to the course */
     protected $linktocourse;
 
     // Constructor.
 
     /**
      * Constructor for a letter
-     * @param $courseid
-     * @param $modulename
-     * @param $content
-     * @param $created
+     *
+     * @param int $contentid
+     * @param int $courseid
+     * @param string $modulename
+     * @param mixed $content
+     * @param int $created
      */
     public function __construct($contentid, $courseid, $modulename, $content, $created) {
         $this->contentid = $contentid;

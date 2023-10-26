@@ -36,7 +36,7 @@ class renderer extends plugin_renderer_base {
     /**
      * Return the main content for the block townsquare.
      *
-     * @param main $main The main renderable
+     * @param array $data Data to render the townsquare templates
      * @return string HTML string
      */
     public function render_main($data) {

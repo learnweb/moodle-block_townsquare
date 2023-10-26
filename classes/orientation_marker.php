@@ -39,7 +39,7 @@ class orientation_marker {
     /** @var int an ID to identify every content in townsquare */
     private $contentid;
 
-    /** @var int The timestamp of todays day. */
+    /** @var int The timestamp of the current day. */
     private $today;
 
     /** @var object the current user */
@@ -53,6 +53,8 @@ class orientation_marker {
     /**
      * Constructor for a letter
      *
+     * @param int $contentid The ID to identify the orientation marker
+     * @param int $time      A Timestamp of the time that the orientation marker is created
      */
     public function __construct($contentid, $time) {
         global $USER;

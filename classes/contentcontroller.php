@@ -28,6 +28,7 @@ use stdClass;
 
 /**
  * Letter Controller Class.
+ *
  * This Class controls the logic of townsquare. It retrieves all important events,
  * builds the letters and calls the renderer functions to draw the letters.
  *
@@ -46,6 +47,9 @@ class contentcontroller {
     /** @var array letters and other content that will be shown to the user */
     public $content;
 
+    /**
+     * Constructor for the controller.
+     */
     public function __construct() {
         $this->townsquareevents = new townsquareevents();
         $this->events = [];

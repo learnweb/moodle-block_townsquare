@@ -24,10 +24,12 @@
 
 namespace block_townsquare\letter;
 
+use moodle_url;
+
 /**
  * Class that represents an activity completion.
- * Subclass from letter.
  *
+ * Subclass from letter.
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -40,14 +42,17 @@ class activitycompletion_letter extends letter {
     /** @var string The name of the author */
     private $authorname;
 
-    /** @var \moodle_url The url to the activity */
+    /** @var moodle_url The url to the activity */
     private $linktoactivity;
 
     /** @var bool variable for the mustache template */
     public $isactivitycompletion = true;
 
     /**
-     * @param $calendarevent object a calendar event with information, for more see classes/townsquareevents.php
+     * Constructor for the activity completion letter
+     *
+     * @param int $contentid
+     * @param object $calendarevent a calendar event with information, for more see classes/townsquareevents.php
      */
     public function __construct($contentid, $calendarevent) {
         global $DB;
@@ -58,7 +63,7 @@ class activitycompletion_letter extends letter {
         $author = $DB->get_record('user', ['id' => $calendarevent->userid]);
         $this->authorname = $author->firstname . ' ' . $author->lastname;
         $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
-        $this->linktoactivity = new \moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
+        $this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
     }
 
     /**
@@ -96,6 +101,7 @@ class activitycompletion_letter extends letter {
     }
 
     /**
+     * Getter for the author id.
      * @return int
      */
     public function get_author() {
@@ -103,7 +109,8 @@ class activitycompletion_letter extends letter {
     }
 
     /**
-     * @return \moodle_url
+     * Getter for the link.
+     * @return moodle_url
      */
     public function get_linktoactivity() {
         return $this->linktoactivity;

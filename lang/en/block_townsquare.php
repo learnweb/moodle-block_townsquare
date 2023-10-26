@@ -47,5 +47,5 @@ $string['invalidmodulename'] = 'Module name is unknown or not supported';
 $string['eventsempty'] = 'Events need to be retrieved before working with them';
 
 // Test strings.
-$string['seitenpanel'] = 'Ich bin das Seitenpanel';
+$string['seitenpanel'] = 'In development...';
 $string['hauptseite'] = 'Ich bin die hauptseite';

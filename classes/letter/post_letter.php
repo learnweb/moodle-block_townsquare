@@ -24,12 +24,13 @@
 
 namespace block_townsquare\letter;
 
+use moodle_exception;
 use moodle_url;
 
 /**
  * Class that represents a post from the forum or moodleoverflow.
- * Subclass from letter.
  *
+ * Subclass from letter.
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -93,8 +94,10 @@ class post_letter extends letter {
     // Constructor.
 
     /**
-     * @param $postevent object a post event with information,for more see classes/townsquareevents.php.
-     * @throws \moodle_exception
+     * Constructor of the postevent class.
+     * @param int $contentid
+     * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
+     * @throws moodle_exception
      */
     public function __construct($contentid, $postevent) {
         global $DB;
@@ -107,7 +110,7 @@ class post_letter extends letter {
             $this->localmoduleid = $postevent->moodleoverflowid;
             $this->anonymous = $postevent->anonymous;
         } else {
-            throw new \moodle_exception('invalidmodulename', 'block_townsquare');
+            throw new moodle_exception('invalidmodulename', 'block_townsquare');
         }
         $this->coursemoduleid = get_coursemodule_from_instance($postevent->modulename, $this->localmoduleid)->id;
         $this->discussionid = $postevent->postdiscussion;
@@ -162,7 +165,6 @@ class post_letter extends letter {
 
     /**
      * Overrides function from superclass.
-     * @param $
      * @return string
      */
     public function get_lettertype() {
@@ -170,6 +172,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the local module id.
      * @return int
      */
     public function get_localmoduleid() {
@@ -177,6 +180,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the discussion id.
      * @return int
      */
     public function get_discussionid() {
@@ -184,6 +188,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the author id.
      * @return int
      */
     public function get_author() {
@@ -191,6 +196,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the post id.
      * @return int
      */
     public function get_postid() {
@@ -198,6 +204,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the post message.
      * @return string
      */
     public function get_message() {
@@ -205,6 +212,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the name of the discussion.
      * @return string
      */
     public function get_discussionsubject() {
@@ -212,6 +220,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the id of the parent post.
      * @return int
      */
     public function get_postparentid() {
@@ -219,6 +228,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the instance id in the local database of the plugin.
      * @return moodle_url
      */
     public function get_linktomoduleinstance() {
@@ -226,6 +236,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the link to the post.
      * @return moodle_url
      */
     public function get_linktopost() {
@@ -233,6 +244,7 @@ class post_letter extends letter {
     }
 
     /**
+     * Getter for the link to the author.
      * @return moodle_url
      */
     public function get_linktoauthor() {

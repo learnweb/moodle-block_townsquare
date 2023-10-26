@@ -47,6 +47,9 @@ class townsquareevents {
     /** @var array ids of the courses where the events should be searched */
     public $courses;
 
+    /**
+     * Constructor of the townsquareevents class
+     */
     public function __construct() {
         $this->starttime = time() - 15768000;
         $this->endtime = time() + 15768000;
@@ -92,6 +95,7 @@ class townsquareevents {
      * @return array
      */
     public function townsquare_get_calendarevents() {
+        global $DB, $USER;
         // Get all events from the last six months and the next six months.
         $calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses);
 
@@ -99,6 +103,15 @@ class townsquareevents {
         foreach ($calendarevents as $calendarevent) {
             $calendarevent->coursemoduleid = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance,
                                                                             $calendarevent->courseid)->id;
+            // Delete activity completions that are completed by the current user.
+            if ($calendarevent->eventtype == "expectcompletionon") {
+                if ($completionstatus = $DB->get_record('course_modules_completion',
+                        ['coursemoduleid' => $calendarevent->coursemoduleid, 'userid' => $USER->id])) {
+                    if ($completionstatus->completionstate != 0) {
+                        unset($calendarevents[$calendarevent->id]);
+                    }
+                }
+            }
         }
 
         return array_reverse($calendarevents, true);
