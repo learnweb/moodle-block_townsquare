@@ -25,6 +25,7 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
+use dml_exception;
 use mod_moodleoverflow\anonymous;
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
@@ -39,10 +40,10 @@ require_once($CFG->dirroot . '/calendar/lib.php');
 class townsquareevents {
 
     /** @var int timestamp from where the events should be searched */
-    public $starttime;
+    public $timestart;
 
     /** @var int timestamp until where the events should be searched */
-    public $endtime;
+    public $timeend;
 
     /** @var array ids of the courses where the events should be searched */
     public $courses;
@@ -51,8 +52,8 @@ class townsquareevents {
      * Constructor of the townsquareevents class
      */
     public function __construct() {
-        $this->starttime = time() - 15768000;
-        $this->endtime = time() + 15768000;
+        $this->timestart = time() - 15768000;
+        $this->timeend = time() + 15768000;
         $this->courses = $this->townsquare_get_courses();
     }
 
@@ -60,7 +61,7 @@ class townsquareevents {
      * Retrieves calendar and post events, merges and sorts them
      * @return array
      */
-    public function townsquare_get_all_events_sorted() {
+    public function townsquare_get_all_events_sorted() : array {
         $calendarevents = $this->townsquare_get_calendarevents();
         $postevents = $this->townsquare_get_postevents();
 
@@ -94,15 +95,15 @@ class townsquareevents {
      * The events are sorted in descending order by time created (newest event first)
      * @return array
      */
-    public function townsquare_get_calendarevents() {
+    public function townsquare_get_calendarevents() : array {
         global $DB, $USER;
         // Get all events from the last six months and the next six months.
-        $calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses);
-
-        // Add the course module id to every event.
+        //$calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses, true, true, false);
+        $calendarevents = $this->townsquare_search_events($this->timestart, $this->timeend, $this->courses);
+        // Filter the events and add the coursemoduleid.
         foreach ($calendarevents as $calendarevent) {
             $calendarevent->coursemoduleid = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance,
-                                                                            $calendarevent->courseid)->id;
+                                                                $calendarevent->courseid)->id;
             // Delete activity completions that are completed by the current user.
             if ($calendarevent->eventtype == "expectcompletionon") {
                 if ($completionstatus = $DB->get_record('course_modules_completion',
@@ -114,7 +115,7 @@ class townsquareevents {
             }
         }
 
-        return array_reverse($calendarevents, true);
+        return $calendarevents;
     }
 
     /**
@@ -123,7 +124,7 @@ class townsquareevents {
      * The events are sorted in descending order by time created (newest event first)
      * @return array | false;
      */
-    public function townsquare_get_postevents() {
+    public function townsquare_get_postevents() : array {
         global $DB;
 
         $forumposts = false;
@@ -131,14 +132,13 @@ class townsquareevents {
 
         // Check which modules are installed and get their data.
         if ($DB->get_record('modules', ['name' => 'forum'])) {
-            $forumposts = $this->townsquare_search_posts('forum', 'discuss.forum', 'forumid', 'forum_posts',
-                'forum_discussions', $this->courses, $this->starttime);
+            $forumposts = $this->townsquare_search_posts('forum', 'forumid', 'forum_posts',
+                'forum_discussions', $this->courses, $this->timestart);
         }
 
         if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
-            $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', 'discuss.moodleoverflow',
-                'moodleoverflowid', 'moodleoverflow_posts',
-                'moodleoverflow_discussions', $this->courses, $this->starttime);
+            $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', 'moodleoverflowid', 'moodleoverflow_posts',
+                'moodleoverflow_discussions', $this->courses, $this->timestart);
         }
 
         // If no module is installed, return false.
@@ -210,8 +210,7 @@ class townsquareevents {
      * @param int    $starttime   The timestamp from where the posts should be searched.
      * @return array
      */
-    private function townsquare_search_posts($modulename, $localid, $localidname, $posts, $discussions,
-                                             $courses, $starttime) {
+    private function townsquare_search_posts($modulename, $localidname, $posts, $discussions, $courses, $starttime) : array {
         global $DB;
 
         $sql = 'SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
@@ -238,10 +237,35 @@ class townsquareevents {
     }
 
     /**
+     * Searches for events in the events table, that are relevant to the timeline.
+     * This is a helper function for townsquare_get_calendarevents().
+     * @param $timestart
+     * @param $timeend
+     * @param $courses
+     * @return array
+     * @throws dml_exception
+     */
+    private function townsquare_search_events($timestart, $timeend, $courses) : array {
+        global $DB;
+
+        $sql = "SELECT e.id, e.name, e.courseid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart
+                FROM {event} e LEFT JOIN {modules} m ON e.modulename = m.name
+                WHERE (e.timestart >= ' . $timestart . ' OR e.timestart+e.timeduration > ' . $timestart . ')
+                      AND e.timestart <= ' . $timeend . '
+                      AND e.courseid IN (" . implode(",", $courses) . ")
+                      AND (e.modulename NOT LIKE " . '0' . " AND e.instance != 0 AND e.courseid != 0 AND e.userid != 0)
+                      AND (e.name NOT LIKE " . '0' . " AND e.name NOT LIKE " . '0' . ")
+                ORDER BY e.timestart DESC";
+
+        // Get all events.
+        return $DB->get_records_sql($sql);
+    }
+
+    /**
      * Gets the id of all courses where the current user is enrolled
      * @return array
      */
-    private function townsquare_get_courses() {
+    private function townsquare_get_courses() : array {
         global $USER;
 
         $enrolledcourses = enrol_get_all_users_courses($USER->id);
