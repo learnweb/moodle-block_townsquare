@@ -280,11 +280,11 @@ class townsquareevents {
         global $DB;
 
         $sql = "SELECT e.id, e.name, e.courseid, e.groupid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart, e.visible
-                FROM {event} e LEFT JOIN {modules} m ON e.modulename = m.name
+                FROM {event} e JOIN {modules} m ON e.modulename = m.name
                 WHERE (e.timestart >= " . $timestart . " OR e.timestart+e.timeduration > " . $timestart . " )
                       AND e.timestart <= " . $timeend . "
                       AND e.courseid IN (" . implode(',', $courses) . " )
-                      AND (e.modulename NOT LIKE '" .'0'. "' AND e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
+                      AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
                       AND ( e.instance != 0 AND e.userid != 0 AND e.visible = 1)
                 ORDER BY e.timestart DESC;";
 
