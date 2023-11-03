@@ -59,21 +59,12 @@ class contentcontroller {
     // Core functions.
 
     /**
-     * Uses the townsquareevents class to retrieve all important events.
-     * @return array
-     */
-    public function retrieve_events() {
-        $this->events = $this->townsquareevents->townsquare_get_all_events_sorted();
-        return $this->events;
-    }
-
-    /**
      * Builds the content from events.
      * @return array
      * @throws moodle_exception
      */
     public function build_content() {
-        $this->retrieve_events();
+        $this->events = $this->townsquareevents->townsquare_get_all_events_sorted();
 
         $orientationmarkerset = false;
         $index = 0;

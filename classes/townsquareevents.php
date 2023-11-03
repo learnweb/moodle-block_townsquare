@@ -102,7 +102,7 @@ class townsquareevents {
     public function townsquare_get_calendarevents() : array {
         global $DB, $USER;
         // Get all events from the last six months and the next six months.
-        //$calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses, true, true, false);
+
         $calendarevents = $this->townsquare_search_events($this->timestart, $this->timeend, $this->courses);
 
         // Filter the events and add the coursemoduleid.
@@ -110,8 +110,15 @@ class townsquareevents {
             $calendarevent->coursemoduleid = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance,
                                                                             $calendarevent->courseid)->id;
 
-            // If there is an assignment event, check if it is relevant for the current user.
+            // Delete assign events that the user should not see.
             if ($calendarevent->modulename == "assign") {
+
+                // If the assignment due date is over than a week, it disappears.
+                if ($calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800)) {
+                    unset($calendarevents[$calendarevent->id]);
+                    continue;
+                }
+
                 // Only people that can rate should see a gradingdue event.
                 if ($calendarevent->eventtype == "gradingdue" &&
                     !has_capability('mod/assign:grade', \context_module::instance($calendarevent->coursemoduleid))) {
@@ -126,13 +133,8 @@ class townsquareevents {
                     unset($calendarevents[$calendarevent->id]);
                     continue;
                 }
-
-                // If the assignment due date is over than a week, it disappears.
-                if ($this->timenow >= ($assignment->duedate + 604800)) {
-                    unset($calendarevents[$calendarevent->id]);
-                    continue;
-                }
             }
+
             // Delete activity completions that are completed by the current user.
             if ($calendarevent->eventtype == "expectcompletionon") {
                 if ($completionstatus = $DB->get_record('course_modules_completion',
@@ -268,9 +270,9 @@ class townsquareevents {
     /**
      * Searches for events in the events table, that are relevant to the timeline.
      * This is a helper function for townsquare_get_calendarevents().
-     * @param $timestart
-     * @param $timeend
-     * @param $courses
+     * @param int $timestart The time from where the events should be searched. Not equal to timestart in the database events table.
+     * @param int $timeend   The time until where the events should be searched.
+     * @param array $courses The ids of the courses where the events should be searched.
      * @return array
      * @throws dml_exception
      */
