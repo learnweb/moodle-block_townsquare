@@ -39,6 +39,9 @@ require_once($CFG->dirroot . '/calendar/lib.php');
  */
 class townsquareevents {
 
+    /** @var int timestamp of the current time */
+    public $timenow;
+
     /** @var int timestamp from where the events should be searched */
     public $timestart;
 
@@ -52,8 +55,9 @@ class townsquareevents {
      * Constructor of the townsquareevents class
      */
     public function __construct() {
-        $this->timestart = time() - 15768000;
-        $this->timeend = time() + 15768000;
+        $this->timenow = time();
+        $this->timestart = $this->timenow - 15768000;
+        $this->timeend = $this->timenow + 15768000;
         $this->courses = $this->townsquare_get_courses();
     }
 
@@ -100,10 +104,35 @@ class townsquareevents {
         // Get all events from the last six months and the next six months.
         //$calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses, true, true, false);
         $calendarevents = $this->townsquare_search_events($this->timestart, $this->timeend, $this->courses);
+
         // Filter the events and add the coursemoduleid.
         foreach ($calendarevents as $calendarevent) {
             $calendarevent->coursemoduleid = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance,
-                                                                $calendarevent->courseid)->id;
+                                                                            $calendarevent->courseid)->id;
+
+            // If there is an assignment event, check if it is relevant for the current user.
+            if ($calendarevent->modulename == "assign") {
+                // Only people that can rate should see a gradingdue event.
+                if ($calendarevent->eventtype == "gradingdue" &&
+                    !has_capability('mod/assign:grade', \context_module::instance($calendarevent->coursemoduleid))) {
+
+                    unset($calendarevents[$calendarevent->id]);
+                    continue;
+                }
+
+                // If the assignment is not open to submit, the user should not see the event.
+                $assignment = $DB->get_record('assign', ['id' => $calendarevent->instance]);
+                if ($assignment->allowsubmissionsfromdate >= $this->timenow) {
+                    unset($calendarevents[$calendarevent->id]);
+                    continue;
+                }
+
+                // If the assignment due date is over than a week, it disappears.
+                if ($this->timenow >= ($assignment->duedate + 604800)) {
+                    unset($calendarevents[$calendarevent->id]);
+                    continue;
+                }
+            }
             // Delete activity completions that are completed by the current user.
             if ($calendarevent->eventtype == "expectcompletionon") {
                 if ($completionstatus = $DB->get_record('course_modules_completion',
@@ -248,14 +277,14 @@ class townsquareevents {
     private function townsquare_search_events($timestart, $timeend, $courses) : array {
         global $DB;
 
-        $sql = "SELECT e.id, e.name, e.courseid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart
+        $sql = "SELECT e.id, e.name, e.courseid, e.groupid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart, e.visible
                 FROM {event} e LEFT JOIN {modules} m ON e.modulename = m.name
-                WHERE (e.timestart >= ' . $timestart . ' OR e.timestart+e.timeduration > ' . $timestart . ')
-                      AND e.timestart <= ' . $timeend . '
-                      AND e.courseid IN (" . implode(",", $courses) . ")
-                      AND (e.modulename NOT LIKE " . '0' . " AND e.instance != 0 AND e.courseid != 0 AND e.userid != 0)
-                      AND (e.name NOT LIKE " . '0' . " AND e.name NOT LIKE " . '0' . ")
-                ORDER BY e.timestart DESC";
+                WHERE (e.timestart >= " . $timestart . " OR e.timestart+e.timeduration > " . $timestart . " )
+                      AND e.timestart <= " . $timeend . "
+                      AND e.courseid IN (" . implode(',', $courses) . " )
+                      AND (e.modulename NOT LIKE '" .'0'. "' AND e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
+                      AND ( e.instance != 0 AND e.userid != 0 AND e.visible = 1)
+                ORDER BY e.timestart DESC;";
 
         // Get all events.
         return $DB->get_records_sql($sql);
