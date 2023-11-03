@@ -49,11 +49,11 @@ class block_townsquare extends block_base {
         $townsquarecontent = $controller->build_content();
         $mustachedata = new stdClass();
         $mustachedata->content = $townsquarecontent;
-        ob_start();
-        var_dump($controller->townsquareevents->townsquare_get_calendarevents());
+        //ob_start();
+        //var_dump($controller->townsquareevents->townsquare_get_calendarevents());
         $this->content = new stdClass;
-        //$this->content->text = $OUTPUT->render_from_template('block_townsquare/main', $mustachedata);
-        $this->content->text = ob_get_clean();
+        $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', $mustachedata);
+        //$this->content->text = ob_get_clean();
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         return $this->content;
     }

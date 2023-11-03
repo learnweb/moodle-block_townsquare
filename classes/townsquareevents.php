@@ -262,7 +262,6 @@ class townsquareevents {
                 WHERE discuss.course IN (' . implode(",", $courses) . ')
                       AND posts.created > ' . $starttime . '
                 ORDER BY posts.created DESC ;';
-
         // Get all posts.
         return $DB->get_records_sql($sql);
     }
