@@ -25,6 +25,7 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
+use context_module;
 use dml_exception;
 use mod_moodleoverflow\anonymous;
 global $CFG;
@@ -103,6 +104,7 @@ class townsquareevents {
         global $DB, $USER;
         // Get all events from the last six months and the next six months.
 
+        //$calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses);
         $calendarevents = $this->townsquare_search_events($this->timestart, $this->timeend, $this->courses);
 
         // Filter the events and add the coursemoduleid.
@@ -121,7 +123,7 @@ class townsquareevents {
 
                 // Only people that can rate should see a gradingdue event.
                 if ($calendarevent->eventtype == "gradingdue" &&
-                    !has_capability('mod/assign:grade', \context_module::instance($calendarevent->coursemoduleid))) {
+                    !has_capability('mod/assign:grade', context_module::instance($calendarevent->coursemoduleid))) {
 
                     unset($calendarevents[$calendarevent->id]);
                     continue;
@@ -153,7 +155,7 @@ class townsquareevents {
      * Function to get the newest posts from modules like the forum or moodleoverflow.
      *
      * The events are sorted in descending order by time created (newest event first)
-     * @return array | false;
+     * @return array;
      */
     public function townsquare_get_postevents() : array {
         global $DB;
@@ -164,17 +166,17 @@ class townsquareevents {
         // Check which modules are installed and get their data.
         if ($DB->get_record('modules', ['name' => 'forum'])) {
             $forumposts = $this->townsquare_search_posts('forum', 'forumid', 'forum_posts',
-                'forum_discussions', $this->courses, $this->timestart);
+                'forum_discussions', 'discuss.forum', $this->courses, $this->timestart);
         }
 
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+        if (!$DB->get_record('modules', ['name' => 'moodleoverflow'])) {
             $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', 'moodleoverflowid', 'moodleoverflow_posts',
-                'moodleoverflow_discussions', $this->courses, $this->timestart);
+                'moodleoverflow_discussions', 'discuss.moodleoverflow', $this->courses, $this->timestart);
         }
 
         // If no module is installed, return false.
         if (!$forumposts && !$moodleoverflowposts) {
-            return false;
+            return [];
         }
 
         // Return directly the posts if no other module exists.
@@ -237,16 +239,23 @@ class townsquareevents {
      * @param string $localidname The name of the module instances id, i 'forumid' or 'moodleoverflowid'.
      * @param string $posts The name of the posts table, is 'forum_posts' or 'moodleoverflow_posts'.
      * @param string $discussions The name of the discussions table, is 'forum_discussions' or 'moodleoverflow_discussions'.
+     * @param string $discussmodule The module that the discussion refers to, is 'discuss.forum' or 'discuss.moodleoverflow'.
      * @param array  $courses The ids of the courses where the posts should be searched.
      * @param int    $starttime   The timestamp from where the posts should be searched.
      * @return array
      */
-    private function townsquare_search_posts($modulename, $localidname, $posts, $discussions, $courses, $starttime) : array {
+    private function townsquare_search_posts($modulename, $localidname, $posts, $discussions,
+                                             $discussmodule, $courses, $starttime) : array {
         global $DB;
+        // Prepare params for sql statement.
+        $moduletable = $modulename; // Double a parameter for sql statement.
+        list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
+
+        // Define sql statement.
         $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
-                       '" . $modulename . "' AS modulename,
+                       'forum' AS modulename,
                        discuss.course AS courseid,
-                       module.id AS " . $localidname . ",
+                       module.id AS :localidname,
                        module.name AS localname,
                        posts.id AS postid,
                        posts.discussion AS postdiscussion,
@@ -255,15 +264,26 @@ class townsquareevents {
                        posts.created AS postcreated,
                        discuss.name AS discussionsubject,
                        posts.message AS postmessage
-                FROM {" . $posts .  "} posts
-                JOIN {" . $discussions . "} discuss ON discuss.id = posts.discussion
-                JOIN {" . $modulename . "} module ON module.id = discuss." . $modulename . "
-                WHERE discuss.course IN (" . implode(",", $courses) . ")
-                      AND posts.created > " . $starttime . "
-                ORDER BY posts.created DESC ;";
+                  FROM {forum_posts} posts
+                  JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
+                  JOIN {forum} module ON module.id = :discussmodule
+                 WHERE discuss.course $insqlcourses
+                       AND posts.created > :starttime
+              ORDER BY posts.created DESC ;";
 
         // Get all posts.
-        return $DB->get_records_sql($sql);
+        $params = ['modulename' => $modulename, 'localidname' => $localidname, 'posts' => $posts, 'discussions' => $discussions,
+                   'moduletable' => $moduletable, 'discussmodule' => $discussmodule, 'courses' => $courses,
+                   'starttime' => $starttime, ] + $inparamscourses;
+        return $DB->get_records_sql($sql, $params);
+        /*$posts = [];
+        // Iterate over the records to get the posts.
+        foreach ($records as $record) {
+            $posts[] = $record;
+        }
+        $records->close();
+        var_dump($records);
+        return $posts;*/
     }
 
     /**

@@ -72,7 +72,10 @@ class contentcontroller {
         // Build a letter for each event.
         foreach ($this->events as $event) {
             // Push a "today" letter on the current date between the other events.
-            if (!$orientationmarkerset && ($event->timestart <= $time)) {
+            if (!$orientationmarkerset && (
+               ($event->eventtype != 'post' && $event->timestart <= $time) ||
+               ($event->eventtype == 'post' && $event->postcreated <= $time))) {
+
                 $orientationmarkerset = true;
                 $tempcontent = new orientation_marker($index, $time);
                 $this->content[$index] = $tempcontent->export_data();
