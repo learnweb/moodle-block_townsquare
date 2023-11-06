@@ -243,11 +243,10 @@ class townsquareevents {
      */
     private function townsquare_search_posts($modulename, $localidname, $posts, $discussions, $courses, $starttime) : array {
         global $DB;
-
-        $sql = 'SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
-                       "' . $modulename . '" AS modulename,
+        $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
+                       '" . $modulename . "' AS modulename,
                        discuss.course AS courseid,
-                       module.id AS ' . $localidname . ',
+                       module.id AS " . $localidname . ",
                        module.name AS localname,
                        posts.id AS postid,
                        posts.discussion AS postdiscussion,
@@ -256,12 +255,13 @@ class townsquareevents {
                        posts.created AS postcreated,
                        discuss.name AS discussionsubject,
                        posts.message AS postmessage
-                FROM {' . $posts .  '} posts
-                JOIN {' . $discussions . '} discuss ON discuss.id = posts.discussion
-                JOIN {' . $modulename . '} module ON module.id = discuss.' . $modulename . '
-                WHERE discuss.course IN (' . implode(",", $courses) . ')
-                      AND posts.created > ' . $starttime . '
-                ORDER BY posts.created DESC ;';
+                FROM {" . $posts .  "} posts
+                JOIN {" . $discussions . "} discuss ON discuss.id = posts.discussion
+                JOIN {" . $modulename . "} module ON module.id = discuss." . $modulename . "
+                WHERE discuss.course IN (" . implode(",", $courses) . ")
+                      AND posts.created > " . $starttime . "
+                ORDER BY posts.created DESC ;";
+
         // Get all posts.
         return $DB->get_records_sql($sql);
     }
