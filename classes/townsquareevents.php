@@ -102,9 +102,8 @@ class townsquareevents {
      */
     public function townsquare_get_calendarevents() : array {
         global $DB, $USER;
-        // Get all events from the last six months and the next six months.
 
-        //$calendarevents = calendar_get_events($this->starttime, $this->endtime, true, true, $this->courses);
+        // Get all events from the last six months and the next six months.
         $calendarevents = $this->townsquare_search_events($this->timestart, $this->timeend, $this->courses);
 
         // Filter the events and add the coursemoduleid.
@@ -165,13 +164,11 @@ class townsquareevents {
 
         // Check which modules are installed and get their data.
         if ($DB->get_record('modules', ['name' => 'forum'])) {
-            $forumposts = $this->townsquare_search_posts('forum', 'forumid', 'forum_posts',
-                'forum_discussions', 'discuss.forum', $this->courses, $this->timestart);
+            $forumposts = $this->townsquare_search_posts('forum', $this->courses, $this->timestart);
         }
 
-        if (!$DB->get_record('modules', ['name' => 'moodleoverflow'])) {
-            $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', 'moodleoverflowid', 'moodleoverflow_posts',
-                'moodleoverflow_discussions', 'discuss.moodleoverflow', $this->courses, $this->timestart);
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+            $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', $this->courses, $this->timestart);
         }
 
         // If no module is installed, return false.
@@ -235,55 +232,52 @@ class townsquareevents {
      * Searches for posts in the forum or moodleoverflow module.
      * This is a helper function for townsquare_get_postevents().
      * @param string $modulename  The name of the module, is 'forum' or 'moodleoverflow'.
-     * @param string $localid     The internal id of the modules instance.
-     * @param string $localidname The name of the module instances id, i 'forumid' or 'moodleoverflowid'.
-     * @param string $posts The name of the posts table, is 'forum_posts' or 'moodleoverflow_posts'.
-     * @param string $discussions The name of the discussions table, is 'forum_discussions' or 'moodleoverflow_discussions'.
-     * @param string $discussmodule The module that the discussion refers to, is 'discuss.forum' or 'discuss.moodleoverflow'.
-     * @param array  $courses The ids of the courses where the posts should be searched.
-     * @param int    $starttime   The timestamp from where the posts should be searched.
+     * @param array  $courses     The ids of the courses where the posts should be searched.
+     * @param int    $timestart   The timestamp from where the posts should be searched.
      * @return array
      */
-    private function townsquare_search_posts($modulename, $localidname, $posts, $discussions,
-                                             $discussmodule, $courses, $starttime) : array {
+    private function townsquare_search_posts($modulename, $courses, $timestart) : array {
         global $DB;
         // Prepare params for sql statement.
-        $moduletable = $modulename; // Double a parameter for sql statement.
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
+        $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
+        // Set begin of sql statement.
+        $begin = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num, ";
 
-        // Define sql statement.
-        $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
-                       'forum' AS modulename,
-                       discuss.course AS courseid,
-                       module.id AS :localidname,
-                       module.name AS localname,
-                       posts.id AS postid,
-                       posts.discussion AS postdiscussion,
-                       posts.parent AS postparent,
-                       posts.userid AS postuserid,
-                       posts.created AS postcreated,
-                       discuss.name AS discussionsubject,
-                       posts.message AS postmessage
-                  FROM {forum_posts} posts
-                  JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
-                  JOIN {forum} module ON module.id = :discussmodule
-                 WHERE discuss.course $insqlcourses
-                       AND posts.created > :starttime
-              ORDER BY posts.created DESC ;";
+        // Set the select part of the sql that is always the same.
+        $middle = "module.name AS localname,
+                   discuss.course AS courseid,
+                   posts.id AS postid,
+                   posts.discussion AS postdiscussion,
+                   posts.parent AS postparent,
+                   posts.userid AS postuserid,
+                   posts.created AS postcreated,
+                   discuss.name AS discussionsubject,
+                   posts.message AS postmessage ";
+
+        // Extend the strings for the 2 module cases.
+        if ($modulename == 'forum') {
+            $begin .= "'forum' AS modulename, module.id AS forumid,";
+            $middle .= "FROM {forum_posts} posts
+                        JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
+                        JOIN {forum} module ON module.id = discuss.forum ";
+        } else if ($modulename == 'moodleoverflow') {
+            $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, ";
+            $middle .= "FROM {moodleoverflow_posts} posts
+                        JOIN {moodleoverflow_discussions} discuss ON discuss.id = posts.discussion
+                        JOIN {moodleoverflow} module ON module.id = discuss.moodleoverflow ";
+        }
+
+        // Set the where clause of the string.
+        $end = "WHERE discuss.course $insqlcourses
+                AND posts.created > :timestart
+                ORDER BY posts.created DESC;";
+
+        // Concatenate all strings.
+        $sql = $begin . $middle . $end;
 
         // Get all posts.
-        $params = ['modulename' => $modulename, 'localidname' => $localidname, 'posts' => $posts, 'discussions' => $discussions,
-                   'moduletable' => $moduletable, 'discussmodule' => $discussmodule, 'courses' => $courses,
-                   'starttime' => $starttime, ] + $inparamscourses;
         return $DB->get_records_sql($sql, $params);
-        /*$posts = [];
-        // Iterate over the records to get the posts.
-        foreach ($records as $record) {
-            $posts[] = $record;
-        }
-        $records->close();
-        var_dump($records);
-        return $posts;*/
     }
 
     /**
@@ -298,17 +292,23 @@ class townsquareevents {
     private function townsquare_search_events($timestart, $timeend, $courses) : array {
         global $DB;
 
+        // Prepare params for sql statement.
+        list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
+        $params = ['timestart' => $timestart, 'timeduration' => $timestart,
+                   'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses;
+
+        // Set the sql statement.
         $sql = "SELECT e.id, e.name, e.courseid, e.groupid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart, e.visible
                 FROM {event} e JOIN {modules} m ON e.modulename = m.name
-                WHERE (e.timestart >= " . $timestart . " OR e.timestart+e.timeduration > " . $timestart . " )
-                      AND e.timestart <= " . $timeend . "
-                      AND e.courseid IN (" . implode(',', $courses) . " )
+                WHERE (e.timestart >= :timestart OR e.timestart+e.timeduration > :timeduration)
+                      AND e.timestart <= :timeend
+                      AND e.courseid $insqlcourses
                       AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
                       AND ( e.instance != 0 AND e.userid != 0 AND e.visible = 1)
                 ORDER BY e.timestart DESC;";
 
         // Get all events.
-        return $DB->get_records_sql($sql);
+        return $DB->get_records_sql($sql, $params);
     }
 
     /**
