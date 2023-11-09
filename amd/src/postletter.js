@@ -36,12 +36,19 @@ const Selectors = {
 /**
  * Init function
  *
- * The function should cut the text if it is too long
+ * The function can cut the text or extract paragraphs of a post.
  */
 export function init() {
-    // Go through all elements and check if the text is too long.
     contentElements.forEach(
         (element) => {
+            // Replace all <p> within the text with <br> tags.
+            replaceParagraghTags(element);
+
+           // element.textContent = ptexts.join("\n");
+            if (element.id == "content-nr-7") {
+                //window.alert(ptexts);
+            }
+            // Check if the text is too long.
             if (element.textContent.length >= 250) {
                 // If the text is too long, cut it.
                 originalTexts[element.id] = element.textContent;
@@ -115,4 +122,26 @@ async function changeButtonString(index, toshowmore) {
         buttons[index].textContent = await getString('showless', 'block_townsquare');
         buttons[index].setAttribute('showmore', 'false');
     }
+}
+
+/**
+ * Removes all &nbsp; and surrounding <p> tags excluding the first occurrence.
+ *
+ * Helper function to make post look better.
+ * @param {object} element
+ */
+async function replaceParagraghTags(element) {
+    // Identify and store the first <p> and </p> tags
+    var message = element.innerHTML;
+    var firstPTag = message.indexOf('<p>');
+    var lastPTag = message.lastIndexOf('</p>');
+
+    // Remove &nbsp; and surrounding <p> tags excluding the first occurrence
+    message = message.replace(/<p>&nbsp;<\/p>/g, '').replace(/&nbsp;/g, '');
+
+    // Replace <p> tags with <br> excluding the first occurrence
+    message = message.substring(0, firstPTag + 3) +
+        message.substring(firstPTag + 3, lastPTag).replace(/<p>/g, '<br>').replace(/<\/p>/g, '') +
+        message.substring(lastPTag);
+    element.innerHTML = message;
 }
