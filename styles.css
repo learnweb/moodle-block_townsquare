@@ -1,12 +1,18 @@
 /* Style for the main template*/
+.townsquare_root {
+    max-height: 750px;
+    overflow: scroll;
+    max-width: 100%;
+    overflow-x: hidden;
+}
 
 .townsquare_sidepanel {
     background-color: #eee;
-    border-radius: 5px;
+    border-radius: 0.5rem;
 }
 
 .townsquare_content {
-    border-radius: 5px;
+    border-radius: 0.5rem;
 }
 
 /* Style for all letter or content templates */
@@ -18,7 +24,7 @@
 
 .townsquareletter_body.card-body {
     padding-top: 0.7rem;
-    padding-bottom: 0rem;
+    padding-bottom: 0.6rem;
 }
 
 .orientationmarker_body.card-body {
@@ -33,13 +39,15 @@
 .townsquareletter_course {
     flex: 1;
 }
-.townsquareletter_course, .townsquareletter_date{
+
+.townsquareletter_course,
+.townsquareletter_date {
     color: #fff;
     text-shadow: 1px 1px 2px #000;
 }
 
 .townsquare_showmore {
-    cursor: pointer
+    cursor: pointer;
 }
 
 /* Styles for individual letters */
