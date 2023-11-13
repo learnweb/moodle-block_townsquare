@@ -44,14 +44,10 @@ export function init() {
             // Replace all <p> within the text with <br> tags.
             replaceParagraghTags(element);
 
-           // element.textContent = ptexts.join("\n");
-            if (element.id == "content-nr-7") {
-                //window.alert(ptexts);
-            }
             // Check if the text is too long.
             if (element.textContent.length >= 250) {
                 // If the text is too long, cut it.
-                originalTexts[element.id] = element.textContent;
+                originalTexts[element.id] = element.innerHTML;
                 cutString(element);
                 element.parentElement.insertAdjacentHTML('beforeend', '<p>');
                 buttons[element.id].setAttribute('showmore', 'true');
@@ -70,7 +66,7 @@ export function init() {
 }
 
 /**
- * Function to cut a String at a certain length.
+ * Function to cut a String at a length of 250 characters..
  * The function does not cut within a word or after a space.
  * If the cutting point is within a word, the function searches for the next space and cuts there.
  * @param {object} element
@@ -81,7 +77,7 @@ function cutString(element) {
     while (text.charAt(index) != " ") {
         index++;
     }
-    element.textContent = text.substring(0,index);
+    element.innerHTML = text.substring(0,index);
 }
 
 /**
@@ -96,7 +92,7 @@ const addEventListener = () => {
                 (element) => {
                     if (element.id == letterid) {
                         if (buttons[letterid].getAttribute('showmore') == 'true') {
-                            element.textContent = originalTexts[letterid];
+                            element.innerHTML = originalTexts[letterid];
                             changeButtonString(letterid, false);
                         } else {
                             cutString(element);
@@ -110,7 +106,7 @@ const addEventListener = () => {
 };
 
 /**
- * Change the button strings.
+ * Changes the button strings.
  * @param {string} index Which button should be changed
  * @param {boolean} toshowmore a boolean that indicates if the button should show more or less
  */
@@ -125,16 +121,16 @@ async function changeButtonString(index, toshowmore) {
 }
 
 /**
- * Removes all &nbsp; and surrounding <p> tags excluding the first occurrence.
+ * Removes in a text all &nbsp; and surrounding <p> tags excluding the first occurrence.
  *
  * Helper function to make post look better.
  * @param {object} element
  */
 async function replaceParagraghTags(element) {
     // Identify and store the first <p> and </p> tags
-    var message = element.innerHTML;
-    var firstPTag = message.indexOf('<p>');
-    var lastPTag = message.lastIndexOf('</p>');
+    let message = element.innerHTML;
+    const firstPTag = message.indexOf('<p>');
+    const lastPTag = message.lastIndexOf('</p>');
 
     // Remove &nbsp; and surrounding <p> tags excluding the first occurrence
     message = message.replace(/<p>&nbsp;<\/p>/g, '').replace(/&nbsp;/g, '');
