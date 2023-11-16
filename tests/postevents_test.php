@@ -125,7 +125,6 @@ class postevents_test extends \advanced_testcase {
         $townsquareevents = new townsquareevents();
         $posts = $townsquareevents->townsquare_get_postevents();
 
-
         $result = true;
         // Check if there are no more moodleoverflow posts.
         foreach ($posts as $post) {
@@ -228,10 +227,6 @@ class postevents_test extends \advanced_testcase {
         $this->assertEquals(true, $secondstudentpost->anonymous);
     }
 
-    /*public function test_numberofposts() : void {
-
-    }*/
-
     // Helper functions.
 
     /**
@@ -282,12 +277,14 @@ class postevents_test extends \advanced_testcase {
         $forumgenerator = $datagenerator->get_plugin_generator('mod_forum');
 
         $this->testdata->forum1 = $datagenerator->create_module('forum', $course1location);
-        $record = (array)$this->testdata->forum1 + ['forum' => $this->testdata->forum1->id, 'userid' => $this->testdata->teacher->id];
+        $record = (array)$this->testdata->forum1 + ['forum' => $this->testdata->forum1->id,
+                                                    'userid' => $this->testdata->teacher->id, ];
         $this->testdata->fdiscussion1 = (object)$forumgenerator->create_discussion($record);
         $this->testdata->fpost1 = $DB->get_record('forum_posts', ['id' => $this->testdata->fdiscussion1->id]);
 
         $this->testdata->forum2 = $datagenerator->create_module('forum', $course2location);
-        $record = (array)$this->testdata->forum2 + ['forum' => $this->testdata->forum2->id, 'userid' => $this->testdata->teacher->id];
+        $record = (array)$this->testdata->forum2 + ['forum' => $this->testdata->forum2->id,
+                                                    'userid' => $this->testdata->teacher->id, ];
         $this->testdata->fdiscussion2 = (object)$forumgenerator->create_discussion($record);
         $this->testdata->fpost2 = $DB->get_record('forum_posts', ['id' => $this->testdata->fdiscussion2->id]);
     }
