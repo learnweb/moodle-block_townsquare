@@ -257,9 +257,9 @@ class postevents_test extends \advanced_testcase {
         $datagenerator->enrol_user($this->testdata->teacher->id, $this->testdata->course2->id, 'teacher');
 
         // Create two students.
-        $this->testdata->student1 = $this->getDataGenerator()->create_user();
+        $this->testdata->student1 = $datagenerator->create_user();
         $this->getDataGenerator()->enrol_user($this->testdata->student1->id, $this->testdata->course1->id, 'student');
-        $this->testdata->student2 = $this->getDataGenerator()->create_user();
+        $this->testdata->student2 = $datagenerator->create_user();
         $this->getDataGenerator()->enrol_user($this->testdata->student2->id, $this->testdata->course2->id, 'student');
 
         // Create a moodleoverflow with 2 post in each course.
