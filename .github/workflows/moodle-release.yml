@@ -19,7 +19,7 @@ jobs:
   release-at-moodle-org:
     runs-on: ubuntu-latest
     env:
-      PLUGIN: mod_moodleoverflow
+      PLUGIN: blocks_townsquare
       CURL: curl -s
       ENDPOINT: https://moodle.org/webservice/rest/server.php
       TOKEN: ${{ secrets.MOODLE_ORG_TOKEN }}
