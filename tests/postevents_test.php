@@ -91,12 +91,12 @@ class postevents_test extends \advanced_testcase {
     }
 
     /**
-     * Test, if the post events are processed correctly if one modules is not installed.
+     * Test, if the post events are processed correctly if the moodleoverflow module is not installed.
      * @return void
      */
-    public function test_modules() : void {
+    public function test_module_moodleoverflow() : void {
         global $DB;
-        // Test case 1: disable moodleoverflow.
+        // Test case: disable moodleoverflow.
         $DB->delete_records('modules', ['name' => 'moodleoverflow']);
 
         // Set the teacher as the current logged in user and get the post events.
@@ -115,13 +115,19 @@ class postevents_test extends \advanced_testcase {
         // Two Checks: The number of posts (there are only 2 forum posts).
         $this->assertEquals(2, count($posts));
         $this->assertEquals(true, $result);
+    }
 
-        // Test case 2: disable forum (But add the moodleoverflow module again).
-        $moodleoverflowmodule = ['name' => 'moodleoverflow', 'cron' => 0, 'lastcron' => 0, 'search' => 0, 'visible' => 1];
-        $DB->insert_record('modules', (object)$moodleoverflowmodule);
+    /**
+     * Test, if the post events are processed correctly if the forum module is not installed.
+     * @return void
+     */
+    public function test_module_forum() : void {
+        global $DB;
+        // Test case: disable forum.
         $DB->delete_records('modules', ['name' => 'forum']);
 
-        // Get the current post events.
+        // Set the teacher as the current logged in user and get the post events.
+        $this->setUser($this->testdata->teacher);
         $townsquareevents = new townsquareevents();
         $posts = $townsquareevents->townsquare_get_postevents();
 
