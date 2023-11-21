@@ -57,7 +57,7 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install tool plugin
-        run: moodle-plugin-ci add-plugin --branch "${branch_tool_plugin}" learnweb/moodle-mod_moodleoverflow
+        run: moodle-plugin-ci add-plugin learnweb/moodle-mod_moodleoverflow
 
       - name: Install moodle-plugin-ci
         run: |
