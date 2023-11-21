@@ -56,6 +56,9 @@ jobs:
           sudo locale-gen en_AU.UTF-8
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
+      - name: Install tool plugin
+        run: moodle-plugin-ci add-plugin --branch "${branch_tool_plugin}" learnweb/moodle-mod_moodleoverflow
+
       - name: Install moodle-plugin-ci
         run: |
           moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1 --no-init
