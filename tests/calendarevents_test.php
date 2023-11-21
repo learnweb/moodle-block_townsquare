@@ -17,8 +17,13 @@
 
 namespace block_townsquare;
 
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->libdir . '/completionlib.php');
+
 use stdClass;
-use testing_data_generator;
+
 /**
  * Unit tests for the block_townsquare.
  *
@@ -37,14 +42,13 @@ use testing_data_generator;
  * @covers \townsquareevents::townsquare_get_calendarevents()
  */
 class calendarevents_test extends \advanced_testcase {
-
     // Attributes.
 
     /** @var stdClass The data that will be used for testing.
      * This Class contains the test data:
      * - tow courses
      * - a teacher,
-     * - a student of the course
+     * - a student of each course
      * - one assign module (with a date when the assignment is due)
      * - an activity completion from the assign module
      * -
@@ -53,6 +57,8 @@ class calendarevents_test extends \advanced_testcase {
 
     // Construct functions.
     public function setUp() : void {
+        global $CFG;
+        $CFG->enablecompletion = true;
         $this->testdata = new stdClass();
         $this->resetAfterTest();
         $this->helper_course_set_up();
@@ -69,13 +75,15 @@ class calendarevents_test extends \advanced_testcase {
      * Test, if calendar events are sorted correctly.
      */
     public function test_sortorder() : void {
+        global $DB;
+
         // Set the teacher as the current logged in user.
         $this->setUser($this->testdata->teacher);
 
-        // Get the current post events.
+        // Get the current calendar events.
         $townsquareevents = new townsquareevents();
         $calendarevents = $townsquareevents->townsquare_get_calendarevents();
-        var_dump($calendarevents);
+
         // Iterate trough all posts and check if the sort order is correct.
         $timestamp = 9999999999;
         $result = true;
@@ -87,6 +95,7 @@ class calendarevents_test extends \advanced_testcase {
             }
         }
 
+        $this->assertEquals(5, count($calendarevents));
         $this->assertEquals(true, $result);
     }
 
@@ -95,15 +104,77 @@ class calendarevents_test extends \advanced_testcase {
      * @return void
      */
     public function test_course() : void {
+        // Test case 1: Posts for the teacher.
+        $calendarevents = $this->get_events_from_user($this->testdata->teacher);
 
+        // Two checks: Is every event in the course of the teacher and is the number of events correct.
+        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->teacher->id));
+        $this->assertEquals(true, $result);
+        $this->assertEquals(5, count($calendarevents));
+
+        // Test case 2: Post for a student.
+        $calendarevents = $this->get_events_from_user($this->testdata->student2);
+
+        // Two checks: Is every event in the course of the student and is the number of events correct.
+        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->student2->id));
+        $this->assertEquals(true, $result);
+        $this->assertEquals(1, count($calendarevents));
     }
 
     /**
-     * Test, if a assignment is displayed correctly
+     * Test, if an assignment is displayed correctly
      * @return void
      */
     public function test_assignfilter() : void {
+        // Test case 1: An Assignment is over a week due.
+        $time = time();
+        $pastassignment = $this->create_assignment($this->testdata->course1->id, $time - 1814400,
+                                                   $time - 907200, $time - 907200, false);
 
+        // Get the current calendar events.
+        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+
+        // The assignment should not appear.
+        $result = true;
+        foreach ($calendarevents as $event) {
+            if ($event->coursemoduleid == $pastassignment->cmid) {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
+
+        // Test case 2: The student should not see the gradingdue event, the teacher should see it.
+        // First the events of the student.
+        $result = true;
+        foreach ($calendarevents as $event) {
+            if ($event->eventtype == 'gradingdue') {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
+
+        // Then the events of the teacher.
+        $calendarevents = $this->get_events_from_user($this->testdata->teacher);
+
+        $result = false;
+        foreach ($calendarevents as $event) {
+            if ($event->eventtype == 'gradingdue') {
+                $result = true;
+            }
+        }
+        $this->assertEquals(true, $result);
+
+        // Test case 3: Assignments that are not open should not be seen.
+        $notopenassignment = $this->create_assignment($this->testdata->course1->id, $time + 3600,
+                                            $time + 604800 , $time + 604800 , false);
+        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+        $result = true;
+        foreach ($calendarevents as $event) {
+            if ($event->coursemoduleid == $notopenassignment->cmid) {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
     }
 
     /**
@@ -127,28 +198,77 @@ class calendarevents_test extends \advanced_testcase {
         $datagenerator = $this->getDataGenerator();
 
         // Create a new course.
-        $this->testdata->course = $datagenerator->create_course(['enablecompletion' => 1]);
+        $this->testdata->course1 = $datagenerator->create_course(['enablecompletion' => 1]);
+        $this->testdata->course2 = $datagenerator->create_course(['enablecompletion' => 1]);
 
         // Create a teacher and a student and enroll them in the course.
         $this->testdata->teacher = $datagenerator->create_user();
-        $this->testdata->student = $datagenerator->create_user();
-        $datagenerator->enrol_user($this->testdata->teacher->id, $this->testdata->course->id, 'teacher');
-        $datagenerator->enrol_user($this->testdata->student->id, $this->testdata->course->id, 'student');
+        $this->testdata->student1 = $datagenerator->create_user();
+        $this->testdata->student2 = $datagenerator->create_user();
 
-        // Create an assign module and a activity completion.
+        $datagenerator->enrol_user($this->testdata->teacher->id, $this->testdata->course1->id, 'teacher');
+        $datagenerator->enrol_user($this->testdata->teacher->id, $this->testdata->course2->id, 'teacher');
+        $datagenerator->enrol_user($this->testdata->student1->id, $this->testdata->course1->id, 'student');
+        $datagenerator->enrol_user($this->testdata->student2->id, $this->testdata->course2->id, 'student');
+
+        // Create an assign module with an activity completion.
         // Make an assignment that is due in 1 week and will be graded in 2 weeks.
         $time = time();
-        $this->testdata->assignment = $this->create_assignment($time, $time + 1209600, $time + 1209600);
+        $this->testdata->assignment1 = $this->create_assignment($this->testdata->course1->id, $time - 3600,
+                                                     $time + 1209600, $time + 1209600, true);
+
+        // Create a second assignment for the second course.
+        $this->testdata->assignment1 = $this->create_assignment($this->testdata->course2->id, $time - 3600,
+            $time + 1209600, $time + 1209600, false);
+
     }
 
 
-    private function create_assignment($allowsubmittsionsfromdate, $duedate, $gradingduedate) {
+    private function create_assignment($courseid, $allowsubmittsionsfromdate, $duedate, $gradingduedate, $activitycompletion) {
+        // Create an activity completion for the assignment if wanted.
+        $featurecompletionmanual = [];
+        if ($activitycompletion) {
+            $featurecompletionmanual = [
+                'completion' => COMPLETION_TRACKING_MANUAL,
+                'completionexpected' => $duedate,
+            ];
+        }
         $assignrecord = [
-            'course'                            => $this->testdata->course->id,
-            'duedate'                           => $duedate,
-            'allowsubmissionsfromdate'          => $allowsubmittsionsfromdate,
-            'gradingduedate'                    => $gradingduedate,
+            'course' => $courseid,
+            'courseid' => $courseid,
+            'duedate' => $duedate,
+            'allowsubmissionsfromdate' => $allowsubmittsionsfromdate,
+            'gradingduedate' => $gradingduedate,
         ];
-        return $this->getDataGenerator()->create_module('assign', $assignrecord, ['completion' => 1]);
+        return $this->getDataGenerator()->create_module('assign', $assignrecord, $featurecompletionmanual);
+    }
+
+    private function get_events_from_user($user) {
+        $this->setUser($user);
+        $townsquareevents = new townsquareevents();
+        return $townsquareevents->townsquare_get_calendarevents();
+    }
+
+
+    /**
+     * Helper function to check if all events are in the courses of the user.
+     * @param $events
+     * @param $enrolledcourses
+     * @return bool
+     */
+    private function check_eventcourses($events, $enrolledcourses) {
+        foreach ($events as $event) {
+            $eventcourseid = $event->courseid;
+
+            $enrolledcoursesid = [];
+            foreach ($enrolledcourses as $enrolledcourse) {
+                $enrolledcoursesid[] = $enrolledcourse->id;
+            }
+
+            if (!in_array($eventcourseid, $enrolledcoursesid)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
