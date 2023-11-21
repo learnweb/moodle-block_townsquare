@@ -147,8 +147,12 @@ class postevents_test extends \advanced_testcase {
             }
         }
 
-        // Two Checks: The number of posts (there are 4 moodleoverflow posts).
-        $this->assertEquals(4, count($posts));
+        // Two Checks: The number of posts (there are 4 moodleoverflow posts) and the result.
+        if ($this->moodleoverflowavailable) {
+            $this->assertEquals(4, count($posts));
+        } else {
+            $this->assertEquals(0, count($posts));
+        }
         $this->assertEquals(true, $result);
     }
 
@@ -172,7 +176,6 @@ class postevents_test extends \advanced_testcase {
         } else {
             $this->assertEquals(2, count($posts));
         }
-        $this->assertEquals(6, count($posts));
         $this->assertEquals(true, $result);
 
         // Testcase 2: Post for the first student.
