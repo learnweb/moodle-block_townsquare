@@ -304,7 +304,7 @@ class townsquareevents {
                       AND e.timestart <= :timeend
                       AND e.courseid $insqlcourses
                       AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
-                      AND ( e.instance != 0 AND e.userid != 0 AND e.visible = 1)
+                      AND ( e.instance != 0 AND e.visible = 1)
                 ORDER BY e.timestart DESC;";
 
         // Get all events.
