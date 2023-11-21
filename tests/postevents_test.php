@@ -50,6 +50,11 @@ class postevents_test extends \advanced_testcase {
      */
     private $testdata;
 
+    /** @var bool If the moodleoverflow module is available.
+     * This Plugin can support moodleoverflow, but it is not necessary to have it installed.
+     */
+    private $moodleoverflowavailable;
+
     // Construct functions.
     public function setUp() : void {
         $this->testdata = new stdClass();
@@ -96,6 +101,9 @@ class postevents_test extends \advanced_testcase {
      */
     public function test_module_moodleoverflow() : void {
         global $DB;
+        if (!$this->moodleoverflowavailable) {
+            return;
+        }
         // Test case: disable moodleoverflow.
         $DB->delete_records('modules', ['name' => 'moodleoverflow']);
 
@@ -159,6 +167,11 @@ class postevents_test extends \advanced_testcase {
         $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->teacher->id));
 
         // Two Checks: Is the number of posts correct (no post is missing) and is every post in the course of the teacher.
+        if ($this->moodleoverflowavailable) {
+            $this->assertEquals(6, count($posts));
+        } else {
+            $this->assertEquals(2, count($posts));
+        }
         $this->assertEquals(6, count($posts));
         $this->assertEquals(true, $result);
 
@@ -169,7 +182,11 @@ class postevents_test extends \advanced_testcase {
 
         $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student1->id));
 
-        $this->assertEquals(3, count($posts));
+        if ($this->moodleoverflowavailable) {
+            $this->assertEquals(3, count($posts));
+        } else {
+            $this->assertEquals(1, count($posts));
+        }
         $this->assertEquals(true, $result);
 
         // Testcase 3: Post for the second student.
@@ -179,7 +196,11 @@ class postevents_test extends \advanced_testcase {
 
         $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student2->id));
 
-        $this->assertEquals(3, count($posts));
+        if ($this->moodleoverflowavailable) {
+            $this->assertEquals(3, count($posts));
+        } else {
+            $this->assertEquals(1, count($posts));
+        }
         $this->assertEquals(true, $result);
     }
 
@@ -188,6 +209,9 @@ class postevents_test extends \advanced_testcase {
      * @return void
      */
     public function test_anonymous() : void {
+        if (!$this->moodleoverflowavailable) {
+            return;
+        }
         // Set the teacher as the current logged in user.
         $this->setUser($this->testdata->teacher);
 
@@ -263,22 +287,30 @@ class postevents_test extends \advanced_testcase {
         $this->testdata->student2 = $datagenerator->create_user();
         $this->getDataGenerator()->enrol_user($this->testdata->student2->id, $this->testdata->course2->id, 'student');
 
-        // Create a moodleoverflow with 2 post in each course.
-        $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
+        // Create a moodleoverflow with 2 post in each course. (But only if it is available.
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+            $this->moodleoverflowavailable = true;
+            $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
 
-        $this->testdata->moodleoverflow1 = $datagenerator->create_module('moodleoverflow', $course1location);
-        $this->testdata->mdiscussion1 = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow1,
-                                                                                $this->testdata->teacher);
-        $this->testdata->mpost1 = $DB->get_record('moodleoverflow_posts', ['id' => $this->testdata->mdiscussion1[0]->firstpost]);
-        $this->testdata->answer1 = $moodleoverflowgenerator->reply_to_post($this->testdata->mdiscussion1[1],
-                                                                           $this->testdata->student1, true);
+            $this->testdata->moodleoverflow1 = $datagenerator->create_module('moodleoverflow', $course1location);
+            $this->testdata->mdiscussion1 = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow1,
+                $this->testdata->teacher);
+            $this->testdata->mpost1 = $DB->get_record('moodleoverflow_posts',
+                                                      ['id' => $this->testdata->mdiscussion1[0]->firstpost]);
+            $this->testdata->answer1 = $moodleoverflowgenerator->reply_to_post($this->testdata->mdiscussion1[1],
+                $this->testdata->student1, true);
 
-        $this->testdata->moodleoverflow2 = $datagenerator->create_module('moodleoverflow', $course2location);
-        $this->testdata->mdiscussion2 = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow2,
-                                                                                $this->testdata->teacher);
-        $this->testdata->mpost2 = $DB->get_record('moodleoverflow_posts', ['id' => $this->testdata->mdiscussion2[0]->firstpost]);
-        $this->testdata->answer2 = $moodleoverflowgenerator->reply_to_post($this->testdata->mdiscussion2[1],
-                                                                           $this->testdata->student2, true);
+            $this->testdata->moodleoverflow2 = $datagenerator->create_module('moodleoverflow', $course2location);
+            $this->testdata->mdiscussion2 = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow2,
+                $this->testdata->teacher);
+            $this->testdata->mpost2 = $DB->get_record('moodleoverflow_posts',
+                                                       ['id' => $this->testdata->mdiscussion2[0]->firstpost]);
+            $this->testdata->answer2 = $moodleoverflowgenerator->reply_to_post($this->testdata->mdiscussion2[1],
+                $this->testdata->student2, true);
+        } else {
+            $this->moodleoverflowavailable = false;
+        }
+
         // Create a forum with 2 post in each course.
         $forumgenerator = $datagenerator->get_plugin_generator('mod_forum');
 
