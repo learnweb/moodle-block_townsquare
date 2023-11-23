@@ -99,10 +99,32 @@ class calendarevents_test extends \advanced_testcase {
     }
 
     /**
+     * Test, if the post events are processed correctly if the course disappears.
+     * @return void
+     */
+    public function test_course_deleted() {
+        global $DB;
+        // Delete the course from the database.
+        $DB->delete_records('course', ['id' => $this->testdata->course1->id]);
+
+        // Get the post events from the teacher.
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
+
+        // There should be no posts from the first course.
+        $result = true;
+        foreach ($calendarevents as $event) {
+            if ($event->courseid == $this->testdata->course1->id) {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    /**
      * Test, if the users see only posts of their courses.
      * @return void
      */
-    public function test_course(): void {
+    public function test_coursefilter(): void {
         // Test case 1: Posts for the teacher.
         $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
 
