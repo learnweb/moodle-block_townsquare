@@ -74,12 +74,8 @@ class postevents_test extends \advanced_testcase {
      * @return void
      */
     public function test_sortorder(): void {
-        // Set the teacher as the current logged in user.
-        $this->setUser($this->testdata->teacher);
-
-        // Get the current post events.
-        $townsquareevents = new townsquareevents();
-        $posts = $townsquareevents->townsquare_get_postevents();
+        // Get the current post events from the teacher.
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
 
         // Iterate trough all posts and check if the sort order is correct.
         $timestamp = 9999999999;
@@ -107,10 +103,8 @@ class postevents_test extends \advanced_testcase {
         // Test case: disable moodleoverflow.
         $DB->delete_records('modules', ['name' => 'moodleoverflow']);
 
-        // Set the teacher as the current logged in user and get the post events.
-        $this->setUser($this->testdata->teacher);
-        $townsquareevents = new townsquareevents();
-        $posts = $townsquareevents->townsquare_get_postevents();
+        // Get the post events from the teacher.
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
 
         $result = true;
         // Check if there are no more moodleoverflow posts.
@@ -134,10 +128,8 @@ class postevents_test extends \advanced_testcase {
         // Test case: disable forum.
         $DB->delete_records('modules', ['name' => 'forum']);
 
-        // Set the teacher as the current logged in user and get the post events.
-        $this->setUser($this->testdata->teacher);
-        $townsquareevents = new townsquareevents();
-        $posts = $townsquareevents->townsquare_get_postevents();
+        // Get the post events from the teacher.
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
 
         $result = true;
         // Check if there are no more moodleoverflow posts.
@@ -162,10 +154,7 @@ class postevents_test extends \advanced_testcase {
      */
     public function test_course(): void {
         // Test case 1: Post for the teacher.
-        // Set the teacher as the current logged in user and get the current posts.
-        $this->setUser($this->testdata->teacher);
-        $townsquareevents = new townsquareevents();
-        $posts = $townsquareevents->townsquare_get_postevents();
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);;
 
         // Check if the teacher sees only posts of his courses.
         $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->teacher->id));
@@ -179,9 +168,7 @@ class postevents_test extends \advanced_testcase {
         $this->assertEquals(true, $result);
 
         // Test case 2: Post for the first student.
-        $this->setUser($this->testdata->student1);
-        $townsquareevents = new townsquareevents();
-        $posts = $townsquareevents->townsquare_get_postevents();
+        $posts = $this->get_postevents_from_user($this->testdata->student1);
 
         $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student1->id));
 
@@ -193,9 +180,7 @@ class postevents_test extends \advanced_testcase {
         $this->assertEquals(true, $result);
 
         // Test case 3: Post for the second student.
-        $this->setUser($this->testdata->student2);
-        $townsquareevents = new townsquareevents();
-        $posts = $townsquareevents->townsquare_get_postevents();
+        $posts = $this->get_postevents_from_user($this->testdata->student2);
 
         $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student2->id));
 
@@ -215,16 +200,13 @@ class postevents_test extends \advanced_testcase {
         if (!$this->moodleoverflowavailable) {
             return;
         }
-        // Set the teacher as the current logged in user.
-        $this->setUser($this->testdata->teacher);
 
         // Set the first moodleoverflow to partially anonymous and the second to fully anonymous.
         $this->make_anonymous($this->testdata->moodleoverflow1, 1);
         $this->make_anonymous($this->testdata->moodleoverflow2, 2);
 
-        // Get the current post events.
-        $townsquareevents = new townsquareevents();
-        $posts = $townsquareevents->townsquare_get_postevents();
+        // Get the current post events from the teacher..
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
 
         // Posts of the first moodleoverflow.
         $firstteacherpost = null;
@@ -348,6 +330,17 @@ class postevents_test extends \advanced_testcase {
         } else {
             throw new \Exception('invalid parameter, anonymoussetting should be 1 or 2');
         }
+    }
+
+    /**
+     * Helper function to get the post events from a certain user.
+     * @param object $user The user for whom the events should be collected (townsquareevents.php uses $USER).
+     * @return array
+     */
+    private function get_postevents_from_user($user):array {
+        $this->setUser($user);
+        $townsquareevents = new townsquareevents();
+        return $townsquareevents->townsquare_get_postevents();
     }
 
     /**
