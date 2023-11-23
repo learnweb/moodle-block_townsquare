@@ -105,7 +105,7 @@ class calendarevents_test extends \advanced_testcase {
      */
     public function test_course(): void {
         // Test case 1: Posts for the teacher.
-        $calendarevents = $this->get_events_from_user($this->testdata->teacher);
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
 
         // Two checks: Is every event in the course of the teacher and is the number of events correct.
         $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->teacher->id));
@@ -113,7 +113,7 @@ class calendarevents_test extends \advanced_testcase {
         $this->assertEquals(5, count($calendarevents));
 
         // Test case 2: Post for a student.
-        $calendarevents = $this->get_events_from_user($this->testdata->student2);
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student2);
 
         // Two checks: Is every event in the course of the student and is the number of events correct.
         $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->student2->id));
@@ -132,7 +132,7 @@ class calendarevents_test extends \advanced_testcase {
                                                    $time - 907200, $time - 907200, false);
 
         // Get the current calendar events.
-        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
 
         // The assignment should not appear.
         $result = true;
@@ -154,7 +154,7 @@ class calendarevents_test extends \advanced_testcase {
         $this->assertEquals(true, $result);
 
         // Then the events of the teacher.
-        $calendarevents = $this->get_events_from_user($this->testdata->teacher);
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
 
         $result = false;
         foreach ($calendarevents as $event) {
@@ -167,7 +167,7 @@ class calendarevents_test extends \advanced_testcase {
         // Test case 3: Assignments that are not open should not be seen.
         $notopenassignment = $this->create_assignment($this->testdata->course1->id, $time + 3600,
                                             $time + 604800 , $time + 604800 , false);
-        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
         $result = true;
         foreach ($calendarevents as $event) {
             if ($event->coursemoduleid == $notopenassignment->cmid) {
@@ -183,7 +183,7 @@ class calendarevents_test extends \advanced_testcase {
      */
     public function test_activitycompletion(): void {
         // Test case 1: The student should see the activity completion event.
-        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
         $result = false;
         $count = 0;
         foreach ($calendarevents as $event) {
@@ -198,7 +198,7 @@ class calendarevents_test extends \advanced_testcase {
         // Test case 2: The student marks the assignment as completed, the activity completion event should disappear.
         \core_completion_external::update_activity_completion_status_manually($this->testdata->assignment1->cmid, true);
 
-        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
         $result = true;
         foreach ($calendarevents as $event) {
             if ($event->eventtype == 'expectcompletionon') {
@@ -278,7 +278,7 @@ class calendarevents_test extends \advanced_testcase {
      * @param object $user  The user for whom the events should be collected (townsquareevents.php uses $USER).
      * @return array
      */
-    private function get_events_from_user($user):array {
+    private function get_calendarevents_from_user($user):array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
         return $townsquareevents->townsquare_get_calendarevents();
