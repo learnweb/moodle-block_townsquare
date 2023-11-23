@@ -46,12 +46,11 @@ class calendarevents_test extends \advanced_testcase {
 
     /** @var object The data that will be used for testing.
      * This Class contains the test data:
-     * - tow courses
-     * - a teacher,
-     * - a student of each course
-     * - one assign module (with a date when the assignment is due)
-     * - an activity completion from the assign module
-     * -
+     * - two courses.
+     * - an assignment in each course.
+     * - an activity completion in the first course.
+     * - a teacher that is enrolled in both courses.
+     * - a student in each course.
      */
     private $testdata;
 
@@ -212,9 +211,11 @@ class calendarevents_test extends \advanced_testcase {
 
     /**
      * Helper function that creates:
-     * - two courses with a forum and a moodleoverflow
-     * - a teacher, who creates a post in each forum and moodleoverflow.
-     * - a student in each course
+     * - two courses.
+     * - an assignment in each course.
+     * - an activity completion in the first course.
+     * - a teacher that is enrolled in both courses.
+     * - a student in each course.
      */
     private function helper_course_set_up(): void {
         $datagenerator = $this->getDataGenerator();
