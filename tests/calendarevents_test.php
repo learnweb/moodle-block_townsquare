@@ -39,9 +39,10 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \townsquareevents::townsquare_get_calendarevents()
+ * @covers \block_townsquare\townsquareevents::townsquare_get_calendarevents()
  */
 class calendarevents_test extends \advanced_testcase {
+
     // Attributes.
 
     /** @var object The data that will be used for testing.

@@ -34,7 +34,7 @@ use testing_data_generator;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \townsquareevents::townsquare_get_postevents()
+ * @covers \block_townsquare\townsquareevents::townsquare_get_postevents()
  */
 class postevents_test extends \advanced_testcase {
 
@@ -301,17 +301,13 @@ class postevents_test extends \advanced_testcase {
 
             $this->testdata->moodleoverflow1 = $datagenerator->create_module('moodleoverflow', $course1location);
             $this->testdata->mdiscussion1 = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow1,
-                $this->testdata->teacher);
-            $this->testdata->mpost1 = $DB->get_record('moodleoverflow_posts',
-                                                      ['id' => $this->testdata->mdiscussion1[0]->firstpost]);
+                                                                                    $this->testdata->teacher);
             $this->testdata->answer1 = $moodleoverflowgenerator->reply_to_post($this->testdata->mdiscussion1[1],
-                $this->testdata->student1, true);
+                                                                               $this->testdata->student1, true);
 
             $this->testdata->moodleoverflow2 = $datagenerator->create_module('moodleoverflow', $course2location);
             $this->testdata->mdiscussion2 = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow2,
-                $this->testdata->teacher);
-            $this->testdata->mpost2 = $DB->get_record('moodleoverflow_posts',
-                                                       ['id' => $this->testdata->mdiscussion2[0]->firstpost]);
+                                                                                    $this->testdata->teacher);
             $this->testdata->answer2 = $moodleoverflowgenerator->reply_to_post($this->testdata->mdiscussion2[1],
                 $this->testdata->student2, true);
         } else {
@@ -325,13 +321,11 @@ class postevents_test extends \advanced_testcase {
         $record = (array)$this->testdata->forum1 + ['forum' => $this->testdata->forum1->id,
                                                     'userid' => $this->testdata->teacher->id, ];
         $this->testdata->fdiscussion1 = (object)$forumgenerator->create_discussion($record);
-        $this->testdata->fpost1 = $DB->get_record('forum_posts', ['id' => $this->testdata->fdiscussion1->id]);
 
         $this->testdata->forum2 = $datagenerator->create_module('forum', $course2location);
         $record = (array)$this->testdata->forum2 + ['forum' => $this->testdata->forum2->id,
                                                     'userid' => $this->testdata->teacher->id, ];
         $this->testdata->fdiscussion2 = (object)$forumgenerator->create_discussion($record);
-        $this->testdata->fpost2 = $DB->get_record('forum_posts', ['id' => $this->testdata->fdiscussion2->id]);
     }
 
 
