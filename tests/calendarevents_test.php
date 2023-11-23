@@ -182,7 +182,30 @@ class calendarevents_test extends \advanced_testcase {
      * @return void
      */
     public function test_activitycompletion() : void {
+        // Test case 1: The student should see the activity completion event.
+        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+        $result = false;
+        $count = 0;
+        foreach ($calendarevents as $event) {
+            if ($event->eventtype == 'expectcompletionon') {
+                $result = true;
+                $count++;
+            }
+        }
+        $this->assertEquals(true, $result);
+        $this->assertEquals(1, $count);
 
+        // Test case 2: The student marks the assignment as completed, the activity completion event should disappear.
+        \core_completion_external::update_activity_completion_status_manually($this->testdata->assignment1->cmid, true);
+
+        $calendarevents = $this->get_events_from_user($this->testdata->student1);
+        $result = true;
+        foreach ($calendarevents as $event) {
+            if ($event->eventtype == 'expectcompletionon') {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
     }
 
     // Helper functions.
@@ -218,7 +241,7 @@ class calendarevents_test extends \advanced_testcase {
                                                      $time + 1209600, $time + 1209600, true);
 
         // Create a second assignment for the second course.
-        $this->testdata->assignment1 = $this->create_assignment($this->testdata->course2->id, $time - 3600,
+        $this->testdata->assignment2 = $this->create_assignment($this->testdata->course2->id, $time - 3600,
             $time + 1209600, $time + 1209600, false);
 
     }
