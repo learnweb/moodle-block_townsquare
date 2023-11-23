@@ -40,7 +40,7 @@ class postevents_test extends \advanced_testcase {
 
     // Attributes.
 
-    /** @var stdClass The data that will be used for testing.
+    /** @var object The data that will be used for testing.
      * This Class contains the test data:
      * - course1, course2
      * - forum1, forum2 (with one post each)
@@ -56,13 +56,13 @@ class postevents_test extends \advanced_testcase {
     private $moodleoverflowavailable;
 
     // Construct functions.
-    public function setUp() : void {
+    public function setUp(): void {
         $this->testdata = new stdClass();
         $this->resetAfterTest();
         $this->helper_course_set_up();
     }
 
-    public function tearDown() : void {
+    public function tearDown(): void {
         $this->testdata = null;
     }
 
@@ -73,7 +73,7 @@ class postevents_test extends \advanced_testcase {
      * Post should be sorted by the time they were created in descending order (newest post first).
      * @return void
      */
-    public function test_sortorder() : void {
+    public function test_sortorder(): void {
         // Set the teacher as the current logged in user.
         $this->setUser($this->testdata->teacher);
 
@@ -99,7 +99,7 @@ class postevents_test extends \advanced_testcase {
      * Test, if the post events are processed correctly if the moodleoverflow module is not installed.
      * @return void
      */
-    public function test_module_moodleoverflow() : void {
+    public function test_module_moodleoverflow(): void {
         global $DB;
         if (!$this->moodleoverflowavailable) {
             return;
@@ -129,7 +129,7 @@ class postevents_test extends \advanced_testcase {
      * Test, if the post events are processed correctly if the forum module is not installed.
      * @return void
      */
-    public function test_module_forum() : void {
+    public function test_module_forum(): void {
         global $DB;
         // Test case: disable forum.
         $DB->delete_records('modules', ['name' => 'forum']);
@@ -160,7 +160,7 @@ class postevents_test extends \advanced_testcase {
      * Test, if the users see only posts of their courses.
      * @return void
      */
-    public function test_course() : void {
+    public function test_course(): void {
         // Test case 1: Post for the teacher.
         // Set the teacher as the current logged in user and get the current posts.
         $this->setUser($this->testdata->teacher);
@@ -211,7 +211,7 @@ class postevents_test extends \advanced_testcase {
      * Test, if data in moodleoverflow posts is processed correctly when the moodleoverflow is anonymous.
      * @return void
      */
-    public function test_anonymous() : void {
+    public function test_anonymous(): void {
         if (!$this->moodleoverflowavailable) {
             return;
         }
@@ -269,7 +269,7 @@ class postevents_test extends \advanced_testcase {
      * - a student in each course
      *
      */
-    private function helper_course_set_up() : void {
+    private function helper_course_set_up(): void {
         global $DB;
         $datagenerator = $this->getDataGenerator();
         // Create two new courses.
@@ -340,7 +340,7 @@ class postevents_test extends \advanced_testcase {
      * @param object $moodleoverflow The moodleoverflow that should be made anonymous.
      * @param int $anonymoussetting The type of anonymous moodleoverflow.
      */
-    private function make_anonymous($moodleoverflow, $anonymoussetting) {
+    private function make_anonymous($moodleoverflow, $anonymoussetting):void {
         global $DB;
         if ($anonymoussetting == 1 || $anonymoussetting == 2) {
             $moodleoverflow->anonymous = $anonymoussetting;
@@ -352,11 +352,11 @@ class postevents_test extends \advanced_testcase {
 
     /**
      * Helper function to check if all posts are in the courses of the user.
-     * @param $posts
-     * @param $enrolledcourses
+     * @param array $posts
+     * @param array $enrolledcourses
      * @return bool
      */
-    private function check_postcourses($posts, $enrolledcourses) {
+    private function check_postcourses($posts, $enrolledcourses):bool {
         foreach ($posts as $post) {
             $postcourseid = $post->courseid;
 

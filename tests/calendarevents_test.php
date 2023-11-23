@@ -44,7 +44,7 @@ use stdClass;
 class calendarevents_test extends \advanced_testcase {
     // Attributes.
 
-    /** @var stdClass The data that will be used for testing.
+    /** @var object The data that will be used for testing.
      * This Class contains the test data:
      * - tow courses
      * - a teacher,
@@ -56,7 +56,7 @@ class calendarevents_test extends \advanced_testcase {
     private $testdata;
 
     // Construct functions.
-    public function setUp() : void {
+    public function setUp(): void {
         global $CFG;
         $CFG->enablecompletion = true;
         $this->testdata = new stdClass();
@@ -65,7 +65,7 @@ class calendarevents_test extends \advanced_testcase {
 
     }
 
-    public function tearDown() : void {
+    public function tearDown(): void {
         $this->testdata = null;
     }
 
@@ -74,7 +74,7 @@ class calendarevents_test extends \advanced_testcase {
     /**
      * Test, if calendar events are sorted correctly.
      */
-    public function test_sortorder() : void {
+    public function test_sortorder(): void {
         global $DB;
 
         // Set the teacher as the current logged in user.
@@ -103,7 +103,7 @@ class calendarevents_test extends \advanced_testcase {
      * Test, if the users see only posts of their courses.
      * @return void
      */
-    public function test_course() : void {
+    public function test_course(): void {
         // Test case 1: Posts for the teacher.
         $calendarevents = $this->get_events_from_user($this->testdata->teacher);
 
@@ -125,7 +125,7 @@ class calendarevents_test extends \advanced_testcase {
      * Test, if an assignment is displayed correctly
      * @return void
      */
-    public function test_assignfilter() : void {
+    public function test_assignfilter(): void {
         // Test case 1: An Assignment is over a week due.
         $time = time();
         $pastassignment = $this->create_assignment($this->testdata->course1->id, $time - 1814400,
@@ -181,7 +181,7 @@ class calendarevents_test extends \advanced_testcase {
      * Test, if a activity completion is displayed correctly.
      * @return void
      */
-    public function test_activitycompletion() : void {
+    public function test_activitycompletion(): void {
         // Test case 1: The student should see the activity completion event.
         $calendarevents = $this->get_events_from_user($this->testdata->student1);
         $result = false;
@@ -216,8 +216,7 @@ class calendarevents_test extends \advanced_testcase {
      * - a teacher, who creates a post in each forum and moodleoverflow.
      * - a student in each course
      */
-    private function helper_course_set_up() : void {
-        global $DB;
+    private function helper_course_set_up(): void {
         $datagenerator = $this->getDataGenerator();
 
         // Create a new course.
@@ -246,8 +245,16 @@ class calendarevents_test extends \advanced_testcase {
 
     }
 
-
-    private function create_assignment($courseid, $allowsubmittsionsfromdate, $duedate, $gradingduedate, $activitycompletion) {
+    /**
+     * Helper function to create an assignment.
+     * @param int $courseid                  id of the course
+     * @param int $allowsubmissionsdate      timestamp
+     * @param int $duedate                   timestamp
+     * @param int $gradingduedate            timestamp
+     * @param bool $activitycompletion
+     * @return object
+     */
+    private function create_assignment($courseid, $allowsubmissionsdate, $duedate, $gradingduedate, $activitycompletion):object {
         // Create an activity completion for the assignment if wanted.
         $featurecompletionmanual = [];
         if ($activitycompletion) {
@@ -260,13 +267,18 @@ class calendarevents_test extends \advanced_testcase {
             'course' => $courseid,
             'courseid' => $courseid,
             'duedate' => $duedate,
-            'allowsubmissionsfromdate' => $allowsubmittsionsfromdate,
+            'allowsubmissionsfromdate' => $allowsubmissionsdate,
             'gradingduedate' => $gradingduedate,
         ];
         return $this->getDataGenerator()->create_module('assign', $assignrecord, $featurecompletionmanual);
     }
 
-    private function get_events_from_user($user) {
+    /**
+     * Helper function to get the events from a certain user.
+     * @param object $user  The user for whom the events should be collected (townsquareevents.php uses $USER).
+     * @return array
+     */
+    private function get_events_from_user($user):array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
         return $townsquareevents->townsquare_get_calendarevents();
@@ -275,11 +287,11 @@ class calendarevents_test extends \advanced_testcase {
 
     /**
      * Helper function to check if all events are in the courses of the user.
-     * @param $events
-     * @param $enrolledcourses
+     * @param array $events
+     * @param array $enrolledcourses
      * @return bool
      */
-    private function check_eventcourses($events, $enrolledcourses) {
+    private function check_eventcourses($events, $enrolledcourses):bool {
         foreach ($events as $event) {
             $eventcourseid = $event->courseid;
 

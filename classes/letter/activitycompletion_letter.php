@@ -70,7 +70,7 @@ class activitycompletion_letter extends letter {
      * Export function for the mustache template.
      * return array
      */
-    public function export_letter() {
+    public function export_letter():array {
         // Change the timestamp to a date.
         $date = date('d.m.Y', $this->created);
 
@@ -96,7 +96,7 @@ class activitycompletion_letter extends letter {
      * Overrides function from superclass.
      * @return string
      */
-    public function get_lettertype() {
+    public function get_lettertype():string {
         return $this->lettertype;
     }
 
@@ -104,7 +104,7 @@ class activitycompletion_letter extends letter {
      * Getter for the author id.
      * @return int
      */
-    public function get_author() {
+    public function get_author():int {
         return $this->author;
     }
 
@@ -112,7 +112,7 @@ class activitycompletion_letter extends letter {
      * Getter for the link.
      * @return moodle_url
      */
-    public function get_linktoactivity() {
+    public function get_linktoactivity():moodle_url {
         return $this->linktoactivity;
     }
 

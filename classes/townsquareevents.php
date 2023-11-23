@@ -66,7 +66,7 @@ class townsquareevents {
      * Retrieves calendar and post events, merges and sorts them
      * @return array
      */
-    public function townsquare_get_all_events_sorted() : array {
+    public function townsquare_get_all_events_sorted(): array {
         $calendarevents = $this->townsquare_get_calendarevents();
         $postevents = $this->townsquare_get_postevents();
 
@@ -100,7 +100,7 @@ class townsquareevents {
      * The events are sorted in descending order by time created (newest event first)
      * @return array
      */
-    public function townsquare_get_calendarevents() : array {
+    public function townsquare_get_calendarevents(): array {
         global $DB, $USER;
 
         // Get all events from the last six months and the next six months.
@@ -156,7 +156,7 @@ class townsquareevents {
      * The events are sorted in descending order by time created (newest event first)
      * @return array;
      */
-    public function townsquare_get_postevents() : array {
+    public function townsquare_get_postevents(): array {
         global $DB;
 
         $forumposts = false;
@@ -236,7 +236,7 @@ class townsquareevents {
      * @param int    $timestart   The timestamp from where the posts should be searched.
      * @return array
      */
-    private function townsquare_search_posts($modulename, $courses, $timestart) : array {
+    private function townsquare_search_posts($modulename, $courses, $timestart): array {
         global $DB;
         // Prepare params for sql statement.
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
@@ -289,7 +289,7 @@ class townsquareevents {
      * @return array
      * @throws dml_exception
      */
-    private function townsquare_search_events($timestart, $timeend, $courses) : array {
+    private function townsquare_search_events($timestart, $timeend, $courses): array {
         global $DB;
 
         // Prepare params for sql statement.
@@ -315,7 +315,7 @@ class townsquareevents {
      * Gets the id of all courses where the current user is enrolled
      * @return array
      */
-    private function townsquare_get_courses() : array {
+    private function townsquare_get_courses(): array {
         global $USER;
 
         $enrolledcourses = enrol_get_all_users_courses($USER->id);

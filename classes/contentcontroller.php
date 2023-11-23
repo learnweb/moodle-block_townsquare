@@ -38,7 +38,7 @@ use stdClass;
  */
 class contentcontroller {
 
-    /** @var stdClass Class to retrieve events */
+    /** @var object Class to retrieve events */
     public $townsquareevents;
 
     /** @var array events that are relevant for the townsquare */
@@ -63,7 +63,7 @@ class contentcontroller {
      * @return array
      * @throws moodle_exception
      */
-    public function build_content() {
+    public function build_content():array {
         $this->events = $this->townsquareevents->townsquare_get_all_events_sorted();
 
         $orientationmarkerset = false;
@@ -100,7 +100,7 @@ class contentcontroller {
      * Getter for the content
      * @return array
      */
-    public function get_content() {
+    public function get_content():array {
         return $this->content;
     }
 }

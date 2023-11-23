@@ -56,7 +56,7 @@ class post_letter extends letter {
     /** @var int the id of the author of the post */
     private $author;
 
-    /** @var \stdClass the profile picture of the author */
+    /** @var object the profile picture of the author */
     private $authorpicture;
 
     /** @var string the name of the author */
@@ -131,7 +131,7 @@ class post_letter extends letter {
      * Export Function for the mustache template.
      * @return array
      */
-    public function export_letter() {
+    public function export_letter():array {
         global $OUTPUT, $DB;
         // Change the created timestamp to a date.
         $date = date('d.m.Y', $this->created);
@@ -167,7 +167,7 @@ class post_letter extends letter {
      * Overrides function from superclass.
      * @return string
      */
-    public function get_lettertype() {
+    public function get_lettertype():string {
         return $this->lettertype;
     }
 
@@ -175,7 +175,7 @@ class post_letter extends letter {
      * Getter for the local module id.
      * @return int
      */
-    public function get_localmoduleid() {
+    public function get_localmoduleid():int {
         return $this->localmoduleid;
     }
 

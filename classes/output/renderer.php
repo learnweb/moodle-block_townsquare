@@ -39,7 +39,7 @@ class renderer extends plugin_renderer_base {
      * @param array $data Data to render the townsquare templates
      * @return string HTML string
      */
-    public function render_main($data) {
+    public function render_main($data):string {
         return $this->render_from_template('block_townsquare/main', $data);
     }
 }

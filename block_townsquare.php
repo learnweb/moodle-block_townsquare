@@ -29,16 +29,16 @@ class block_townsquare extends block_base {
      *
      * @return void
      */
-    public function init() {
+    public function init():void {
         $this->title = get_string('pluginname', 'block_townsquare');
     }
 
     /**
      * Gets the block contents.
      *
-     * @return stdClass|null The block HTML.
+     * @return object|null The block HTML.
      */
-    public function get_content() {
+    public function get_content():object {
         global $OUTPUT;
 
         if ($this->content !== null) {
@@ -61,7 +61,7 @@ class block_townsquare extends block_base {
      *
      * @return array of the pages where the block can be added.
      */
-    public function applicable_formats() {
+    public function applicable_formats():array {
         return [
             'admin' => false,
             'site-index' => false,
