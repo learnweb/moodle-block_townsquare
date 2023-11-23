@@ -161,7 +161,7 @@ class postevents_test extends \advanced_testcase {
      * @return void
      */
     public function test_course() : void {
-        // Testcase 1: Post for the teacher.
+        // Test case 1: Post for the teacher.
         // Set the teacher as the current logged in user and get the current posts.
         $this->setUser($this->testdata->teacher);
         $townsquareevents = new townsquareevents();
@@ -178,7 +178,7 @@ class postevents_test extends \advanced_testcase {
         }
         $this->assertEquals(true, $result);
 
-        // Testcase 2: Post for the first student.
+        // Test case 2: Post for the first student.
         $this->setUser($this->testdata->student1);
         $townsquareevents = new townsquareevents();
         $posts = $townsquareevents->townsquare_get_postevents();
@@ -192,7 +192,7 @@ class postevents_test extends \advanced_testcase {
         }
         $this->assertEquals(true, $result);
 
-        // Testcase 3: Post for the second student.
+        // Test case 3: Post for the second student.
         $this->setUser($this->testdata->student2);
         $townsquareevents = new townsquareevents();
         $posts = $townsquareevents->townsquare_get_postevents();
@@ -251,11 +251,11 @@ class postevents_test extends \advanced_testcase {
             }
         }
 
-        // Test Case 1: The teacherpost should be anonymous and the studentpost should not be anonymous (partial anonymous).
+        // Test case 1: The teacherpost should be anonymous and the studentpost should not be anonymous (partial anonymous).
         $this->assertEquals(true, $firstteacherpost->anonymous);
         $this->assertEquals(false, $firststudentpost->anonymous);
 
-        // Test Case 2: The teacherpost and studentpost should be anonymous (fully anonymous).
+        // Test case 2: The teacherpost and studentpost should be anonymous (fully anonymous).
         $this->assertEquals(true, $secondteacherpost->anonymous);
         $this->assertEquals(true, $secondstudentpost->anonymous);
     }
