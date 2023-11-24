@@ -42,9 +42,6 @@ class orientation_marker {
     /** @var int The timestamp of the current day. */
     private $today;
 
-    /** @var object the current user */
-    private $username;
-
     /** @var bool variable for the mustache template */
     public $isorientationmarker = true;
 
@@ -59,7 +56,6 @@ class orientation_marker {
     public function __construct($contentid, $time) {
         global $USER;
         $this->contentid = $contentid;
-        $this->username = $USER->firstname . " " . $USER->lastname;
         $this->today = $time;
 
     }
@@ -74,7 +70,6 @@ class orientation_marker {
 
         return [
             'contentid' => $this->contentid,
-            'username' => $this->username,
             'date' => $date,
             'isorientationmarker' => $this->isorientationmarker,
         ];

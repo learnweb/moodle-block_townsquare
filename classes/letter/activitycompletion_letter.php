@@ -36,12 +36,6 @@ use moodle_url;
  */
 class activitycompletion_letter extends letter {
 
-    /** @var int The id of the author of the post */
-    private $author;
-
-    /** @var string The name of the author */
-    private $authorname;
-
     /** @var moodle_url The url to the activity */
     private $linktoactivity;
 
@@ -59,9 +53,6 @@ class activitycompletion_letter extends letter {
         parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename,
                             $calendarevent->name, $calendarevent->timestart);
         $this->lettertype = 'activitycompletion';
-        $this->author = $calendarevent->userid;
-        $author = $DB->get_record('user', ['id' => $calendarevent->userid]);
-        $this->authorname = $author->firstname . ' ' . $author->lastname;
         $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
         $this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
     }
@@ -81,8 +72,6 @@ class activitycompletion_letter extends letter {
             'courseid' => $this->courseid,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,
-            'author' => $this->author,
-            'authorname' => $this->authorname,
             'content' => $this->content,
             'created' => $date,
             'linktoactivity' => $this->linktoactivity->out(),
