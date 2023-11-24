@@ -19,8 +19,6 @@ namespace block_townsquare;
 
 use block_townsquare;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Unit tests for the block_townsquare.
  *
@@ -90,22 +88,26 @@ class contentcontroller_test extends \advanced_testcase {
             }
 
             // Declare the three types of letter checks.
-            $postcheck = current($events)['eventtype'] == 'post' && current($content)['lettertype'] == 'post';
-            $completioncheck = current($events)['eventtype'] == 'expectcompletionon' &&
+            $postcheck = current($events)->eventtype == 'post' && current($content)['lettertype'] == 'post';
+            $completioncheck = current($events)->eventtype == 'expectcompletionon' &&
                               current($content)['lettertype'] == 'activitycompletion';
 
-            $basiccheck = (current($events)['eventtype'] != 'post' && current($events)['eventtype'] != 'expectcompletionon') &&
+            $basiccheck = (current($events)->eventtype != 'post' && current($events)->eventtype != 'expectcompletionon') &&
                            current($content)['lettertype'] == 'basic';
 
             // If one of the checks fails there is a problem while creating the letters..
-            if (!$postcheck || !$completioncheck || !$basiccheck) {
+            if (!$postcheck && !$completioncheck && !$basiccheck) {
                 $result = false;
                 break;
             }
+
+            next($content);
+            next($events);
         }
 
         $this->assertEquals(true, $result);
     }
+
     // Helper functions.
 
     /**
@@ -135,9 +137,10 @@ class contentcontroller_test extends \advanced_testcase {
             $this->testdata->mdiscussion = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow,
                                                                                    $this->testdata->teacher);
         }
+
         // Create an assign module with activity completion.
         $time = time();
-        $this->testdata->assignment = $this->create_assignment($time, $time + 3600, $time + 7200, true);
+        $this->testdata->assignment = $this->create_assignment($time - 3600, $time + 86400, $time + 172800);
     }
 
     /**
@@ -145,30 +148,22 @@ class contentcontroller_test extends \advanced_testcase {
      * @param int $allowsubmissionsdate      timestamp
      * @param int $duedate                   timestamp
      * @param int $gradingduedate            timestamp
-     * @param bool $activitycompletion
      * @return object
      */
     private function create_assignment($allowsubmissionsdate, $duedate, $gradingduedate):object {
         // Create an activity completion for the assignment if wanted.
-        $featurecompletionmanual = ['completion' => COMPLETION_TRACKING_MANUAL, 'completionexpected' => $duedate];
+        $featurecompletionmanual = [
+            'completion' => COMPLETION_TRACKING_MANUAL,
+            'completionexpected' => $duedate,
+        ];
 
         $assignrecord = [
             'course' => $this->testdata->course->id,
+            'courseid' => $this->testdata->course->id,
             'duedate' => $duedate,
             'allowsubmissionsfromdate' => $allowsubmissionsdate,
             'gradingduedate' => $gradingduedate,
         ];
         return $this->getDataGenerator()->create_module('assign', $assignrecord, $featurecompletionmanual);
-    }
-
-    /**
-     * Helper function to get the events from a certain user.
-     * @param object $user  The user for whom the events should be collected (townsquareevents.php uses $USER).
-     * @return array
-     */
-    private function get_townsquareevents_from_user($user):array {
-        $this->setUser($user);
-        $townsquareevents = new townsquareevents();
-        return $townsquareevents->townsquare_get_all_events_sorted();
     }
 }
