@@ -19,10 +19,15 @@ import {prefetchStrings} from 'core/prefetch';
 /**
  * Javascript for the post letter
  *
+ * This file implements 2 functionalities:
+ * - cuts posts that have many characters and shows a "see more" Button to see the whole text.
+ * - Unnecessary <p> Tags from the Database are being replaced with line breaks to make the text more readable.
+ *
  * @module     block_townsquare/postletter
  * @copyright  2023 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 const contentElements = document.getElementsByClassName('postletter_message');
 const buttons = document.getElementsByClassName('townsquare_showmore');
 const originalTexts = [];
@@ -41,7 +46,7 @@ const Selectors = {
 export function init() {
     contentElements.forEach(
         (element) => {
-            // Replace all <p> within the text with <br> tags.
+            // Replace all <p> within the text with simple line breaks..
             replaceParagraghTags(element);
 
             // Check if the text is too long.
@@ -66,7 +71,7 @@ export function init() {
 }
 
 /**
- * Function to cut a String at a length of 250 characters..
+ * Function to cut a String at a length of 250 characters.
  * The function does not cut within a word or after a space.
  * If the cutting point is within a word, the function searches for the next space and cuts there.
  * @param {object} element

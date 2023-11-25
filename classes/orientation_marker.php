@@ -24,16 +24,15 @@
 
 namespace block_townsquare;
 
-// Import other namespaces.
-
 /**
- * Abstract Class to show the current date
+ * Class that represent a orientation marker.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class orientation_marker {
+
     // Attributes.
 
     /** @var int an ID to identify every content in townsquare */
@@ -59,6 +58,8 @@ class orientation_marker {
         $this->today = $time;
 
     }
+
+    // Functions.
 
     /**
      * Export function for the mustache template.

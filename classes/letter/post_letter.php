@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Class to show information to the user
+ * Class to show content to the user
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -28,8 +28,9 @@ use moodle_exception;
 use moodle_url;
 
 /**
- * Class that represents a post from the forum or moodleoverflow.
- *
+ * Class that represents a post from the forum or moodleoverflow module.
+ * Note: The forum module belongs to the core plugins of Moodle.
+ *       Townsquare also supports the moodleoverflow plugin, if it is installed.
  * Subclass from letter.
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -39,12 +40,10 @@ class post_letter extends letter {
 
     // Attributes.
 
-    // From parent class: lettertype, course, modulename, created.
-
     /** @var int The course module id */
     private $coursemoduleid;
 
-    /** @var int The local ID of the module instance, is the forumid or moodleoverflowid*/
+    /** @var int The local ID of the module instance, is the forumid or moodleoverflowid */
     private $localmoduleid;
 
     /** @var string The name of the module instance */
@@ -82,7 +81,7 @@ class post_letter extends letter {
 
     // Urls Attributes.
 
-    /** @var moodle_url url to the module instance*/
+    /** @var moodle_url url to the module instance */
     private $linktomoduleinstance;
 
     /** @var moodle_url url to the discussion */
@@ -94,8 +93,8 @@ class post_letter extends letter {
     // Constructor.
 
     /**
-     * Constructor of the postevent class.
-     * @param int $contentid
+     * Constructor of the post letter class.
+     * @param int $contentid    internal ID in the townsquare block
      * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
      * @throws moodle_exception
      */
@@ -127,14 +126,17 @@ class post_letter extends letter {
         $this->retrieve_profilepicture();
     }
 
+    // Functions.
+
     /**
      * Export Function for the mustache template.
      * @return array
      */
     public function export_letter():array {
-        global $OUTPUT, $DB;
+
         // Change the created timestamp to a date.
         $date = date('d.m.Y', $this->created);
+
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -183,7 +185,7 @@ class post_letter extends letter {
      * Getter for the discussion id.
      * @return int
      */
-    public function get_discussionid() {
+    public function get_discussionid():int {
         return $this->discussionid;
     }
 
@@ -191,7 +193,7 @@ class post_letter extends letter {
      * Getter for the author id.
      * @return int
      */
-    public function get_author() {
+    public function get_author():int {
         return $this->author;
     }
 
@@ -199,7 +201,7 @@ class post_letter extends letter {
      * Getter for the post id.
      * @return int
      */
-    public function get_postid() {
+    public function get_postid():int {
         return $this->postid;
     }
 
@@ -207,7 +209,7 @@ class post_letter extends letter {
      * Getter for the post message.
      * @return string
      */
-    public function get_message() {
+    public function get_message():string {
         return $this->message;
     }
 
@@ -215,7 +217,7 @@ class post_letter extends letter {
      * Getter for the name of the discussion.
      * @return string
      */
-    public function get_discussionsubject() {
+    public function get_discussionsubject():string {
         return $this->discussionsubject;
     }
 
@@ -223,7 +225,7 @@ class post_letter extends letter {
      * Getter for the id of the parent post.
      * @return int
      */
-    public function get_postparentid() {
+    public function get_postparentid():int {
         return $this->postparentid;
     }
 
@@ -231,7 +233,7 @@ class post_letter extends letter {
      * Getter for the instance id in the local database of the plugin.
      * @return moodle_url
      */
-    public function get_linktomoduleinstance() {
+    public function get_linktomoduleinstance():moodle_url {
         return $this->linktomoduleinstance;
     }
 
@@ -239,7 +241,7 @@ class post_letter extends letter {
      * Getter for the link to the post.
      * @return moodle_url
      */
-    public function get_linktopost() {
+    public function get_linktopost():moodle_url {
         return $this->linktopost;
     }
 
@@ -247,7 +249,7 @@ class post_letter extends letter {
      * Getter for the link to the author.
      * @return moodle_url
      */
-    public function get_linktoauthor() {
+    public function get_linktoauthor():moodle_url {
         return $this->linktoauthor;
     }
 
@@ -284,12 +286,12 @@ class post_letter extends letter {
     private function retrieve_profilepicture() {
         global $DB, $OUTPUT;
 
-        // If the author is anonymous, the profile picture should not be visible.
+        // Profile picture is only retrieved if the author is visible.
         if ($this->author) {
             $user = new \stdClass();
             $picturefields = \core_user\fields::get_picture_fields();
-            $user = username_load_fields_from_object($user,
-                                                     $DB->get_record('user', ['id' => $this->author]), null, $picturefields);
+            $user = username_load_fields_from_object($user, $DB->get_record('user', ['id' => $this->author]),
+                                            null, $picturefields);
             $user->id = $this->author;
             $this->authorpicture = $OUTPUT->user_picture($user, ['courseid' => $this->courseid, 'link' => false]);
         }

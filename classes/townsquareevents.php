@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class to get relevant events.
+ * Class to get relevant events from courses the user is enrolled to..
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -53,7 +53,8 @@ class townsquareevents {
     public $courses;
 
     /**
-     * Constructor of the townsquareevents class
+     * Constructor of the townsquareevents class.
+     * Events will be searched in the timespan of 6 months in the past and 6 months in the future.
      */
     public function __construct() {
         $this->timenow = time();
@@ -63,7 +64,7 @@ class townsquareevents {
     }
 
     /**
-     * Retrieves calendar and post events, merges and sorts them
+     * Retrieves calendar and post events, merges and sorts them.
      * @return array
      */
     public function townsquare_get_all_events_sorted(): array {

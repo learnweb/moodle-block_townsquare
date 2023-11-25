@@ -119,7 +119,6 @@ class contentcontroller_test extends \advanced_testcase {
         // Declare generators.
         $datagenerator = $this->getDataGenerator();
         $forumgenerator = $datagenerator->get_plugin_generator('mod_forum');
-        $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
 
         // Create a course and a user.
         $this->testdata->course = $datagenerator->create_course(['enablecompletion' => 1]);
@@ -132,6 +131,7 @@ class contentcontroller_test extends \advanced_testcase {
         $this->testdata->fdiscussion = (object)$forumgenerator->create_discussion($record);
 
         if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+            $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
             $this->testdata->moodleoverflow = $datagenerator->create_module('moodleoverflow',
                                                                              ['course' => $this->testdata->course->id]);
             $this->testdata->mdiscussion = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow,

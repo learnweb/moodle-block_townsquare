@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Class to show information to the user
+ * Class to show content to the user
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -27,7 +27,7 @@ namespace block_townsquare\letter;
 use moodle_url;
 
 /**
- * Class that represents an activity completion.
+ * Class that represents an activity completion reminder.
  *
  * Subclass from letter.
  * @package     block_townsquare
@@ -36,26 +36,31 @@ use moodle_url;
  */
 class activitycompletion_letter extends letter {
 
+    // Attributes.
+
     /** @var moodle_url The url to the activity */
     private $linktoactivity;
 
     /** @var bool variable for the mustache template */
     public $isactivitycompletion = true;
 
+    // Constructor.
+
     /**
      * Constructor for the activity completion letter
      *
-     * @param int $contentid
+     * @param int $contentid        internal ID in the townsquare block
      * @param object $calendarevent a calendar event with information, for more see classes/townsquareevents.php
      */
     public function __construct($contentid, $calendarevent) {
-        global $DB;
         parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename,
-                            $calendarevent->name, $calendarevent->timestart);
+                                        $calendarevent->name, $calendarevent->timestart);
         $this->lettertype = 'activitycompletion';
-        $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
-        $this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
+        $this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php',
+                                                ['id' => $calendarevent->coursemoduleid]);
     }
+
+    // Functions.
 
     /**
      * Export function for the mustache template.
@@ -87,14 +92,6 @@ class activitycompletion_letter extends letter {
      */
     public function get_lettertype():string {
         return $this->lettertype;
-    }
-
-    /**
-     * Getter for the author id.
-     * @return int
-     */
-    public function get_author():int {
-        return $this->author;
     }
 
     /**

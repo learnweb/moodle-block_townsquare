@@ -24,13 +24,11 @@
 namespace block_townsquare;
 
 use moodle_exception;
-use stdClass;
 
 /**
  * Letter Controller Class.
  *
- * This Class controls the logic of townsquare. It retrieves all important events,
- * builds the letters and calls the renderer functions to draw the letters.
+ * This Class controls the logic of townsquare. It retrieves all important events and builds the letters.
  *
  * @package   block_townsquare
  * @copyright 2023 Tamaro Walter
@@ -71,7 +69,7 @@ class contentcontroller {
         $time = time();
         // Build a letter for each event.
         foreach ($this->events as $event) {
-            // Push a "today" letter on the current date between the other events.
+            // Display a orientation marker on the current date between the other events.
             if (!$orientationmarkerset && (
                ($event->eventtype != 'post' && $event->timestart <= $time) ||
                ($event->eventtype == 'post' && $event->postcreated <= $time))) {

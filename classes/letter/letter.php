@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Class to show information to the user
+ * Class to show content to the user
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -27,18 +27,15 @@ namespace block_townsquare\letter;
 use moodle_url;
 
 /**
- * Abstract Class to show the latest activities and other new things in moodle
- *
- * A Letter represents one notification, the notification can be:
- * - an activity that is due
- * - a post from a forum that is new
- * - ...
+ * Class that represents an unspecific type of content.
+ * This class is used for the basic letter type and is the top-class for more specific letters..
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class letter {
+
     // Attributes.
 
     /** @var int an ID to identify every content in townsquare */
@@ -65,8 +62,6 @@ class letter {
     /** @var bool variable for the mustache template */
     public $isbasic = true;
 
-    // Url attributes.
-
     /** @var moodle_url Link to the course */
     protected $linktocourse;
 
@@ -75,11 +70,11 @@ class letter {
     /**
      * Constructor for a letter
      *
-     * @param int $contentid
-     * @param int $courseid
-     * @param string $modulename
-     * @param mixed $content
-     * @param int $created
+     * @param int $contentid        internal ID in the townsquare block.
+     * @param int $courseid         Course ID from where the content comes from.
+     * @param string $modulename    Name of the module/activity.
+     * @param mixed $content        The content that will be showed in the letter.
+     * @param int $created          Timestamp of creation.
      */
     public function __construct($contentid, $courseid, $modulename, $content, $created) {
         $this->contentid = $contentid;
@@ -91,6 +86,8 @@ class letter {
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
     }
+
+    // Functions.
 
     /**
      * Export function for the mustache template.
@@ -124,11 +121,19 @@ class letter {
     }
 
     /**
-     * Getter for the course.
+     * Getter for the course id.
      * @return int
      */
-    public function get_course() {
-        return $this->course;
+    public function get_courseid() {
+        return $this->courseid;
+    }
+
+    /**
+     * Getter for the course name.
+     * @return string
+     */
+    public function get_coursename() {
+        return $this->coursename;
     }
 
     /**
