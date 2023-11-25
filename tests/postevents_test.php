@@ -25,7 +25,6 @@
 namespace block_townsquare;
 
 use stdClass;
-use testing_data_generator;
 
 /**
  * PHPUnit tests for testing the process of collecting post events.

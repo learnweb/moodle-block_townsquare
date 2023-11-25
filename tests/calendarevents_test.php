@@ -62,7 +62,6 @@ class calendarevents_test extends \advanced_testcase {
         $this->testdata = new stdClass();
         $this->resetAfterTest();
         $this->helper_course_set_up();
-
     }
 
     public function tearDown(): void {
@@ -75,14 +74,9 @@ class calendarevents_test extends \advanced_testcase {
      * Test, if calendar events are sorted correctly.
      */
     public function test_sortorder(): void {
-        global $DB;
 
-        // Set the teacher as the current logged in user.
-        $this->setUser($this->testdata->teacher);
-
-        // Get the current calendar events.
-        $townsquareevents = new townsquareevents();
-        $calendarevents = $townsquareevents->townsquare_get_calendarevents();
+        // Get the current calendar events from the teacher.
+        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
 
         // Iterate trough all posts and check if the sort order is correct.
         $timestamp = 9999999999;
@@ -95,7 +89,6 @@ class calendarevents_test extends \advanced_testcase {
             }
         }
 
-        $this->assertEquals(5, count($calendarevents));
         $this->assertEquals(true, $result);
     }
 

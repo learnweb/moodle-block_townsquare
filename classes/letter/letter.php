@@ -28,6 +28,7 @@ use moodle_url;
 
 /**
  * Class that represents an unspecific type of content.
+ *
  * This class is used for the basic letter type and is the top-class for more specific letters..
  *
  * @package     block_townsquare

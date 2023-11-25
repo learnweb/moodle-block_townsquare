@@ -23,8 +23,6 @@
  */
 namespace block_townsquare;
 
-use moodle_exception;
-
 /**
  * Letter Controller Class.
  *
@@ -59,7 +57,6 @@ class contentcontroller {
     /**
      * Builds the content from events.
      * @return array
-     * @throws moodle_exception
      */
     public function build_content():array {
         $this->events = $this->townsquareevents->townsquare_get_all_events_sorted();
@@ -100,5 +97,13 @@ class contentcontroller {
      */
     public function get_content():array {
         return $this->content;
+    }
+
+    /**
+     * Getter for the events
+     * @return array
+     */
+    public function get_events():array {
+        return $this->events;
     }
 }

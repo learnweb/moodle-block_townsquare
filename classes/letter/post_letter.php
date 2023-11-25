@@ -29,6 +29,7 @@ use moodle_url;
 
 /**
  * Class that represents a post from the forum or moodleoverflow module.
+ *
  * Note: The forum module belongs to the core plugins of Moodle.
  *       Townsquare also supports the moodleoverflow plugin, if it is installed.
  * Subclass from letter.

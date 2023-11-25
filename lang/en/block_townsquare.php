@@ -31,7 +31,7 @@ $string['pluginname'] = 'Town Square';
 $string['pluginname:addinstance'] = 'Add a new Town Square block';
 $string['pluginname:myaddinstance'] = 'Add a new Town Square block to the My Moodle page';
 
-// Mustache strings.
+// Mustache templates strings.
 $string['lettercourse'] = 'Course: {$a->course}';
 $string['completionletterorigin'] = 'A completion is required by {$a->modulename}:';
 $string['postletternotification'] = 'New {$a->modulename} post!';
@@ -42,10 +42,3 @@ $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare!
 
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
-
-// Letter Controller strings.
-$string['eventsempty'] = 'Events need to be retrieved before working with them';
-
-// Test strings.
-$string['seitenpanel'] = 'In development...';
-$string['hauptseite'] = 'Ich bin die hauptseite';

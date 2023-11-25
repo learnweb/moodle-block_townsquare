@@ -28,11 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 use context_module;
 use dml_exception;
 use mod_moodleoverflow\anonymous;
+
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 
 /**
- * Class to get relevant events.
+ * Class to get events and posts that will be shown in the townsquare block..
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -172,7 +173,7 @@ class townsquareevents {
             $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', $this->courses, $this->timestart);
         }
 
-        // If no module is installed, return false.
+        // If no module is installed, return an empty array..
         if (!$forumposts && !$moodleoverflowposts) {
             return [];
         }

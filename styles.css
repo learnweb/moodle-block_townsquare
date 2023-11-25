@@ -27,11 +27,6 @@
     padding-bottom: 0.6rem;
 }
 
-.orientationmarker_body.card-body {
-    padding-top: 0.6rem;
-    /*padding-bottom: 0.6rem;*/
-}
-
 .townsquareletter_top {
     display: flex;
 }
@@ -86,5 +81,9 @@
 .orientationmarker.card {
     border-color: #adb5bd;
     background-color: #adb5bd;
+}
+
+.orientationmarker_body.card-body {
+    padding-top: 0.6rem;
 }
 /*# sourceMappingURL=styles.css.map */
