@@ -102,6 +102,7 @@ class contentcontroller_test extends \advanced_testcase {
             next($events);
         }
 
+        $this->assertEquals(6, count($content));
         $this->assertEquals(true, $result);
     }
 

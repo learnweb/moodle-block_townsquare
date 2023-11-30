@@ -67,7 +67,7 @@ class contentcontroller {
         // Build a letter for each event.
         foreach ($this->events as $event) {
             // Display a orientation marker on the current date between the other events.
-            if (!$orientationmarkerset && isset($events->eventtype) && (
+            if (!$orientationmarkerset && isset($event->eventtype) && (
                ($event->eventtype != 'post' && $event->timestart <= $time) ||
                ($event->eventtype == 'post' && $event->postcreated <= $time))) {
 
@@ -76,9 +76,9 @@ class contentcontroller {
                 $this->content[$index] = $tempcontent->export_data();
                 $index++;
             }
-            if ($event->eventtype == 'post') {
+            if (isset($event->eventtype) && $event->eventtype == 'post') {
                 $templetter = new letter\post_letter($index, $event);
-            } else if ($event->eventtype == 'expectcompletionon') {
+            } else if (isset($event->eventtype) && $event->eventtype == 'expectcompletionon') {
                 $templetter = new letter\activitycompletion_letter($index, $event);
             } else {
                 $templetter = new letter\letter($index, $event->courseid, $event->modulename, $event->name, $event->timestart);
