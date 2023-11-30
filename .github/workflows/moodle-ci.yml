@@ -116,13 +116,6 @@ jobs:
         php: ['8.0', '8.1']
         moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'MOODLE_403_STABLE']
         database: ['mariadb', 'pgsql']
-        include:
-          - php: '8.0'
-            moodle-branch: 'MOODLE_400_STABLE'
-            database: 'mariadb'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_400_STABLE'
-            database: 'pgsql'
 
     steps:
       - name: Start MariaDB
