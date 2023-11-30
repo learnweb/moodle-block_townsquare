@@ -72,7 +72,9 @@ class contentcontroller_test extends \advanced_testcase {
         $controller = new contentcontroller();
         $content = $controller->build_content();
         $events = $controller->events;
-
+        var_dump($events);
+        var_dump("jetzt kommt der content");
+        var_dump($content);
         // Check the lettertype for each letter.
         $result = true;
         $length = count($content); // The content is one object larger than the townsquareevents (because of the orientationmarker).
