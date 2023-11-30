@@ -180,10 +180,12 @@ class townsquareevents {
 
         // Return directly the posts if no other module exists.
         if (!$moodleoverflowposts) {
+            $moodleoverflowposts = $this->townsquare_add_postattributes($moodleoverflowposts);
             return $forumposts;
         }
 
         if (!$forumposts) {
+            $forumposts = $this->townsquare_add_postattributes($forumposts);
             return $moodleoverflowposts;
         }
 
@@ -210,22 +212,8 @@ class townsquareevents {
             }
         }
 
-        // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts.
-        foreach ($posts as $post) {
-            $post->eventtype = 'post';
-            if ($post->modulename == 'moodleoverflow') {
-                $moodleoverflow = $DB->get_record('moodleoverflow', ['id' => $post->moodleoverflowid]);
-                $discussion = $DB->get_record('moodleoverflow_discussions', ['id' => $post->postdiscussion]);
-                $post->anonymous = anonymous::is_post_anonymous($discussion, $moodleoverflow, $post->postuserid);
-                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->moodleoverflowid,
-                                                                       $post->courseid)->id;
-            } else {
-                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->forumid, $post->courseid)->id;
-            }
-        }
-
-        // Return the posts.
-        return $posts;
+        // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts. Then return it.
+        return $this->townsquare_add_postattributes($posts);
     }
 
     // Helper functions.
@@ -327,5 +315,27 @@ class townsquareevents {
         }
 
         return $courses;
+    }
+
+    /**
+     * Adds the eventtype, coursemoduleid and anonymous setting (if needed) to the posts.
+     * @param array $posts
+     * @return void
+     */
+    private function townsquare_add_postattributes($posts) {
+        global $DB;
+        foreach ($posts as $post) {
+            $post->eventtype = 'post';
+            if ($post->modulename == 'moodleoverflow') {
+                $moodleoverflow = $DB->get_record('moodleoverflow', ['id' => $post->moodleoverflowid]);
+                $discussion = $DB->get_record('moodleoverflow_discussions', ['id' => $post->postdiscussion]);
+                $post->anonymous = anonymous::is_post_anonymous($discussion, $moodleoverflow, $post->postuserid);
+                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->moodleoverflowid,
+                    $post->courseid)->id;
+            } else {
+                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->forumid, $post->courseid)->id;
+            }
+        }
+        return $posts;
     }
 }

@@ -46,8 +46,13 @@ class contentcontroller_test extends \advanced_testcase {
      */
     private $testdata;
 
+    /** @var bool If the moodleoverflow module is available.
+     * This Plugin can support moodleoverflow, but it is not necessary to have it installed.
+     */
+    private bool $moodleoverflowavailable;
 
     // Construct functions.
+
     public function setUp(): void {
         $this->testdata = new \stdClass();
         $this->resetAfterTest();
@@ -72,9 +77,7 @@ class contentcontroller_test extends \advanced_testcase {
         $controller = new contentcontroller();
         $content = $controller->build_content();
         $events = $controller->events;
-        var_dump($events);
-        var_dump("jetzt kommt der content");
-        var_dump($content);
+
         // Check the lettertype for each letter.
         $result = true;
         $length = count($content); // The content is one object larger than the townsquareevents (because of the orientationmarker).
@@ -104,7 +107,11 @@ class contentcontroller_test extends \advanced_testcase {
             next($events);
         }
 
-        $this->assertEquals(6, count($content));
+        if ($this->moodleoverflowavailable) {
+            $this->assertEquals(6, count($content));
+        } else {
+            $this->assertEquals(5, count($content));
+        }
         $this->assertEquals(true, $result);
     }
 
@@ -131,11 +138,14 @@ class contentcontroller_test extends \advanced_testcase {
         $this->testdata->fdiscussion = (object)$forumgenerator->create_discussion($record);
 
         if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+            $this->moodleoverflowavailable = true;
             $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
             $this->testdata->moodleoverflow = $datagenerator->create_module('moodleoverflow',
                                                                              ['course' => $this->testdata->course->id]);
             $this->testdata->mdiscussion = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow,
                                                                                    $this->testdata->teacher);
+        } else {
+            $this->moodleoverflowavailable = false;
         }
 
         // Create an assign module with activity completion.
