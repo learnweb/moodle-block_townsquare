@@ -59,8 +59,6 @@ class activitycompletion_letter extends letter {
 
         $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
         $this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
-        //$this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php',
-          //  ['id' => $calendarevent->coursemoduleid]);
     }
 
     // Functions.
