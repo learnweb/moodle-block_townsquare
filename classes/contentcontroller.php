@@ -67,7 +67,7 @@ class contentcontroller {
         // Build a letter for each event.
         foreach ($this->events as $event) {
             // Display a orientation marker on the current date between the other events.
-            if (!$orientationmarkerset && (
+            if (!$orientationmarkerset && isset($events->eventtype) && (
                ($event->eventtype != 'post' && $event->timestart <= $time) ||
                ($event->eventtype == 'post' && $event->postcreated <= $time))) {
 
