@@ -180,13 +180,11 @@ class townsquareevents {
 
         // Return directly the posts if no other module exists.
         if (!$moodleoverflowposts) {
-            $moodleoverflowposts = $this->townsquare_add_postattributes($moodleoverflowposts);
-            return $forumposts;
+            return $this->townsquare_add_postattributes($forumposts);
         }
 
         if (!$forumposts) {
-            $forumposts = $this->townsquare_add_postattributes($forumposts);
-            return $moodleoverflowposts;
+            return $this->townsquare_add_postattributes($moodleoverflowposts);
         }
 
         // Merge the posts in a sorted order.
