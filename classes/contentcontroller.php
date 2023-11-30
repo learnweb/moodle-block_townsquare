@@ -64,6 +64,7 @@ class contentcontroller {
         $orientationmarkerset = false;
         $index = 0;
         $time = time();
+        var_dump($this->events);
         // Build a letter for each event.
         foreach ($this->events as $event) {
             // Display a orientation marker on the current date between the other events.
