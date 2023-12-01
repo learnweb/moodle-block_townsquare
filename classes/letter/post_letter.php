@@ -138,6 +138,9 @@ class post_letter extends letter {
         // Change the created timestamp to a date.
         $date = date('d.m.Y', $this->created);
 
+        // Prepare the message.
+        $message = format_text($this->message);
+
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -154,7 +157,7 @@ class post_letter extends letter {
             'authorname' => $this->authorname,
             'authorpicture' => $this->authorpicture,
             'postid' => $this->postid,
-            'message' => $this->message,
+            'message' => $message,
             'postparentid' => $this->postparentid,
             'created' => $date,
             'linktocourse' => $this->linktocourse->out(),
