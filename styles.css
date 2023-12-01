@@ -1,18 +1,15 @@
 /* Style for the main template*/
-.townsquare_root {
-    max-height: 750px;
-    overflow: scroll;
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
 .townsquare_sidepanel {
     background-color: #eee;
     border-radius: 0.5rem;
 }
 
 .townsquare_content {
+    max-height: 750px;
     border-radius: 0.5rem;
+    overflow:scroll;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* Style for all letter or content templates */
