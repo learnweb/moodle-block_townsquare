@@ -47,37 +47,37 @@
 /* basicletter Style*/
 
 .basicletter.card {
-    border-color: #0d6efd; /* bootstrap primary color */
+    border-color: var(--primary);
 }
 
 .basicletter_header.card-header {
-    background-color: #0d6efd;
+    background-color: var(--primary);
 }
 
 /* postletter Style */
 
 .postletter.card {
-    border-color: #f7634d; /*forum and moodleoverflow sign color*/
+    border-color: var(--activitycollaboration);
 }
 
 .postletter_header.card-header {
-    background-color: #f7634d;
+    background-color: var(--activitycollaboration);
 }
 
 /* actvitiycompletionletter Style*/
 
 .completionletter.card {
-    border-color: #dc3545;  /* bootstrap warning color */
+    border-color: var(--danger);
 }
 
 .completionletter_header.card-header {
-    background-color: #dc3545;
+    background-color: var(--danger);
 }
 
 /* Style for the orientation marker */
 .orientationmarker.card {
-    border-color: #adb5bd;
-    background-color: #adb5bd;
+    border-color: var(--secondary);
+    background-color: var(--secondary);
 }
 
 .orientationmarker_body.card-body {
