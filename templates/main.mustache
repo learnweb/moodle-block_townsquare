@@ -21,11 +21,51 @@
 }}
 <div id="townsquare_root" class="townsquare_root container-fluid">
     <div class="row townsquare_main">
-        {{!--<div class="col-md-3 townsquare_sidepanel">
-            in development
-        </div> --}}
+        <div class="col-md-3 townsquare_sidepanel">
+            <p></p>
+            <p></p>
+            <div>
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Course Filter</button>
+                <div class="dropdown-menu">
+                    <a>WinterSemester 23/24</a>
+                    <a class="dropdown-item" href="#">Betriebsysteme</a>
+                    <a class="dropdown-item" href="#">Softwarepraktikum</a>
+                </div>
+            </div>
 
-        <div class=" {{!--col-md-9 --}} townsquare_content">
+            <p></p>
+            <div>
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Time Filter</button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item active" href="#">All</a>
+                    <a class="dropdown-item" href="#">Today </a>
+                    <a class="dropdown-item" href="#">This Week </a>
+                    <a class="dropdown-item" href="#">This Month </a>
+                </div>
+            </div>
+
+            <p></p>
+
+            <div>
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Letter Filter</button>
+                <div class="dropdown-menu">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Activity completion
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                        <label class="form-check-label" for="flexCheckDefault">
+                            Post letters
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9 townsquare_content">
             <div class="townsquare_letters">
                 {{#content}}
                         {{#isorientationmarker}}
