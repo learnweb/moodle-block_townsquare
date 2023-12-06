@@ -47,12 +47,11 @@ class block_townsquare extends block_base {
         }
 
         $controller = new contentcontroller();
-        $townsquarecontent = $controller->build_content();
         $mustachedata = new stdClass();
-        $mustachedata->content = $townsquarecontent;
+        $mustachedata->content = $controller->get_content();
 
-        $this->content = new stdClass;
-        $this->content->text = $OUTPUT->render_from_template('block_townsquare/main', $mustachedata);
+        $this->content = new stdClass();
+        $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         return $this->content;
     }
@@ -66,7 +65,7 @@ class block_townsquare extends block_base {
         return [
             'admin' => false,
             'site-index' => false,
-            'course-view' => true,
+            'course-view' => false,
             'mod' => false,
             'my' => true,
         ];
