@@ -137,7 +137,7 @@ class contentcontroller_test extends \advanced_testcase {
         $record = (array)$this->testdata->forum + ['forum' => $this->testdata->forum->id, 'userid' => $this->testdata->teacher->id];
         $this->testdata->fdiscussion = (object)$forumgenerator->create_discussion($record);
 
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
             $this->moodleoverflowavailable = true;
             $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
             $this->testdata->moodleoverflow = $datagenerator->create_module('moodleoverflow',

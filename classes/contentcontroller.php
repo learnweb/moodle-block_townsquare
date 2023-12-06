@@ -26,7 +26,7 @@ namespace block_townsquare;
 /**
  * Letter Controller Class.
  *
- * This Class controls the logic of townsquare. It retrieves all important events and builds the letters.
+ * This Class controls access to the townsquareevents class. It retrieves all important events and builds the letters.
  *
  * @package   block_townsquare
  * @copyright 2023 Tamaro Walter
@@ -35,21 +35,20 @@ namespace block_townsquare;
 class contentcontroller {
 
     /** @var object Class to retrieve events */
-    public $townsquareevents;
+    public object $townsquareevents;
 
     /** @var array events that are relevant for the townsquare */
-    public $events;
+    public array $events;
 
     /** @var array letters and other content that will be shown to the user */
-    public $content;
+    public array $content;
 
     /**
      * Constructor for the controller.
      */
     public function __construct() {
         $this->townsquareevents = new townsquareevents();
-        $this->events = [];
-        $this->content = [];
+        $this->content = $this->build_content();
     }
 
     // Core functions.
@@ -59,7 +58,7 @@ class contentcontroller {
      * @return array
      */
     public function build_content():array {
-        $this->events = $this->townsquareevents->townsquare_get_all_events_sorted();
+        $this->events = $this->townsquareevents->get_all_events_sorted();
 
         $orientationmarkerset = false;
         $index = 0;

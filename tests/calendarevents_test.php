@@ -298,7 +298,7 @@ class calendarevents_test extends \advanced_testcase {
     private function get_calendarevents_from_user($user):array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
-        return $townsquareevents->townsquare_get_calendarevents();
+        return $townsquareevents->get_calendarevents();
     }
 
 

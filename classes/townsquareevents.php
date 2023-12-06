@@ -42,16 +42,16 @@ require_once($CFG->dirroot . '/calendar/lib.php');
 class townsquareevents {
 
     /** @var int timestamp of the current time */
-    public $timenow;
+    public int $timenow;
 
     /** @var int timestamp from where the events should be searched */
-    public $timestart;
+    public int $timestart;
 
     /** @var int timestamp until where the events should be searched */
-    public $timeend;
+    public int $timeend;
 
     /** @var array ids of the courses where the events should be searched */
-    public $courses;
+    public array $courses;
 
     /**
      * Constructor of the townsquareevents class.
@@ -61,16 +61,16 @@ class townsquareevents {
         $this->timenow = time();
         $this->timestart = $this->timenow - 15768000;
         $this->timeend = $this->timenow + 15768000;
-        $this->courses = $this->townsquare_get_courses();
+        $this->courses = $this->get_courses();
     }
 
     /**
      * Retrieves calendar and post events, merges and sorts them.
      * @return array
      */
-    public function townsquare_get_all_events_sorted(): array {
-        $calendarevents = $this->townsquare_get_calendarevents();
-        $postevents = $this->townsquare_get_postevents();
+    public function get_all_events_sorted(): array {
+        $calendarevents = $this->get_calendarevents();
+        $postevents = $this->get_postevents();
 
         // Merge the events in a sorted order.
         $events = [];
@@ -102,11 +102,11 @@ class townsquareevents {
      * The events are sorted in descending order by time created (newest event first)
      * @return array
      */
-    public function townsquare_get_calendarevents(): array {
+    public function get_calendarevents(): array {
         global $DB, $USER;
 
         // Get all events from the last six months and the next six months.
-        $calendarevents = $this->townsquare_search_events($this->timestart, $this->timeend, $this->courses);
+        $calendarevents = $this->get_events_from_db($this->timestart, $this->timeend, $this->courses);
 
         // Filter the events and add the coursemoduleid.
         foreach ($calendarevents as $calendarevent) {
@@ -158,33 +158,33 @@ class townsquareevents {
      * The events are sorted in descending order by time created (newest event first)
      * @return array;
      */
-    public function townsquare_get_postevents(): array {
+    public function get_postevents(): array {
         global $DB;
 
         $forumposts = false;
         $moodleoverflowposts = false;
 
-        // Check which modules are installed and get their data.
-        if ($DB->get_record('modules', ['name' => 'forum'])) {
-            $forumposts = $this->townsquare_search_posts('forum', $this->courses, $this->timestart);
+        // Check which modules are installed and activated and get their data.
+        if ($DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
+            $forumposts = $this->get_posts_from_db('forum', $this->courses, $this->timestart);
         }
 
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
-            $moodleoverflowposts = $this->townsquare_search_posts('moodleoverflow', $this->courses, $this->timestart);
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
+            $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
         }
 
-        // If no module is installed, return an empty array..
+        // If no module is available, return an empty array..
         if (!$forumposts && !$moodleoverflowposts) {
             return [];
         }
 
         // Return directly the posts if no other module exists.
         if (!$moodleoverflowposts) {
-            return $this->townsquare_add_postattributes($forumposts);
+            return $this->add_postattributes($forumposts);
         }
 
         if (!$forumposts) {
-            return $this->townsquare_add_postattributes($moodleoverflowposts);
+            return $this->add_postattributes($moodleoverflowposts);
         }
 
         // Merge the posts in a sorted order.
@@ -211,20 +211,20 @@ class townsquareevents {
         }
 
         // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts. Then return it.
-        return $this->townsquare_add_postattributes($posts);
+        return $this->add_postattributes($posts);
     }
 
     // Helper functions.
 
     /**
      * Searches for posts in the forum or moodleoverflow module.
-     * This is a helper function for townsquare_get_postevents().
+     * This is a helper function for get_postevents().
      * @param string $modulename  The name of the module, is 'forum' or 'moodleoverflow'.
      * @param array  $courses     The ids of the courses where the posts should be searched.
      * @param int    $timestart   The timestamp from where the posts should be searched.
      * @return array
      */
-    private function townsquare_search_posts($modulename, $courses, $timestart): array {
+    private function get_posts_from_db($modulename, $courses, $timestart): array {
         global $DB;
         // Prepare params for sql statement.
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
@@ -233,7 +233,7 @@ class townsquareevents {
         $begin = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num, ";
 
         // Set the select part of the sql that is always the same.
-        $middle = "module.name AS localname,
+        $middle = "module.name AS instancename,
                    discuss.course AS courseid,
                    posts.id AS postid,
                    posts.discussion AS postdiscussion,
@@ -270,14 +270,14 @@ class townsquareevents {
 
     /**
      * Searches for events in the events table, that are relevant to the timeline.
-     * This is a helper function for townsquare_get_calendarevents().
+     * This is a helper function for get_calendarevents().
      * @param int $timestart The time from where the events should be searched. Not equal to timestart in the database events table.
      * @param int $timeend   The time until where the events should be searched.
      * @param array $courses The ids of the courses where the events should be searched.
      * @return array
      * @throws dml_exception
      */
-    private function townsquare_search_events($timestart, $timeend, $courses): array {
+    private function get_events_from_db($timestart, $timeend, $courses): array {
         global $DB;
 
         // Prepare params for sql statement.
@@ -303,10 +303,10 @@ class townsquareevents {
      * Gets the id of all courses where the current user is enrolled
      * @return array
      */
-    private function townsquare_get_courses(): array {
+    private function get_courses(): array {
         global $USER;
 
-        $enrolledcourses = enrol_get_all_users_courses($USER->id);
+        $enrolledcourses = enrol_get_all_users_courses($USER->id, true);
         $courses = [];
         foreach ($enrolledcourses as $enrolledcourse) {
             $courses[] = $enrolledcourse->id;
@@ -318,9 +318,9 @@ class townsquareevents {
     /**
      * Adds the eventtype, coursemoduleid and anonymous setting (if needed) to the posts.
      * @param array $posts
-     * @return void
+     * @return array
      */
-    private function townsquare_add_postattributes($posts) {
+    private function add_postattributes($posts): array {
         global $DB;
         foreach ($posts as $post) {
             $post->eventtype = 'post';

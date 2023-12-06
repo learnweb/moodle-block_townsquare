@@ -33,7 +33,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::townsquare_get_postevents()
+ * @covers \block_townsquare\townsquareevents::get_postevents()
  */
 class postevents_test extends \advanced_testcase {
 
@@ -178,7 +178,7 @@ class postevents_test extends \advanced_testcase {
         $posts = $this->get_postevents_from_user($this->testdata->teacher);;
 
         // Check if the teacher sees only posts of his courses.
-        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->teacher->id));
+        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->teacher->id, true));
 
         // Two Checks: Is the number of posts correct (no post is missing) and is every post in the course of the teacher.
         if ($this->moodleoverflowavailable) {
@@ -191,7 +191,7 @@ class postevents_test extends \advanced_testcase {
         // Test case 2: Post for the first student.
         $posts = $this->get_postevents_from_user($this->testdata->student1);
 
-        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student1->id));
+        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student1->id, true));
 
         if ($this->moodleoverflowavailable) {
             $this->assertEquals(3, count($posts));
@@ -203,7 +203,7 @@ class postevents_test extends \advanced_testcase {
         // Test case 3: Post for the second student.
         $posts = $this->get_postevents_from_user($this->testdata->student2);
 
-        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student2->id));
+        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student2->id, true));
 
         if ($this->moodleoverflowavailable) {
             $this->assertEquals(3, count($posts));
@@ -294,7 +294,7 @@ class postevents_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($this->testdata->student2->id, $this->testdata->course2->id, 'student');
 
         // Create a moodleoverflow with 2 post in each course. (But only if it is available.
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
             $this->moodleoverflowavailable = true;
             $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
 
@@ -355,7 +355,7 @@ class postevents_test extends \advanced_testcase {
     private function get_postevents_from_user($user):array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
-        return $townsquareevents->townsquare_get_postevents();
+        return $townsquareevents->get_postevents();
     }
 
     /**

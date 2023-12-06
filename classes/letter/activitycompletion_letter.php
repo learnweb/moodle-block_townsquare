@@ -39,10 +39,10 @@ class activitycompletion_letter extends letter {
     // Attributes.
 
     /** @var moodle_url The url to the activity */
-    private $linktoactivity;
+    private moodle_url $linktoactivity;
 
     /** @var bool variable for the mustache template */
-    public $isactivitycompletion = true;
+    public bool $isactivitycompletion = true;
 
     // Constructor.
 
@@ -86,21 +86,4 @@ class activitycompletion_letter extends letter {
     }
 
     // Getter.
-
-    /**
-     * Overrides function from superclass.
-     * @return string
-     */
-    public function get_lettertype():string {
-        return $this->lettertype;
-    }
-
-    /**
-     * Getter for the link.
-     * @return moodle_url
-     */
-    public function get_linktoactivity():moodle_url {
-        return $this->linktoactivity;
-    }
-
 }
