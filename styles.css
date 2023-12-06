@@ -32,8 +32,13 @@
     flex: 1;
 }
 
-.townsquareletter_courselink {
+.townsquareletter_courselink:hover {
     color: #fff;
+    text-decoration: underline;
+}
+.townsquareletter_courselink{
+    color: #fff;
+    text-decoration: none;
 }
 
 .townsquareletter_course,
