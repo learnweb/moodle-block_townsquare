@@ -117,10 +117,10 @@ class townsquareevents {
             if ($calendarevent->modulename == "assign") {
 
                 // If the assignment due date is over than a week, it disappears.
-                if ($calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800)) {
-                    unset($calendarevents[$calendarevent->id]);
-                    continue;
-                }
+                //if ($calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800)) {
+                //    unset($calendarevents[$calendarevent->id]);
+                //    continue;
+                //}
 
                 // Only people that can rate should see a gradingdue event.
                 if ($calendarevent->eventtype == "gradingdue" &&
@@ -173,7 +173,7 @@ class townsquareevents {
             $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
         }
 
-        // If no module is available, return an empty array..
+        // If no module is available, return an empty array.
         if (!$forumposts && !$moodleoverflowposts) {
             return [];
         }
@@ -292,8 +292,51 @@ class townsquareevents {
                       AND e.timestart <= :timeend
                       AND e.courseid $insqlcourses
                       AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
-                      AND ( e.instance != 0 AND e.visible = 1)
-                ORDER BY e.timestart DESC;";
+                      AND ( e.instance != 0 AND e.visible = 1)";
+
+        // Whitelist events that townsquare can handle. Other event types must be added manually.
+
+        // list core modules that have additional calendar events.
+        $coremodules = ['assign', 'chat', 'choice', 'data', 'feedback', 'forum', 'lesson', 'quiz', 'scorm', 'workshop'];
+
+        // Check which of these modules are active.
+        foreach($coremodules as $coremodule) {
+            if (!$DB->get_record('modules', ['name' => $coremodule, 'visible' => 1])) {
+                unset($coremodules[array_search($coremodule, $coremodules)]);
+            }
+        }
+
+        // Activity completions are always shown.
+        $completionsql = " (e.eventtype = 'expectcompletionon')";
+
+        // Event types 'open' and 'close' are shown, if the module is an active coremodule.
+        if (!empty($coremodules)) {
+            list($insqlmodules, $inparamsmodules) = $DB->get_in_or_equal($coremodules, SQL_PARAMS_NAMED);
+            $params += $inparamsmodules;
+            $openeventtypesql = "((e.eventtype = 'open' OR e.eventtype = 'close') AND (e.modulename $insqlmodules))";
+        }
+
+        // Assignment event type handling.
+        $params += ['timeweek' => $this->timenow - 604800];
+        // TODO: Check if the assignment is aklready submitted by the user.
+        $assigndue = "(e.modulename = 'assign' AND e.eventtype = 'due' AND e.timestart >= :timeweek)";
+        $assigngradingdue = "e.modulename = 'assign' AND e.eventtype = 'gradingdue";
+
+        // Chat event type handling.
+        $chatevent = " (e.modulename = 'chat' AND e.eventtype = 'chattime')";
+
+        // Workshop event type handling.
+        $workshopevent = " (e.modulename = 'workshop')";
+
+        // Event type handling of non-core modules.
+        // Ratingallocate event type handling.
+
+        // Put all different module sql handling together.
+        //$sql .= " AND (". $completionsql ." OR ". $openeventtypesql ." OR ". $assigndue ." OR ".
+        //                 $assigngradingdue ." OR ". $chatevent ." OR ". $workshopevent .")";
+
+        // Add the order of the sql query.
+        $sql .= " ORDER BY e.timestart DESC;";
 
         // Get all events.
         return $DB->get_records_sql($sql, $params);
