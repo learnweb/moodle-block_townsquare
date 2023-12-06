@@ -64,7 +64,7 @@ export function init() {
     );
 
     // Get the strings for the show more/show less button.
-    prefetchStrings('block_townsquare', ['showmore', 'showless',]);
+    prefetchStrings('moodle', ['showmore', 'showless',]);
 
     // Add event listeners for the show more Button.
     addEventListener();
@@ -117,10 +117,10 @@ const addEventListener = () => {
  */
 async function changeButtonString(index, toshowmore) {
     if (toshowmore == true) {
-        buttons[index].textContent = await getString('showmore', 'block_townsquare');
+        buttons[index].textContent = await getString('showmore', 'moodle');
         buttons[index].setAttribute('showmore', 'true');
     } else {
-        buttons[index].textContent = await getString('showless', 'block_townsquare');
+        buttons[index].textContent = await getString('showless', 'moodle');
         buttons[index].setAttribute('showmore', 'false');
     }
 }
