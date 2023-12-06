@@ -24,7 +24,8 @@
         <div class = "townsquareletter_top postletter_top">
             <div class = "townsquareletter_course postletter_course">
                 {{#str}} coursetitle, moodle, {
-                    "course": {{#quote}} <a href='{{linktocourse}}' style="color: #fff">{{coursename}}</a> {{/quote}} }
+                    "course": {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a>
+                              {{/quote}} }
                 {{/str}}
             </div>
             <div class = "townsquareletter_date postletter_date">
@@ -57,7 +58,7 @@
                 <span class ="postletter_message" id="content-nr-{{contentid}}" >
                     {{{message}}}
                 </span>
-                <span class="townsquare_showmore badge rounded-pill bg-light text-dark" id="content-nr-{{contentid}}"
+                <span class="townsquare_showmore badge rounded-pill bg-light" id="content-nr-{{contentid}}"
                       data-action="block_townsquare/showmore_button">
                     {{#str}} showmore, moodle {{/str}}
                 </span>
