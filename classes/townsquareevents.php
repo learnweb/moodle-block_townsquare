@@ -159,32 +159,23 @@ class townsquareevents {
      * @return array;
      */
     public function get_postevents(): array {
-        global $DB;
 
-        $forumposts = false;
-        $moodleoverflowposts = false;
-
-        // Check which modules are installed and activated and get their data.
-        if ($DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
-            $forumposts = $this->get_posts_from_db('forum', $this->courses, $this->timestart);
-        }
-
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
-            $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
-        }
+        // Get posts from the db that are available..
+        $forumposts = $this->get_posts_from_db('forum', $this->courses, $this->timestart);
+        $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
 
         // If no module is available, return an empty array.
-        if (!$forumposts && !$moodleoverflowposts) {
+        if (empty($forumposts) && empty($moodleoverflowposts)) {
             return [];
         }
 
         // Return directly the posts if no other module exists.
-        if (!$moodleoverflowposts) {
-            return $this->add_postattributes($forumposts);
+        if (empty($moodleoverflowposts)) {
+            return $forumposts;
         }
 
-        if (!$forumposts) {
-            return $this->add_postattributes($moodleoverflowposts);
+        if (empty($forumposts)) {
+            return $this->add_anonymousattribute($moodleoverflowposts);
         }
 
         // Merge the posts in a sorted order.
@@ -211,13 +202,14 @@ class townsquareevents {
         }
 
         // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts. Then return it.
-        return $this->add_postattributes($posts);
+        return $this->add_anonymousattribute($posts);
     }
 
     // Helper functions.
 
     /**
      * Searches for posts in the forum or moodleoverflow module.
+     * The sql query makes sure that the modules are installed and available..
      * This is a helper function for get_postevents().
      * @param string $modulename  The name of the module, is 'forum' or 'moodleoverflow'.
      * @param array  $courses     The ids of the courses where the posts should be searched.
@@ -233,7 +225,9 @@ class townsquareevents {
         $begin = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num, ";
 
         // Set the select part of the sql that is always the same.
-        $middle = "module.name AS instancename,
+        $middle = "'post' AS eventtype,
+                   cm.id AS coursemoduleid,
+                   module.name AS instancename,
                    discuss.course AS courseid,
                    posts.id AS postid,
                    posts.discussion AS postdiscussion,
@@ -248,17 +242,25 @@ class townsquareevents {
             $begin .= "'forum' AS modulename, module.id AS forumid,";
             $middle .= "FROM {forum_posts} posts
                         JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
-                        JOIN {forum} module ON module.id = discuss.forum ";
+                        JOIN {forum} module ON module.id = discuss.forum 
+                        JOIN {modules} modules ON modules.name = 'forum' ";
         } else if ($modulename == 'moodleoverflow') {
             $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, ";
             $middle .= "FROM {moodleoverflow_posts} posts
                         JOIN {moodleoverflow_discussions} discuss ON discuss.id = posts.discussion
-                        JOIN {moodleoverflow} module ON module.id = discuss.moodleoverflow ";
+                        JOIN {moodleoverflow} module ON module.id = discuss.moodleoverflow
+                        JOIN {modules} modules ON modules.name = 'moodleoverflow' ";
         }
+
+        // Extension of the middle string.
+        $middle .= "JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
+                                                                           AND cm.instance = module.id) ";
 
         // Set the where clause of the string.
         $end = "WHERE discuss.course $insqlcourses
                 AND posts.created > :timestart
+                AND cm.visible = 1
+                AND modules.visible = 1
                 ORDER BY posts.created DESC;";
 
         // Concatenate all strings.
@@ -359,22 +361,17 @@ class townsquareevents {
     }
 
     /**
-     * Adds the eventtype, coursemoduleid and anonymous setting (if needed) to the posts.
+     * Adds the anonymous setting for moodleoverflow posts.
      * @param array $posts
      * @return array
      */
-    private function add_postattributes($posts): array {
+    private function add_anonymousattribute($posts): array {
         global $DB;
         foreach ($posts as $post) {
-            $post->eventtype = 'post';
             if ($post->modulename == 'moodleoverflow') {
                 $moodleoverflow = $DB->get_record('moodleoverflow', ['id' => $post->moodleoverflowid]);
                 $discussion = $DB->get_record('moodleoverflow_discussions', ['id' => $post->postdiscussion]);
                 $post->anonymous = anonymous::is_post_anonymous($discussion, $moodleoverflow, $post->postuserid);
-                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->moodleoverflowid,
-                    $post->courseid)->id;
-            } else {
-                $post->coursemoduleid = get_coursemodule_from_instance($post->modulename, $post->forumid, $post->courseid)->id;
             }
         }
         return $posts;
