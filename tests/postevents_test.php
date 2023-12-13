@@ -263,6 +263,47 @@ class postevents_test extends \advanced_testcase {
         $this->assertEquals(true, $secondstudentpost->anonymous);
     }
 
+    /**
+     * Test, if posts are not shown in townsquare when the forum/moodleoverflow is hidden.
+     * @return void
+     */
+    public function test_hidden(): void {
+        global $DB;
+        // Test case 1: Hide the first forum.
+        $cmid = get_coursemodule_from_instance('forum', $this->testdata->forum1->id)->id;
+        $DB->update_record('course_modules', ['id' => $cmid, 'visible' => 0]);
+
+        // Get the current post events from the teacher.
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
+
+        // Check if the first forum post is not in the post events.
+        $result = true;
+        foreach ($posts as $post) {
+            if ($post->modulename == 'forum' && $post->forumid == $this->testdata->forum1->id) {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
+
+        // Test case 2: Hide the first moodleoverflow.
+        if ($this->moodleoverflowavailable) {
+            $cmid = get_coursemodule_from_instance('moodleoverflow', $this->testdata->moodleoverflow1->id)->id;
+            $DB->update_record('course_modules', ['id' => $cmid, 'visible' => 0]);
+
+            // Get the current post events from the teacher.
+            $posts = $this->get_postevents_from_user($this->testdata->teacher);
+
+            // Check if the first moodleoverflow post is not in the post events.
+            $result = true;
+            foreach ($posts as $post) {
+                if ($post->modulename == 'moodleoverflow' && $post->moodleoverflowid == $this->testdata->moodleoverflow1->id) {
+                    $result = false;
+                }
+            }
+            $this->assertEquals(true, $result);
+        }
+    }
+
     // Helper functions.
 
     /**
