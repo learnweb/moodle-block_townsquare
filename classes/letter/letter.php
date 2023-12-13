@@ -45,6 +45,9 @@ class letter {
     /** @var string Every Letter must save its letter type */
     protected string $lettertype;
 
+    /** @var int course module id of the content module */
+    protected int $cmid;
+
     /** @var int The course from the letter */
     protected int $courseid;
 
@@ -66,6 +69,9 @@ class letter {
     /** @var moodle_url Link to the course */
     protected moodle_url $linktocourse;
 
+    /** @var moodle_url The url to the activity */
+    protected moodle_url $linktoactivity;
+
     // Constructor.
 
     /**
@@ -76,16 +82,19 @@ class letter {
      * @param string $modulename    Name of the module/activity.
      * @param mixed $content        The content that will be showed in the letter.
      * @param int $created          Timestamp of creation.
+     * @param int $cmid             Course module id of the content module.
      */
-    public function __construct($contentid, $courseid, $modulename, $content, $created) {
+    public function __construct($contentid, $courseid, $modulename, $content, $created, $cmid) {
         $this->contentid = $contentid;
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
+        $this->cmid = $cmid;
         $this->coursename = get_course($courseid)->fullname;
         $this->modulename = $modulename;
         $this->content = $content;
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
+        $this->linktoactivity = new moodle_url('/mod/' . $modulename . '/view.php', ['id' => $cmid]);
     }
 
     // Functions.
@@ -108,6 +117,7 @@ class letter {
             'content' => $this->content,
             'created' => $date,
             'linktocourse' => $this->linktocourse->out(),
+            'linktoactivity' => $this->linktoactivity->out(),
         ];
     }
 }

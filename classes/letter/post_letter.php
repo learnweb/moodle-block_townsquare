@@ -43,7 +43,6 @@ class post_letter extends letter {
     // Attributes.
 
     /** @var object information about the post origin. The object contains:
-     * - int cmid: the course module id
      * - int instanceid: The local ID of the module instance, is the forumid or moodleoverflowid
      * - string instancename: The name of the module instance
      * - int discussionid: The id of the discussion
@@ -67,7 +66,6 @@ class post_letter extends letter {
     private object $post;
 
     /** @var object additional urls that are used in the post letter. The object contains:
-     * -  moodle_url linktomoduleinstance: url to the module instance
      * -  moodle_url linktopost: url to the discussion
      * -  moodle_url linktoauthor: url to the user that wrote the post
      */
@@ -89,7 +87,7 @@ class post_letter extends letter {
     public function __construct($contentid, $postevent) {
         global $DB;
         parent::__construct($contentid, $postevent->courseid, $postevent->modulename,
-                            $postevent->postmessage, $postevent->postcreated);
+                            $postevent->postmessage, $postevent->postcreated, $postevent->coursemoduleid);
 
         $this->origin = new stdClass();
         $this->author = new stdClass();
@@ -106,7 +104,6 @@ class post_letter extends letter {
         } else {
             throw new moodle_exception('invalidmodulename', 'block_townsquare');
         }
-        $this->origin->cmid = get_coursemodule_from_instance($postevent->modulename, $this->origin->instanceid)->id;
         $this->origin->discussionid = $postevent->postdiscussion;
         $this->origin->instancename = $postevent->instancename;
         $this->author->id = $postevent->postuserid;
@@ -144,7 +141,7 @@ class post_letter extends letter {
             'message' => format_text($this->post->message),
             'created' => date('d.m.Y', $this->created),
             'linktocourse' => $this->linktocourse->out(),
-            'linktomoduleinstance' => $this->posturls->linktomoduleinstance->out(),
+            'linktoactivity' => $this->linktoactivity->out(),
             'linktopost' => $this->posturls->linktopost->out(),
             'linktoauthor' => $this->posturls->linktoauthor->out(),
         ];
@@ -158,13 +155,10 @@ class post_letter extends letter {
      */
     private function build_links() {
         $this->posturls->linktoauthor = new moodle_url('/user/view.php', ['id' => $this->author->id]);
-
         if ($this->modulename == 'forum') {
-            $this->posturls->linktomoduleinstance = new moodle_url('/mod/forum/view.php', ['id' => $this->origin->cmid]);
             $this->posturls->linktopost = new moodle_url('/mod/forum/discuss.php',
                                                         ['d' => $this->origin->discussionid], 'p' . $this->post->id);
         } else {
-            $this->posturls->linktomoduleinstance = new moodle_url('/mod/moodleoverflow/view.php', ['id' => $this->origin->cmid]);
             $this->posturls->linktopost = new moodle_url('/mod/moodleoverflow/discussion.php',
                                                         ['d' => $this->origin->discussionid], 'p' . $this->post->id);
 

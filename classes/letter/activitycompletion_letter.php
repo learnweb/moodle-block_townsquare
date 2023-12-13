@@ -38,9 +38,6 @@ class activitycompletion_letter extends letter {
 
     // Attributes.
 
-    /** @var moodle_url The url to the activity */
-    private moodle_url $linktoactivity;
-
     /** @var bool variable for the mustache template */
     public bool $isactivitycompletion = true;
 
@@ -54,11 +51,8 @@ class activitycompletion_letter extends letter {
      */
     public function __construct($contentid, $calendarevent) {
         parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename,
-                                        $calendarevent->name, $calendarevent->timestart);
+                                        $calendarevent->name, $calendarevent->timestart, $calendarevent->coursemoduleid);
         $this->lettertype = 'activitycompletion';
-
-        $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
-        $this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
     }
 
     // Functions.
@@ -85,5 +79,4 @@ class activitycompletion_letter extends letter {
         ];
     }
 
-    // Getter.
 }
