@@ -159,22 +159,31 @@ class townsquareevents {
      * @return array;
      */
     public function get_postevents(): array {
+        global $DB;
 
-        // Get posts from the db that are available..
-        $forumposts = $this->get_posts_from_db('forum', $this->courses, $this->timestart);
-        $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
+        $forumposts = false;
+        $moodleoverflowposts = false;
+
+        // Check which modules are installed and activated and get their data.
+        if ($DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
+            $forumposts = $this->get_posts_from_db('forum', $this->courses, $this->timestart);
+        }
+
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
+            $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
+        }
 
         // If no module is available, return an empty array.
-        if (empty($forumposts) && empty($moodleoverflowposts)) {
+        if (!$forumposts && !$moodleoverflowposts) {
             return [];
         }
 
         // Return directly the posts if no other module exists.
-        if (empty($moodleoverflowposts)) {
+        if (!$moodleoverflowposts) {
             return $forumposts;
         }
 
-        if (empty($forumposts)) {
+        if (!$forumposts) {
             return $this->add_anonymousattribute($moodleoverflowposts);
         }
 
@@ -369,6 +378,7 @@ class townsquareevents {
     private function add_anonymousattribute($posts): array {
         global $DB;
         foreach ($posts as $post) {
+            // TODO: Speicher schon anonyme moodleoverflow in eine datenstruktur um effizienter zu sein.
             if ($post->modulename == 'moodleoverflow') {
                 $moodleoverflow = $DB->get_record('moodleoverflow', ['id' => $post->moodleoverflowid]);
                 $discussion = $DB->get_record('moodleoverflow_discussions', ['id' => $post->postdiscussion]);
