@@ -18,6 +18,28 @@
     @template block_townsquare/activitycompletionletter
 
     This template renders a activity completion letter.
+
+    Variables required for this template (more variables are available for testing and future features):
+    * contentid - Unique identification for every shown plugin content
+    * isactivitycompletion - Variable for the blockcontent template to assure this template is used.
+    * coursename - Name of the course
+    * modulename - Name of the activity module
+    * content - Content of the letter
+    * created - Due date of activity completions
+    * linktocourse - Link to the course
+    * linktoactivity - Link to the module instance
+
+    Example (json):
+    {
+        "contentid": 28,
+        "isactivitycompletion": true,
+        "coursename": "Moodle Engineering",
+        "modulename":"survey",
+        "content": "How difficult was the exam? should be completed",
+        "created": "28.10.2023",
+        "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
+        "linktocourse": "http://localhost/moodle/course/view.php?id=3"
+    }
 }}
 <div class="townsquare_letter completionletter card mb-3" id="content-nr-{{contentid}}">
     <div class="townsquareletter_header completionletter_header card-header">
@@ -34,11 +56,11 @@
     </div>
     <div class="townsquareletter_body completionletter_body card-body">
         <div class="completionletter_origin">
-            <bold>
+            <b>
                 {{#str}} completionletterorigin, block_townsquare,
                     { "modulename": {{#quote}} <a href='{{linktoactivity}}'>{{modulename}}</a> {{/quote}} }
                 {{/str}}
-            </bold>
+            </b>
         </div>
         <div class="completionletter_content">
             {{content}}

@@ -18,6 +18,28 @@
     @template block_townsquare/basicletter
 
     This template renders a basic letter.
+
+    Variables required for this template (more variables are available for testing and future features):
+    * contentid - Unique identification for every shown plugin content
+    * isbasic - Variable for the blockcontent template to assure this template is used.
+    * coursename - Name of the course
+    * modulename - Name of the activity module
+    * content - Content of the letter
+    * created - Date of the notification
+    * linktocourse - Link to the course
+    * linktoactivity - Link to the module instance
+
+    Example (json):
+    {
+          "contentid": 0,
+          "isbasic": true,
+          "coursename": "Moodle Engineering",
+          "modulename": "lesson",
+          "content": "Lesson 1: Quantum Theory closes",
+          "created": "20.12.2023",
+          "linktocourse": "http://localhost/moodle/course/view.php?id=20",
+          "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
+    }
 }}
 <div class="townsquare_letter basicletter card mb-3" id="content-nr-{{contentid}}">
     <div class="townsquareletter_header basicletter_header card-header">
@@ -33,6 +55,13 @@
         </div>
     </div>
     <div class="townsquareletter_body basicletter_body card-body">
+        <div class="basicletter_origin">
+            <b>
+                {{#str}} basicletterorigin, block_townsquare,
+                    { "modulename": {{#quote}} <a href='{{linktoactivity}}'>{{modulename}}</a> {{/quote}} }
+                {{/str}}
+            </b>
+        </div>
         <div class="basicletter_content">
             {{content}}
         </div>
