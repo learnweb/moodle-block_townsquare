@@ -117,10 +117,10 @@ class townsquareevents {
             if ($calendarevent->modulename == "assign") {
 
                 // If the assignment due date is over than a week, it disappears.
-                //if ($calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800)) {
-                //    unset($calendarevents[$calendarevent->id]);
-                //    continue;
-                //}
+                if ($calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800)) {
+                    unset($calendarevents[$calendarevent->id]);
+                    continue;
+                }
 
                 // Only people that can rate should see a gradingdue event.
                 if ($calendarevent->eventtype == "gradingdue" &&
@@ -242,7 +242,7 @@ class townsquareevents {
             $begin .= "'forum' AS modulename, module.id AS forumid,";
             $middle .= "FROM {forum_posts} posts
                         JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
-                        JOIN {forum} module ON module.id = discuss.forum 
+                        JOIN {forum} module ON module.id = discuss.forum
                         JOIN {modules} modules ON modules.name = 'forum' ";
         } else if ($modulename == 'moodleoverflow') {
             $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, ";
@@ -296,9 +296,9 @@ class townsquareevents {
                       AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
                       AND ( e.instance != 0 AND e.visible = 1)";
 
-        // Whitelist events that townsquare can handle. Other event types must be added manually.
-
-        // list core modules that have additional calendar events.
+        // TODO: Whitelist events that townsquare can handle. Other event types must be added manually.
+        /*
+        // List core modules that have additional calendar events.
         $coremodules = ['assign', 'chat', 'choice', 'data', 'feedback', 'forum', 'lesson', 'quiz', 'scorm', 'workshop'];
 
         // Check which of these modules are active.
@@ -336,6 +336,7 @@ class townsquareevents {
         // Put all different module sql handling together.
         //$sql .= " AND (". $completionsql ." OR ". $openeventtypesql ." OR ". $assigndue ." OR ".
         //                 $assigngradingdue ." OR ". $chatevent ." OR ". $workshopevent .")";
+        */
 
         // Add the order of the sql query.
         $sql .= " ORDER BY e.timestart DESC;";
