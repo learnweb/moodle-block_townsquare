@@ -69,7 +69,7 @@
     </div>
     <div class="townsquareletter_body postletter_body card-body">
         <div class = "postletter_origin">
-            <bold>
+            <b>
                 {{#anonymous}}
                     {{#str}} postletterorigin, block_townsquare, {
                         "authorname": {{#quote}} <i> anonymous </i> {{/quote}},
@@ -85,9 +85,8 @@
                         "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
                     {{/str}}
                 {{/anonymous}}
-            </bold>
+            </b>
         </div>
-        <p></p>
         <div class = "postletter_content">
                 <span class ="postletter_message" id="content-nr-{{contentid}}" >
                     {{{message}}}

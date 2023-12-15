@@ -32,10 +32,10 @@ $string['pluginname:addinstance'] = 'Add the Town Square block';
 $string['pluginname:myaddinstance'] = 'Add the Town Square block to the dashboard';
 
 // Mustache templates strings.
-$string['completionletterorigin'] = 'A completion is required by {$a->modulename}:';
+$string['completionletterorigin'] = '{$a->modulename} should be completed until {$a->date}';
 $string['basicletterorigin'] = 'A notification from {$a->modulename}:';
 $string['postletternotification'] = 'New {$a->modulename} post!';
-$string['postletterorigin'] = '{$a->authorname} posted in {$a->instancename} -> {$a->discussionname}';
+$string['postletterorigin'] = '{$a->authorname} posted in {$a->instancename} -> {$a->discussionname}:';
 $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare! Today is the {$a->date}';
 
 // Letter strings.

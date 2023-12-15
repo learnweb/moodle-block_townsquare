@@ -71,7 +71,7 @@ class activitycompletion_letter extends letter {
             'isactivitycompletion' => $this->isactivitycompletion,
             'courseid' => $this->courseid,
             'coursename' => $this->coursename,
-            'modulename' => $this->modulename,
+            'instancename' => $this->instancename,
             'content' => $this->content,
             'created' => $date,
             'linktoactivity' => $this->linktoactivity->out(),
