@@ -27,7 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 
 use context_module;
 use dml_exception;
-use mod_moodleoverflow\anonymous;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
@@ -238,9 +237,10 @@ class townsquareevents {
                    cm.id AS coursemoduleid,
                    module.name AS instancename,
                    discuss.course AS courseid,
+                   discuss.userid AS discussionuserid,
                    posts.id AS postid,
                    posts.discussion AS postdiscussion,
-                   posts.parent AS postparent,
+                   posts.parent AS postparentid,
                    posts.userid AS postuserid,
                    posts.created AS postcreated,
                    discuss.name AS discussionsubject,
@@ -254,7 +254,7 @@ class townsquareevents {
                         JOIN {forum} module ON module.id = discuss.forum
                         JOIN {modules} modules ON modules.name = 'forum' ";
         } else if ($modulename == 'moodleoverflow') {
-            $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, ";
+            $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, module.anonymous AS anonymoussetting";
             $middle .= "FROM {moodleoverflow_posts} posts
                         JOIN {moodleoverflow_discussions} discuss ON discuss.id = posts.discussion
                         JOIN {moodleoverflow} module ON module.id = discuss.moodleoverflow
@@ -371,18 +371,43 @@ class townsquareevents {
     }
 
     /**
-     * Adds the anonymous setting for moodleoverflow posts.
+     * Adds a boolean for the anonymous status of moodleoverflow posts.
+     *
      * @param array $posts
      * @return array
      */
     private function add_anonymousattribute($posts): array {
-        global $DB;
+        // Save the anonymous setting of the moodleoverflows.
+        $totalanonymous = [];
+        $partialanonymous = [];
+        $notanonymous = [];
         foreach ($posts as $post) {
-            // TODO: Speicher schon anonyme moodleoverflow in eine datenstruktur um effizienter zu sein.
             if ($post->modulename == 'moodleoverflow') {
-                $moodleoverflow = $DB->get_record('moodleoverflow', ['id' => $post->moodleoverflowid]);
-                $discussion = $DB->get_record('moodleoverflow_discussions', ['id' => $post->postdiscussion]);
-                $post->anonymous = anonymous::is_post_anonymous($discussion, $moodleoverflow, $post->postuserid);
+                // Fill the corresponding array if the moodleoverflow is not known yet..
+                if (!array_key_exists($post->moodleoverflowid, $totalanonymous) &&
+                    !array_key_exists($post->moodleoverflowid, $partialanonymous) &&
+                    !array_key_exists($post->moodleoverflowid, $notanonymous)) {
+                    if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
+                        $totalanonymous[$post->moodleoverflowid] = true;
+                        $post->anonymous = true;
+                    } else if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS) {
+                        $partialanonymous[$post->moodleoverflowid] = true;
+                        $post->anonymous = $post->postuserid == $post->discussionuserid;
+                    } else {
+                        $notanonymous[$post->moodleoverflowid] = true;
+                        $post->anonymous = false;
+                    }
+                } else {
+                    if (array_key_exists($post->moodleoverflowid, $totalanonymous)) {
+                        $post->anonymous = true;
+                    } else if (array_key_exists($post->moodleoverflowid, $partialanonymous)) {
+                        $post->anonymous = $post->postuserid == $post->discussionuserid;
+                    } else {
+                        $post->anonymous = false;
+                    }
+                }
+                unset($post->anonymoussetting);
+                unset($post->discussionuserid);
             }
         }
         return $posts;

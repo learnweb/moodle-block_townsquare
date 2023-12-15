@@ -112,7 +112,7 @@ class post_letter extends letter {
         $this->post->id = $postevent->postid;
         $this->post->message = $postevent->postmessage;
         $this->post->discussionsubject = $postevent->discussionsubject;
-        $this->post->parentid = $postevent->postparent;
+        $this->post->parentid = $postevent->postparentid;
 
         $this->build_links();
         $this->retrieve_profilepicture();
