@@ -111,6 +111,8 @@ class townsquareevents {
         foreach ($calendarevents as $calendarevent) {
             $calendarevent->coursemoduleid = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance,
                                                                             $calendarevent->courseid)->id;
+            // Add the name of the instance to the event.
+            $calendarevent->instancename = $DB->get_field($calendarevent->modulename, 'name', ['id' => $calendarevent->instance]);
 
             // Delete assign events that the user should not see.
             if ($calendarevent->modulename == "assign") {
@@ -298,12 +300,13 @@ class townsquareevents {
 
         // Set the sql statement.
         $sql = "SELECT e.id, e.name, e.courseid, e.groupid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart, e.visible
-                FROM {event} e JOIN {modules} m ON e.modulename = m.name
+                FROM {event} e
+                JOIN {modules} m ON e.modulename = m.name
                 WHERE (e.timestart >= :timestart OR e.timestart+e.timeduration > :timeduration)
                       AND e.timestart <= :timeend
                       AND e.courseid $insqlcourses
                       AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
-                      AND ( e.instance != 0 AND e.visible = 1)";
+                      AND ( e.instance <> 0 AND e.visible = 1)";
 
         // TODO: Whitelist events that townsquare can handle. Other event types must be added manually.
         /*

@@ -57,6 +57,9 @@ class letter {
     /** @var string The Name of the plugin */
     protected string $modulename;
 
+    /** @var string The Name of the instance */
+    protected string $instancename;
+
     /** @var string The content of the letter */
     protected string $content;
 
@@ -84,13 +87,14 @@ class letter {
      * @param int $created          Timestamp of creation.
      * @param int $cmid             Course module id of the content module.
      */
-    public function __construct($contentid, $courseid, $modulename, $content, $created, $cmid) {
+    public function __construct($contentid, $courseid, $modulename, $instancename, $content, $created, $cmid) {
         $this->contentid = $contentid;
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
         $this->cmid = $cmid;
         $this->coursename = get_course($courseid)->fullname;
         $this->modulename = $modulename;
+        $this->instancename = $instancename;
         $this->content = $content;
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
@@ -113,7 +117,7 @@ class letter {
             'isbasic' => $this->isbasic,
             'courseid' => $this->courseid,
             'coursename' => $this->coursename,
-            'modulename' => $this->modulename,
+            'instancename' => $this->instancename,
             'content' => $this->content,
             'created' => $date,
             'linktocourse' => $this->linktocourse->out(),

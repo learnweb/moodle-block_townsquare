@@ -42,13 +42,6 @@ class post_letter extends letter {
 
     // Attributes.
 
-    /** @var object information about the post origin. The object contains:
-     * - int instanceid: The local ID of the module instance, is the forumid or moodleoverflowid
-     * - string instancename: The name of the module instance
-     * - int discussionid: The id of the discussion
-     * */
-    private object $origin;
-
     /** @var object information about the post author. The object contains:
      * - int id: the id of the author
      * - string name: full name of the author (first and last name combined)
@@ -57,6 +50,8 @@ class post_letter extends letter {
     private object $author;
 
     /** @var object attributes of the post. The object contains:
+     * - int instanceid: The local ID of the module instance, is the forumid or moodleoverflowid
+     * - int discussionid: The id of the discussion
      * - int id: the id of the post
      * - string message: the message of the post
      * - string discussionsubject: the subject of the discussion
@@ -86,26 +81,24 @@ class post_letter extends letter {
      */
     public function __construct($contentid, $postevent) {
         global $DB;
-        parent::__construct($contentid, $postevent->courseid, $postevent->modulename,
+        parent::__construct($contentid, $postevent->courseid, $postevent->modulename, $postevent->instancename,
                             $postevent->postmessage, $postevent->postcreated, $postevent->coursemoduleid);
 
-        $this->origin = new stdClass();
         $this->author = new stdClass();
         $this->post = new stdClass();
         $this->posturls = new stdClass();
 
         $this->lettertype = 'post';
         if ($postevent->modulename == 'forum') {
-            $this->origin->instanceid = $postevent->forumid;
+            $this->post->instanceid = $postevent->forumid;
             $this->post->anonymous = false;
         } else if ($postevent->modulename == 'moodleoverflow') {
-            $this->origin->instanceid = $postevent->moodleoverflowid;
+            $this->post->instanceid = $postevent->moodleoverflowid;
             $this->post->anonymous = $postevent->anonymous;
         } else {
             throw new moodle_exception('invalidmodulename', 'block_townsquare');
         }
-        $this->origin->discussionid = $postevent->postdiscussion;
-        $this->origin->instancename = $postevent->instancename;
+        $this->post->discussionid = $postevent->postdiscussion;
         $this->author->id = $postevent->postuserid;
         $author = $DB->get_record('user', ['id' => $postevent->postuserid]);
         $this->author->name = $author->firstname . ' ' . $author->lastname;
@@ -132,7 +125,7 @@ class post_letter extends letter {
             'courseid' => $this->courseid,
             'coursename' => $this->coursename,
             'modulename' => $this->modulename,
-            'instancename' => $this->origin->instancename,
+            'instancename' => $this->instancename,
             'discussionsubject' => $this->post->discussionsubject,
             'anonymous' => $this->post->anonymous,
             'authorname' => $this->author->name,
@@ -157,10 +150,10 @@ class post_letter extends letter {
         $this->posturls->linktoauthor = new moodle_url('/user/view.php', ['id' => $this->author->id]);
         if ($this->modulename == 'forum') {
             $this->posturls->linktopost = new moodle_url('/mod/forum/discuss.php',
-                                                        ['d' => $this->origin->discussionid], 'p' . $this->post->id);
+                                                        ['d' => $this->post->discussionid], 'p' . $this->post->id);
         } else {
             $this->posturls->linktopost = new moodle_url('/mod/moodleoverflow/discussion.php',
-                                                        ['d' => $this->origin->discussionid], 'p' . $this->post->id);
+                                                        ['d' => $this->post->discussionid], 'p' . $this->post->id);
 
             // If the post in the moodleoverflow is anonymous, the user should not be visible.
             if ($this->post->anonymous) {

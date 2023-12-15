@@ -50,7 +50,7 @@ class activitycompletion_letter extends letter {
      * @param object $calendarevent a calendar event with information, for more see classes/townsquareevents.php
      */
     public function __construct($contentid, $calendarevent) {
-        parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename,
+        parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename, $calendarevent->instancename,
                                         $calendarevent->name, $calendarevent->timestart, $calendarevent->coursemoduleid);
         $this->lettertype = 'activitycompletion';
     }
