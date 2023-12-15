@@ -254,7 +254,7 @@ class townsquareevents {
                         JOIN {forum} module ON module.id = discuss.forum
                         JOIN {modules} modules ON modules.name = 'forum' ";
         } else if ($modulename == 'moodleoverflow') {
-            $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, module.anonymous AS anonymoussetting";
+            $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, module.anonymous AS anonymoussetting, ";
             $middle .= "FROM {moodleoverflow_posts} posts
                         JOIN {moodleoverflow_discussions} discuss ON discuss.id = posts.discussion
                         JOIN {moodleoverflow} module ON module.id = discuss.moodleoverflow
