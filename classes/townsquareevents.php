@@ -386,10 +386,14 @@ class townsquareevents {
         $notanonymous = [];
         foreach ($posts as $post) {
             if ($post->modulename == 'moodleoverflow') {
-                // Fill the corresponding array if the moodleoverflow is not known yet..
-                if (!array_key_exists($post->moodleoverflowid, $totalanonymous) &&
-                    !array_key_exists($post->moodleoverflowid, $partialanonymous) &&
-                    !array_key_exists($post->moodleoverflowid, $notanonymous)) {
+                // Fill the corresponding array if the moodleoverflow is not known yet.
+                if (array_key_exists($post->moodleoverflowid, $totalanonymous)) {
+                    $post->anonymous = true;
+                } else if (array_key_exists($post->moodleoverflowid, $partialanonymous)) {
+                    $post->anonymous = $post->postuserid == $post->discussionuserid;
+                } else if (array_key_exists($post->moodleoverflowid, $notanonymous)) {
+                    $post->anonymous = false;
+                } else {
                     if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
                         $totalanonymous[$post->moodleoverflowid] = true;
                         $post->anonymous = true;
@@ -398,14 +402,6 @@ class townsquareevents {
                         $post->anonymous = $post->postuserid == $post->discussionuserid;
                     } else {
                         $notanonymous[$post->moodleoverflowid] = true;
-                        $post->anonymous = false;
-                    }
-                } else {
-                    if (array_key_exists($post->moodleoverflowid, $totalanonymous)) {
-                        $post->anonymous = true;
-                    } else if (array_key_exists($post->moodleoverflowid, $partialanonymous)) {
-                        $post->anonymous = $post->postuserid == $post->discussionuserid;
-                    } else {
                         $post->anonymous = false;
                     }
                 }
