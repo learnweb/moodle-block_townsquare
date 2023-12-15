@@ -109,8 +109,6 @@ class townsquareevents {
 
         // Filter the events and add the coursemoduleid.
         foreach ($calendarevents as $calendarevent) {
-            $calendarevent->coursemoduleid = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance,
-                                                                            $calendarevent->courseid)->id;
             // Add the name of the instance to the event.
             $calendarevent->instancename = $DB->get_field($calendarevent->modulename, 'name', ['id' => $calendarevent->instance]);
 
@@ -299,9 +297,11 @@ class townsquareevents {
                    'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses;
 
         // Set the sql statement.
-        $sql = "SELECT e.id, e.name, e.courseid, e.groupid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart, e.visible
+        $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid,e.groupid, e.userid, e.modulename, e.instance, e.eventtype,
+                       e.timestart, e.visible
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
+                JOIN {course_modules} cm ON (cm.course = e.courseid AND cm.module = m.id AND cm.instance = e.instance)
                 WHERE (e.timestart >= :timestart OR e.timestart+e.timeduration > :timeduration)
                       AND e.timestart <= :timeend
                       AND e.courseid $insqlcourses
