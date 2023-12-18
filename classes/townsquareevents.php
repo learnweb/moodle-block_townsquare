@@ -72,24 +72,9 @@ class townsquareevents {
         $postevents = $this->get_postevents();
 
         // Merge the events in a sorted order.
-        // In the merge process, filter out irrelevant events.
         $events = [];
         $numberofevents = count($calendarevents) + count($postevents);
         for ($i = 0; $i < $numberofevents; $i++) {
-            // Filter unavailable events.
-            while (current($calendarevents) && !$this->filter_availability(current($calendarevents))) {
-                next($calendarevents);
-                $numberofevents--;
-            }
-            while (current($postevents) && !$this->filter_availability(current($postevents))) {
-                next($postevents);
-                $numberofevents--;
-            }
-            if ($i >= $numberofevents) {
-                break;
-            }
-
-            // Merge.
             if (current($calendarevents) && current($postevents)) {
                 if (current($calendarevents)->timestart > current($postevents)->postcreated) {
                     $events[$i] = current($calendarevents);
@@ -117,50 +102,23 @@ class townsquareevents {
      * @return array
      */
     public function get_calendarevents(): array {
-        global $DB, $USER;
+        global $DB;
 
         // Get all events from the last six months and the next six months.
         $calendarevents = $this->get_events_from_db($this->timestart, $this->timeend, $this->courses);
 
         // Filter the events and add the coursemoduleid.
         foreach ($calendarevents as $calendarevent) {
+            // Filter out events that are not relevant for the user.
+            if ($this->filter_availability($calendarevent) ||
+                ($calendarevent->modulename == "assign" && $this->filter_assignment($calendarevent)) ||
+                ($calendarevent->eventtype == "expectcompletionon" && $this->filter_activitycompletions($calendarevent))) {
+                unset($calendarevents[$calendarevent->id]);
+                continue;
+            }
+
             // Add the name of the instance to the event.
             $calendarevent->instancename = $DB->get_field($calendarevent->modulename, 'name', ['id' => $calendarevent->instance]);
-
-            // Delete assign events that the user should not see.
-            if ($calendarevent->modulename == "assign") {
-
-                // If the assignment due date is over than a week, it disappears.
-                if ($calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800)) {
-                    unset($calendarevents[$calendarevent->id]);
-                    continue;
-                }
-
-                // Only people that can rate should see a gradingdue event.
-                if ($calendarevent->eventtype == "gradingdue" &&
-                    !has_capability('mod/assign:grade', context_module::instance($calendarevent->coursemoduleid))) {
-
-                    unset($calendarevents[$calendarevent->id]);
-                    continue;
-                }
-
-                // If the assignment is not open to submit, the user should not see the event.
-                $assignment = $DB->get_record('assign', ['id' => $calendarevent->instance]);
-                if ($assignment->allowsubmissionsfromdate >= $this->timenow) {
-                    unset($calendarevents[$calendarevent->id]);
-                    continue;
-                }
-            }
-
-            // Delete activity completions that are completed by the current user.
-            if ($calendarevent->eventtype == "expectcompletionon") {
-                if ($completionstatus = $DB->get_record('course_modules_completion',
-                        ['coursemoduleid' => $calendarevent->coursemoduleid, 'userid' => $USER->id])) {
-                    if ($completionstatus->completionstate != 0) {
-                        unset($calendarevents[$calendarevent->id]);
-                    }
-                }
-            }
         }
 
         return $calendarevents;
@@ -175,8 +133,8 @@ class townsquareevents {
     public function get_postevents(): array {
         global $DB;
 
-        $forumposts = false;
-        $moodleoverflowposts = false;
+        $forumposts = [];
+        $moodleoverflowposts = [];
 
         // Check which modules are installed and activated and get their data.
         if ($DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
@@ -187,45 +145,49 @@ class townsquareevents {
             $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
         }
 
-        // If no module is available, return an empty array.
-        if (!$forumposts && !$moodleoverflowposts) {
+        if (empty($forumposts) && empty($moodleoverflowposts)) {
             return [];
         }
 
-        // Return directly the posts if no other module exists.
-        if (!$moodleoverflowposts) {
-            return $forumposts;
-        }
-
-        if (!$forumposts) {
-            return $this->add_anonymousattribute($moodleoverflowposts);
-        }
-
-        // Merge the posts in a sorted order.
+        // Merge the posts in a sorted order. While merging, filter out irrelevant posts and add relevant attributes if necessary.
         $posts = [];
         $numberofposts = count($forumposts) + count($moodleoverflowposts);
         reset($forumposts);
         reset($moodleoverflowposts);
         for ($i = 0; $i < $numberofposts; $i++) {
+            // Filter unavailable posts.
+            while (current($forumposts) && $this->filter_availability(current($forumposts))) {
+                next($forumposts);
+                $numberofposts--;
+            }
+            while (current($moodleoverflowposts) && $this->filter_availability(current($moodleoverflowposts))) {
+                next($moodleoverflowposts);
+                $numberofposts--;
+            }
+            if ($i >= $numberofposts) {
+                break;
+            }
+
+            // Merge.
             if (current($forumposts) && current($moodleoverflowposts)) {
                 if (current($forumposts)->postcreated > current($moodleoverflowposts)->postcreated) {
                     $posts[$i] = current($forumposts);
                     next($forumposts);
                 } else {
-                    $posts[$i] = current($moodleoverflowposts);
+                    $posts[$i] = $this->add_anonymousattribute(current($moodleoverflowposts));
                     next($moodleoverflowposts);
                 }
             } else if (current($forumposts)) {
                 $posts[$i] = current($forumposts);
                 next($forumposts);
             } else {
-                $posts[$i] = current($moodleoverflowposts);
+                $posts[$i] = $this->add_anonymousattribute(current($moodleoverflowposts));
                 next($moodleoverflowposts);
             }
         }
 
         // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts. Then return it.
-        return $this->add_anonymousattribute($posts);
+        return $posts;
     }
 
     // Helper functions.
@@ -307,10 +269,18 @@ class townsquareevents {
     private function get_events_from_db($timestart, $timeend, $courses): array {
         global $DB;
 
+        // Due to compatability reasons, only events from supported modules are shown.
+        // Supported modules are: core modules and additional, tested modules.
+        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
+                    'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop'];
+        $additionalmodules = ['moodleoverflow', 'ratingallocate'];
+        $modules = $coremodules + $additionalmodules;
+
         // Prepare params for sql statement.
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
+        list($insqlmodules, $inparamsmodules) = $DB->get_in_or_equal($modules, SQL_PARAMS_NAMED);
         $params = ['timestart' => $timestart, 'timeduration' => $timestart,
-                   'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses;
+                   'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses + $inparamsmodules;
 
         // Set the sql statement.
         $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability, e.groupid, e.userid,
@@ -321,53 +291,11 @@ class townsquareevents {
                 WHERE (e.timestart >= :timestart OR e.timestart+e.timeduration > :timeduration)
                       AND e.timestart <= :timeend
                       AND e.courseid $insqlcourses
+                      AND e.modulename $insqlmodules
+                      AND m.visible = 1,
                       AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
-                      AND ( e.instance <> 0 AND e.visible = 1)";
-
-        // TODO: Whitelist events that townsquare can handle. Other event types must be added manually.
-        /*
-        // List core modules that have additional calendar events.
-        $coremodules = ['assign', 'chat', 'choice', 'data', 'feedback', 'forum', 'lesson', 'quiz', 'scorm', 'workshop'];
-
-        // Check which of these modules are active.
-        foreach($coremodules as $coremodule) {
-            if (!$DB->get_record('modules', ['name' => $coremodule, 'visible' => 1])) {
-                unset($coremodules[array_search($coremodule, $coremodules)]);
-            }
-        }
-
-        // Activity completions are always shown.
-        $completionsql = " (e.eventtype = 'expectcompletionon')";
-
-        // Event types 'open' and 'close' are shown, if the module is an active coremodule.
-        if (!empty($coremodules)) {
-            list($insqlmodules, $inparamsmodules) = $DB->get_in_or_equal($coremodules, SQL_PARAMS_NAMED);
-            $params += $inparamsmodules;
-            $openeventtypesql = "((e.eventtype = 'open' OR e.eventtype = 'close') AND (e.modulename $insqlmodules))";
-        }
-
-        // Assignment event type handling.
-        $params += ['timeweek' => $this->timenow - 604800];
-        // TODO: Check if the assignment is aklready submitted by the user.
-        $assigndue = "(e.modulename = 'assign' AND e.eventtype = 'due' AND e.timestart >= :timeweek)";
-        $assigngradingdue = "e.modulename = 'assign' AND e.eventtype = 'gradingdue";
-
-        // Chat event type handling.
-        $chatevent = " (e.modulename = 'chat' AND e.eventtype = 'chattime')";
-
-        // Workshop event type handling.
-        $workshopevent = " (e.modulename = 'workshop')";
-
-        // Event type handling of non-core modules.
-        // Ratingallocate event type handling.
-
-        // Put all different module sql handling together.
-        //$sql .= " AND (". $completionsql ." OR ". $openeventtypesql ." OR ". $assigndue ." OR ".
-        //                 $assigngradingdue ." OR ". $chatevent ." OR ". $workshopevent .")";
-        */
-
-        // Add the order of the sql query.
-        $sql .= " ORDER BY e.timestart DESC;";
+                      AND (e.instance <> 0 AND e.visible = 1)
+                ORDER BY e.timestart DESC";
 
         // Get all events.
         return $DB->get_records_sql($sql, $params);
@@ -391,60 +319,78 @@ class townsquareevents {
 
     /**
      * Adds a boolean for the anonymous status of moodleoverflow posts.
-     *
-     * @param array $posts
-     * @return array
+     * @param object $post  The post that is being checked.
+     * @return object
      */
-    private function add_anonymousattribute($posts): array {
-        // Save the anonymous setting of the moodleoverflows.
-        $totalanonymous = [];
-        $partialanonymous = [];
-        $notanonymous = [];
-        foreach ($posts as $post) {
-            if ($post->modulename == 'moodleoverflow') {
-                // Fill the corresponding array if the moodleoverflow is not known yet.
-                if (array_key_exists($post->moodleoverflowid, $totalanonymous)) {
-                    $post->anonymous = true;
-                } else if (array_key_exists($post->moodleoverflowid, $partialanonymous)) {
-                    $post->anonymous = $post->postuserid == $post->discussionuserid;
-                } else if (array_key_exists($post->moodleoverflowid, $notanonymous)) {
-                    $post->anonymous = false;
-                } else {
-                    if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
-                        $totalanonymous[$post->moodleoverflowid] = true;
-                        $post->anonymous = true;
-                    } else if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS) {
-                        $partialanonymous[$post->moodleoverflowid] = true;
-                        $post->anonymous = $post->postuserid == $post->discussionuserid;
-                    } else {
-                        $notanonymous[$post->moodleoverflowid] = true;
-                        $post->anonymous = false;
-                    }
-                }
-                unset($post->anonymoussetting);
-                unset($post->discussionuserid);
-            }
+    private function add_anonymousattribute($post): object {
+        if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
+            $post->anonymous = true;
+        } else if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS) {
+            $post->anonymous = $post->postuserid == $post->discussionuserid;
+        } else {
+            $post->anonymous = false;
         }
-        return $posts;
+
+        unset($post->anonymoussetting);
+        unset($post->discussionuserid);
+        return $post;
     }
 
     /**
-     * Filter that checks if the event is available for the current user.
+     * Filter that checks if the event needs to be filtered out for the current user because it is unavailable.
      * Applies to restriction that are defined in the module setting (restrict access).
      * @param object $event The event that is checked.
-     * @return bool if the event is available for the current user.
+     * @return bool true if the event needs to filtered out, false if not.
      */
     private function filter_availability($event): bool {
         // If there is no restriction defined, the event is available.
         if ($event->availability == null) {
-            return true;
+            return false;
         }
 
         // If there is a restriction, check if it applies to the user.
         $modinfo = get_fast_modinfo($event->courseid);
-        $cm = $modinfo->get_cm($event->coursemoduleid);
-        if ($cm->uservisible) {
+        $moduleinfo = $modinfo->get_cm($event->coursemoduleid);
+        if ($moduleinfo->uservisible) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Filter that checks if the event needs to be filtered out for the current user.
+     * Applies to assignment events.
+     * @param object $calendarevent calendarevent that is checked
+     * @return bool true if the event needs to filtered out, false if not.
+     */
+    private function filter_assignment($calendarevent): bool {
+        global $DB;
+        $assignment = $DB->get_record('assign', ['id' => $calendarevent->instance]);
+        $firstcheck = $calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800);
+        $secondcheck = $calendarevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
+                                                                        context_module::instance($calendarevent->coursemoduleid));
+        $thirdcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
+
+        if ($firstcheck || $secondcheck || $thirdcheck) {
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * Filter that checks if the event needs to be filtered out for the current user.
+     * Applies to activity completion events.
+     * @param object $calendarevent calendarevent that is checked
+     * @return bool true if the event needs to filtered out, false if not.
+     */
+    private function filter_activitycompletions($calendarevent): bool {
+        global $DB, $USER;
+        if ($completionstatus = $DB->get_record('course_modules_completion',
+                                                ['coursemoduleid' => $calendarevent->coursemoduleid, 'userid' => $USER->id])) {
+            if ($completionstatus->completionstate != 0) {
+                return true;
+            }
         }
         return false;
     }
