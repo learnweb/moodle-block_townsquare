@@ -250,6 +250,7 @@ class townsquareevents {
         // Set the select part of the sql that is always the same.
         $middle = "'post' AS eventtype,
                    cm.id AS coursemoduleid,
+                   cm.availability AS availability,
                    module.name AS instancename,
                    discuss.course AS courseid,
                    discuss.userid AS discussionuserid,
@@ -312,7 +313,7 @@ class townsquareevents {
                    'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses;
 
         // Set the sql statement.
-        $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid, e.groupid, e.userid,
+        $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability, e.groupid, e.userid,
                        e.modulename, e.instance, e.eventtype, e.timestart, e.visible
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
@@ -434,6 +435,11 @@ class townsquareevents {
      * @return bool if the event is available for the current user.
      */
     private function filter_availability($event): bool {
+        // If there is no restriction defined, the event is available.
+        if ($event->availability == null) {
+            return true;
+        }
+
         // If there is a restriction, check if it applies to the user.
         $modinfo = get_fast_modinfo($event->courseid);
         $cm = $modinfo->get_cm($event->coursemoduleid);
