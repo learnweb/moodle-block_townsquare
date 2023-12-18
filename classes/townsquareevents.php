@@ -270,7 +270,7 @@ class townsquareevents {
         global $DB;
 
         // Due to compatability reasons, only events from supported modules are shown.
-        // Supported modules are: core modules and additional, tested modules.
+        // Supported modules are: core modules and custom additional modules.
         $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
                     'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop'];
         $additionalmodules = ['moodleoverflow', 'ratingallocate'];
@@ -292,7 +292,7 @@ class townsquareevents {
                       AND e.timestart <= :timeend
                       AND e.courseid $insqlcourses
                       AND e.modulename $insqlmodules
-                      AND m.visible = 1,
+                      AND m.visible = 1
                       AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
                       AND (e.instance <> 0 AND e.visible = 1)
                 ORDER BY e.timestart DESC";
