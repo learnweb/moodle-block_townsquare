@@ -72,9 +72,24 @@ class townsquareevents {
         $postevents = $this->get_postevents();
 
         // Merge the events in a sorted order.
+        // In the merge process, filter out irrelevant events.
         $events = [];
         $numberofevents = count($calendarevents) + count($postevents);
         for ($i = 0; $i < $numberofevents; $i++) {
+            // Filter unavailable events.
+            while (current($calendarevents) && !$this->filter_availability(current($calendarevents))) {
+                next($calendarevents);
+                $numberofevents--;
+            }
+            while (current($postevents) && !$this->filter_availability(current($postevents))) {
+                next($postevents);
+                $numberofevents--;
+            }
+            if ($i >= $numberofevents) {
+                break;
+            }
+
+            // Merge.
             if (current($calendarevents) && current($postevents)) {
                 if (current($calendarevents)->timestart > current($postevents)->postcreated) {
                     $events[$i] = current($calendarevents);
@@ -297,8 +312,8 @@ class townsquareevents {
                    'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses;
 
         // Set the sql statement.
-        $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid,e.groupid, e.userid, e.modulename, e.instance, e.eventtype,
-                       e.timestart, e.visible
+        $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid, e.groupid, e.userid,
+                       e.modulename, e.instance, e.eventtype, e.timestart, e.visible
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
                 JOIN {course_modules} cm ON (cm.course = e.courseid AND cm.module = m.id AND cm.instance = e.instance)
@@ -410,5 +425,21 @@ class townsquareevents {
             }
         }
         return $posts;
+    }
+
+    /**
+     * Filter that checks if the event is available for the current user.
+     * Applies to restriction that are defined in the module setting (restrict access).
+     * @param object $event The event that is checked.
+     * @return bool if the event is available for the current user.
+     */
+    private function filter_availability($event): bool {
+        // If there is a restriction, check if it applies to the user.
+        $modinfo = get_fast_modinfo($event->courseid);
+        $cm = $modinfo->get_cm($event->coursemoduleid);
+        if ($cm->uservisible) {
+            return true;
+        }
+        return false;
     }
 }
