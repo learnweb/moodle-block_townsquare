@@ -83,6 +83,7 @@ class letter {
      * @param int $contentid        internal ID in the townsquare block.
      * @param int $courseid         Course ID from where the content comes from.
      * @param string $modulename    Name of the module/activity.
+     * @param string $instancename  Name of the instance.
      * @param mixed $content        The content that will be showed in the letter.
      * @param int $created          Timestamp of creation.
      * @param int $cmid             Course module id of the content module.

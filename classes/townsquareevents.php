@@ -272,7 +272,7 @@ class townsquareevents {
         // Due to compatability reasons, only events from supported modules are shown.
         // Supported modules are: core modules and custom additional modules.
         $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
-                    'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop'];
+                     'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', ];
         $additionalmodules = ['moodleoverflow', 'ratingallocate'];
         $modules = $coremodules + $additionalmodules;
 
