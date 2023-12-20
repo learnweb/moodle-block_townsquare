@@ -1,8 +1,6 @@
 # Town Square #
 
-TODO Describe the plugin shortly here.
-
-TODO Provide more detailed description here.
+A moodle block for the dashboard.This Plugin shows current events and forum posts in courses the user is enrolled to.
 
 ## Installing via uploaded ZIP file ##
 

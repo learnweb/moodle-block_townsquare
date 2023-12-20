@@ -1,0 +1,100 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_townsquare/main
+
+    This template renders the main content area for the townsquare block.
+
+     Variables required for this template:
+     * content - Array with content
+        * isorientationmarker - Boolean variable if current content is a orientationmarker
+        * isbasic - Boolean variable if current content is a basic notification
+        * isactivitycompletion - Boolean variable if current content is an activity completion
+        * ispost - Boolean variable if current content is a post
+
+    Example (json):
+    {
+        "content": [
+            {
+                "contentid": 0,
+                "isorientationmarker": true
+            },
+            {
+                "contentid": 1,
+                "isactivitycompletion": true,
+                "coursename": "Moodle Engineering",
+                "modulename":"survey",
+                "content": "How difficult was the exam? should be completed",
+                "created": "28.10.2023",
+                "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
+                "linktocourse": "http://localhost/moodle/course/view.php?id=3"
+            },
+            {
+                 "contentid": 2,
+                 "isbasic": true,
+                 "coursename": "Moodle Engineering",
+                 "modulename": "lesson",
+                 "content": "Lesson 1: Quantum Theory closes",
+                 "created": "20.12.2023",
+                 "linktocourse": "http://localhost/moodle/course/view.php?id=20",
+                 "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
+            },
+            {
+                "contentid": 3,
+                "ispost": true,
+                "coursename": "Moodle Engineering",
+                "instancename": "Exam Questions",
+                "discussionsubject": "Hour of Exam",
+                "anonymous": false,
+                "authorname": "Tamaro Walter",
+                "authorpicture": "<img src="http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13" class="userpicture" width="35" height="35" alt="" />",
+                "message": "<div class="text_to_html"><p>When do we write the exam?</p></div>",
+                "created": "03.11.2023",
+                "linktocourse": "http://localhost/moodle/course/view.php?id=20",
+                "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
+                "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
+                "linktoauthor": "http://localhost/moodle/user/view.php?id=2"
+            }
+        ]
+    }
+}}
+<div id="townsquare_root" class="townsquare_root container-fluid">
+    <div class="row townsquare_main">
+        {{!--<div class="col-md-3 townsquare_sidepanel">
+            in development
+        </div> --}}
+
+        <div class=" {{!--col-md-9 --}} townsquare_content">
+            <div class="townsquare_letters">
+                {{#content}}
+                        {{#isorientationmarker}}
+                            {{> block_townsquare/orientationmarker}}
+                        {{/isorientationmarker}}
+                        {{#isbasic}}
+                            {{> block_townsquare/basicletter}}
+                        {{/isbasic}}
+                        {{#isactivitycompletion}}
+                            {{> block_townsquare/activitycompletionletter}}
+                        {{/isactivitycompletion}}
+                        {{#ispost}}
+                            {{> block_townsquare/postletter}}
+                        {{/ispost}}
+                {{/content}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -14,45 +14,45 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+use block_townsquare\contentcontroller;
+
 /**
  * Plugin strings are defined here.
  *
  * @package     block_townsquare
- * @category    string
  * @copyright   2023 Tamaro Walter
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_townsquare extends block_base {
-    
+
     /**
      * Initialises the block.
      *
      * @return void
      */
-    public function init() {
+    public function init():void {
         $this->title = get_string('pluginname', 'block_townsquare');
     }
 
     /**
      * Gets the block contents.
      *
-     * @return string The block HTML.
+     * @return object|null The block HTML.
      */
-    public function get_content() {
+    public function get_content():object {
         global $OUTPUT;
 
         if ($this->content !== null) {
             return $this->content;
         }
 
+        $controller = new contentcontroller();
+        $mustachedata = new stdClass();
+        $mustachedata->content = $controller->content;
+
         $this->content = new stdClass();
-        $this->content->footer = '';
-
-        // Add logic here to define your template data or any other content.
-        $data = ['YOUR DATA GOES HERE'];
-
-        $this->content->text = $OUTPUT->render_from_template('block_townsquare/content', $data);
-
+        $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
+        $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         return $this->content;
     }
 
@@ -61,11 +61,11 @@ class block_townsquare extends block_base {
      *
      * @return array of the pages where the block can be added.
      */
-    public function applicable_formats() {
+    public function applicable_formats():array {
         return [
             'admin' => false,
-            'site-index' => true,
-            'course-view' => true,
+            'site-index' => false,
+            'course-view' => false,
             'mod' => false,
             'my' => true,
         ];

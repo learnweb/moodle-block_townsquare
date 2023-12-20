@@ -1,0 +1,99 @@
+/* Style for the blockcontent template*/
+.townsquare_sidepanel {
+    background-color: #eee;
+    border-radius: 0.5rem;
+}
+
+.townsquare_content {
+    max-height: 750px;
+    border-radius: 0.5rem;
+    overflow:scroll;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Style for all letter or content templates */
+
+.townsquareletter_header.card-header {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+}
+
+.townsquareletter_body.card-body {
+    padding-top: 0.7rem;
+    padding-bottom: 0.6rem;
+}
+
+.townsquareletter_top {
+    display: flex;
+}
+
+.townsquareletter_course {
+    flex: 1;
+}
+
+.townsquareletter_courselink:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+.townsquareletter_courselink{
+    color: #fff;
+    text-decoration: none;
+}
+
+.townsquareletter_course,
+.townsquareletter_date {
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.townsquare_showmore {
+    cursor: pointer;
+}
+
+/* Styles for individual letters */
+
+/* basicletter Style*/
+
+.basicletter.card {
+    border-color: var(--primary);
+}
+
+.basicletter_header.card-header {
+    background-color: var(--primary);
+}
+
+/* postletter Style */
+
+.postletter.card {
+    border-color: var(--activitycollaboration);
+}
+
+.postletter_header.card-header {
+    background-color: var(--activitycollaboration);
+}
+
+.postletter_origin {
+    margin-bottom: 0.4rem;
+}
+
+/* actvitiycompletionletter Style*/
+
+.completionletter.card {
+    border-color: var(--danger);
+}
+
+.completionletter_header.card-header {
+    background-color: var(--danger);
+}
+
+/* Style for the orientation marker */
+.orientationmarker.card {
+    border-color: var(--secondary);
+    background-color: var(--secondary);
+}
+
+.orientationmarker_body.card-body {
+    padding-top: 0.6rem;
+}
+/*# sourceMappingURL=styles.css.map */

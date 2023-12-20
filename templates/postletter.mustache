@@ -1,0 +1,100 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_townsquare/postletter
+
+    This template renders a post letter.
+
+    Variables required for this template (more variables are available for testing and future features):
+    * contentid - Unique identification for every shown plugin content
+    * ispost - Variable for the blockcontent template to assure this template is used.
+    * coursename - Name of the course
+    * instancename - Name of the forum/moodleoverflow
+    * discussionsubject - Name of the discussion
+    * anonymous - if the post is anonymous
+    * authorname - Name of the post author
+    * authorpicture - Picture of the post author
+    * message - Content of the post
+    * created - Date of creation
+    * linktocourse - Link to the course
+    * linktoactivity - Link to the module instance
+    * linktopost - Link to the discussion post
+    * linttoauthor - Link to the user
+
+    Example (json):
+    {
+        "contentid": 27,
+        "ispost": true,
+        "coursename": "Moodle Engineering",
+        "instancename": "Exam Questions",
+        "discussionsubject": "Hour of Exam",
+        "anonymous": false,
+        "authorname": "Tamaro Walter",
+        "authorpicture": "<img src="http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13" class="userpicture" width="35" height="35" alt="" />",
+        "message": "<div class="text_to_html"><p>When do we write the exam?</p></div>",
+        "created": "03.11.2023",
+        "linktocourse": "http://localhost/moodle/course/view.php?id=20",
+        "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
+        "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
+        "linktoauthor": "http://localhost/moodle/user/view.php?id=2"
+    }
+}}
+<div class="townsquare_letter postletter card mb-3" id="content-nr-{{contentid}}">
+    <div class="townsquareletter_header postletter_header card-header">
+        <div class = "townsquareletter_top postletter_top">
+            <div class = "townsquareletter_course postletter_course">
+                {{#str}} coursetitle, moodle, {
+                    "course": {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a>
+                              {{/quote}} }
+                {{/str}}
+            </div>
+            <div class = "townsquareletter_date postletter_date">
+                {{created}}
+            </div>
+        </div>
+    </div>
+    <div class="townsquareletter_body postletter_body card-body">
+        <div class = "postletter_origin">
+            <b>
+                {{#anonymous}}
+                    {{#str}} postletterorigin, block_townsquare, {
+                        "authorname": {{#quote}} <i> anonymous </i> {{/quote}},
+                        "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}},
+                        "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
+                    {{/str}}
+                {{/anonymous}}
+                {{^anonymous}}
+                    {{{authorpicture}}}
+                    {{#str}} postletterorigin, block_townsquare, {
+                        "authorname": {{#quote}} <a href='{{linktoauthor}}'>{{authorname}}</a> {{/quote}},
+                        "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}},
+                        "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
+                    {{/str}}
+                {{/anonymous}}
+            </b>
+        </div>
+        <div class = "postletter_content">
+                <span class ="postletter_message" id="content-nr-{{contentid}}" >
+                    {{{message}}}
+                </span>
+                <span class="townsquare_showmore badge rounded-pill bg-light" id="content-nr-{{contentid}}"
+                      data-action="block_townsquare/showmore_button">
+                    {{#str}} showmore, moodle {{/str}}
+                </span>
+        </div>
+    </div>
+</div>
