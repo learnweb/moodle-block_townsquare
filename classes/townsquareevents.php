@@ -219,8 +219,8 @@ class townsquareevents {
                    discuss.course AS courseid,
                    discuss.userid AS discussionuserid,
                    discuss.name AS discussionsubject,
-                   user.firstname AS postuserfirstname,
-                   user.lastname AS postuserlastname,
+                   u.firstname AS postuserfirstname,
+                   u.lastname AS postuserlastname,
                    posts.id AS postid,
                    posts.discussion AS postdiscussion,
                    posts.parent AS postparentid,
@@ -245,7 +245,7 @@ class townsquareevents {
         }
 
         // Extension of the middle string.
-        $middle .= "JOIN {user} user ON user.id = posts.userid
+        $middle .= "JOIN {user} u ON u.id = posts.userid
                     JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
                                                                            AND cm.instance = module.id) ";
 
