@@ -239,13 +239,13 @@ class postevents_test extends \advanced_testcase {
 
         // Iterate through all posts and save the posts from teacher and student.
         foreach ($posts as $post) {
-            if ($post->modulename == 'moodleoverflow' && $post->moodleoverflowid == $this->testdata->moodleoverflow1->id) {
+            if ($post->modulename == 'moodleoverflow' && $post->instanceid == $this->testdata->moodleoverflow1->id) {
                 if ($post->postuserid == $this->testdata->teacher->id) {
                     $firstteacherpost = $post;
                 } else if ($post->postuserid == $this->testdata->student1->id) {
                     $firststudentpost = $post;
                 }
-            } else if ($post->modulename == 'moodleoverflow' && $post->moodleoverflowid == $this->testdata->moodleoverflow2->id) {
+            } else if ($post->modulename == 'moodleoverflow' && $post->instanceid == $this->testdata->moodleoverflow2->id) {
                 if ($post->postuserid == $this->testdata->teacher->id) {
                     $secondteacherpost = $post;
                 } else if ($post->postuserid == $this->testdata->student2->id) {
@@ -254,13 +254,13 @@ class postevents_test extends \advanced_testcase {
             }
         }
 
-        // Test case 1: The teacherpost should be anonymous and the studentpost should not be anonymous (partial anonymous).
-        $this->assertEquals(true, $firstteacherpost->anonymous);
-        $this->assertEquals(false, $firststudentpost->anonymous);
+        // Test case 1: The teacherpost and studentpost are in partial anonymous mode (only questions are anonymous).
+        $this->assertEquals(true, $firstteacherpost->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS);
+        $this->assertEquals(true, $firststudentpost->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS);
 
-        // Test case 2: The teacherpost and studentpost should be anonymous (fully anonymous).
-        $this->assertEquals(true, $secondteacherpost->anonymous);
-        $this->assertEquals(true, $secondstudentpost->anonymous);
+        // Test case 2: The teacherpost and studentpost are in full anonymous mode (all posts are anonymous).
+        $this->assertEquals(true, $secondteacherpost->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS);
+        $this->assertEquals(true, $secondstudentpost->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS);
     }
 
     /**
@@ -279,7 +279,7 @@ class postevents_test extends \advanced_testcase {
         // Check if the first forum post is not in the post events.
         $result = true;
         foreach ($posts as $post) {
-            if ($post->modulename == 'forum' && $post->forumid == $this->testdata->forum1->id) {
+            if ($post->modulename == 'forum' && $post->instanceid == $this->testdata->forum1->id) {
                 $result = false;
             }
         }
@@ -296,7 +296,7 @@ class postevents_test extends \advanced_testcase {
             // Check if the first moodleoverflow post is not in the post events.
             $result = true;
             foreach ($posts as $post) {
-                if ($post->modulename == 'moodleoverflow' && $post->moodleoverflowid == $this->testdata->moodleoverflow1->id) {
+                if ($post->modulename == 'moodleoverflow' && $post->instanceid == $this->testdata->moodleoverflow1->id) {
                     $result = false;
                 }
             }

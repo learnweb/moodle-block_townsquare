@@ -179,7 +179,7 @@ class post_letter extends letter {
      * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
      * @return void
      */
-    private function add_anonymousattribute($postevent) {
+    private function add_anonymousattribute($postevent): void {
         if ($this->modulename == 'moodleoverflow') {
             if ($postevent->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
                 $this->post->anonymous = true;
