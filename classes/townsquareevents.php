@@ -156,6 +156,7 @@ class townsquareevents {
         reset($moodleoverflowposts);
         for ($i = 0; $i < $numberofposts; $i++) {
             // Filter unavailable posts.
+            // Iterate until the first post that is available. Decrement the number of posts each time a post is filtered.
             while (current($forumposts) && $this->filter_availability(current($forumposts))) {
                 next($forumposts);
                 $numberofposts--;
@@ -164,6 +165,7 @@ class townsquareevents {
                 next($moodleoverflowposts);
                 $numberofposts--;
             }
+            // If there no posts left after filtering, break.
             if ($i >= $numberofposts) {
                 break;
             }
@@ -174,14 +176,14 @@ class townsquareevents {
                     $posts[$i] = current($forumposts);
                     next($forumposts);
                 } else {
-                    $posts[$i] = $this->add_anonymousattribute(current($moodleoverflowposts));
+                    $posts[$i] = current($moodleoverflowposts);
                     next($moodleoverflowposts);
                 }
             } else if (current($forumposts)) {
                 $posts[$i] = current($forumposts);
                 next($forumposts);
             } else {
-                $posts[$i] = $this->add_anonymousattribute(current($moodleoverflowposts));
+                $posts[$i] = current($moodleoverflowposts);
                 next($moodleoverflowposts);
             }
         }
@@ -216,23 +218,26 @@ class townsquareevents {
                    module.name AS instancename,
                    discuss.course AS courseid,
                    discuss.userid AS discussionuserid,
+                   discuss.name AS discussionsubject,
+                   user.firstname AS postuserfirstname,
+                   user.lastname AS postuserlastname,
                    posts.id AS postid,
                    posts.discussion AS postdiscussion,
                    posts.parent AS postparentid,
                    posts.userid AS postuserid,
                    posts.created AS postcreated,
-                   discuss.name AS discussionsubject,
                    posts.message AS postmessage ";
 
         // Extend the strings for the 2 module cases.
         if ($modulename == 'forum') {
-            $begin .= "'forum' AS modulename, module.id AS forumid,";
+            $begin .= "'forum' AS modulename, module.id AS instanceid,";
             $middle .= "FROM {forum_posts} posts
                         JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
                         JOIN {forum} module ON module.id = discuss.forum
                         JOIN {modules} modules ON modules.name = 'forum' ";
+
         } else if ($modulename == 'moodleoverflow') {
-            $begin .= "'moodleoverflow' AS modulename, module.id AS moodleoverflowid, module.anonymous AS anonymoussetting, ";
+            $begin .= "'moodleoverflow' AS modulename, module.id AS instanceid, module.anonymous AS anonymoussetting, ";
             $middle .= "FROM {moodleoverflow_posts} posts
                         JOIN {moodleoverflow_discussions} discuss ON discuss.id = posts.discussion
                         JOIN {moodleoverflow} module ON module.id = discuss.moodleoverflow
@@ -240,7 +245,8 @@ class townsquareevents {
         }
 
         // Extension of the middle string.
-        $middle .= "JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
+        $middle .= "JOIN {user} user ON user.id = posts.userid
+                    JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
                                                                            AND cm.instance = module.id) ";
 
         // Set the where clause of the string.
@@ -318,25 +324,6 @@ class townsquareevents {
     }
 
     /**
-     * Adds a boolean for the anonymous status of moodleoverflow posts.
-     * @param object $post  The post that is being checked.
-     * @return object
-     */
-    private function add_anonymousattribute($post): object {
-        if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
-            $post->anonymous = true;
-        } else if ($post->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS) {
-            $post->anonymous = $post->postuserid == $post->discussionuserid;
-        } else {
-            $post->anonymous = false;
-        }
-
-        unset($post->anonymoussetting);
-        unset($post->discussionuserid);
-        return $post;
-    }
-
-    /**
      * Filter that checks if the event needs to be filtered out for the current user because it is unavailable.
      * Applies to restriction that are defined in the module setting (restrict access).
      * @param object $event The event that is checked.
@@ -367,12 +354,17 @@ class townsquareevents {
     private function filter_assignment($calendarevent): bool {
         global $DB;
         $assignment = $DB->get_record('assign', ['id' => $calendarevent->instance]);
-        $firstcheck = $calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800);
-        $secondcheck = $calendarevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
-                                                                        context_module::instance($calendarevent->coursemoduleid));
-        $thirdcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
 
-        if ($firstcheck || $secondcheck || $thirdcheck) {
+        // Check if the assign is longer than a week closed.
+        $overduecheck = $calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800);
+
+        // Check if the user is someone without grading capability.
+        $nogradecapabilitycheck = $calendarevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
+                                                                        context_module::instance($calendarevent->coursemoduleid));
+        // Check if the assignment is not open yet.
+        $stillclosedcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
+
+        if ($overduecheck || $nogradecapabilitycheck || $stillclosedcheck) {
             return true;
         }
         return false;

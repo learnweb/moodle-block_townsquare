@@ -48,7 +48,7 @@ class block_townsquare extends block_base {
 
         $controller = new contentcontroller();
         $mustachedata = new stdClass();
-        $mustachedata->content = $controller->get_content();
+        $mustachedata->content = $controller->content;
 
         $this->content = new stdClass();
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);

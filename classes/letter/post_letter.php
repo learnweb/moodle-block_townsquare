@@ -77,10 +77,8 @@ class post_letter extends letter {
      * to export it to the mustache template.
      * @param int $contentid    internal ID in the townsquare block
      * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
-     * @throws moodle_exception
      */
     public function __construct($contentid, $postevent) {
-        global $DB;
         parent::__construct($contentid, $postevent->courseid, $postevent->modulename, $postevent->instancename,
                             $postevent->postmessage, $postevent->postcreated, $postevent->coursemoduleid);
 
@@ -89,26 +87,18 @@ class post_letter extends letter {
         $this->posturls = new stdClass();
 
         $this->lettertype = 'post';
-        if ($postevent->modulename == 'forum') {
-            $this->post->instanceid = $postevent->forumid;
-            $this->post->anonymous = false;
-        } else if ($postevent->modulename == 'moodleoverflow') {
-            $this->post->instanceid = $postevent->moodleoverflowid;
-            $this->post->anonymous = $postevent->anonymous;
-        } else {
-            throw new moodle_exception('invalidmodulename', 'block_townsquare');
-        }
+        $this->post->instanceid = $postevent->instanceid;
         $this->post->discussionid = $postevent->postdiscussion;
-        $this->author->id = $postevent->postuserid;
-        $author = $DB->get_record('user', ['id' => $postevent->postuserid]);
-        $this->author->name = $author->firstname . ' ' . $author->lastname;
         $this->post->id = $postevent->postid;
         $this->post->message = $postevent->postmessage;
         $this->post->discussionsubject = $postevent->discussionsubject;
         $this->post->parentid = $postevent->postparentid;
+        $this->author->id = $postevent->postuserid;
+        $this->author->name = $postevent->postuserfirstname . ' ' . $postevent->postuserlastname;
 
-        $this->build_links();
+        $this->add_anonymousattribute($postevent);
         $this->retrieve_profilepicture();
+        $this->build_links();
     }
 
     // Functions.
@@ -182,6 +172,26 @@ class post_letter extends letter {
         } else {
             $this->author->picture = '';
         }
+    }
+
+    /**
+     * Method to add the anonymous attribute to the post.
+     * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
+     * @return void
+     */
+    private function add_anonymousattribute($postevent) {
+        if ($this->modulename == 'moodleoverflow') {
+            if ($postevent->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
+                $this->post->anonymous = true;
+            } else if ($postevent->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS) {
+                $this->post->anonymous = $this->author->id == $postevent->discussionuserid;
+            } else {
+                $this->post->anonymous = false;
+            }
+        } else {
+            $this->post->anonymous = false;
+        }
+
     }
 
 }
