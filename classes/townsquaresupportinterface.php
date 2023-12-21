@@ -21,8 +21,8 @@
  * Every module that wants to show content on townsquare can implement this interface.
  * Every module must:
  * - gather "events" for a user that can be transformed into letters.
- * - declare if the basic letter structure (letter class and letter template) or a custom one is used. Custom letters must be
- *   subclasses of the townsquare basic letter and must implement the basic letter template (extension of the template is allowed).
+ * - declare if the basic letter structure (letter class) or a custom one is used. Custom letters must be
+ *   subclasses of the townsquare basic letter.
  * - provide php_unit test to ensure the correct behaviour.
  * The townsquare block will call the export function of the (custom) letter and draw the letter on the dashboard.
  *
@@ -30,3 +30,20 @@
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace block_townsquare;
+
+interface townsquaresupportinterface {
+
+    /**
+     * Export function for the mustache template
+     *
+     * @return array of information about the letter
+     */
+    public function export_letter(): array;
+
+    /**
+     * Function to gather the events
+     * @return array of events that can be transformed into letters
+     */
+    public function get_events(): array;
+}

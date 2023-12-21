@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * This file defines the sub-plugins for the townsquare block.
  *
@@ -20,4 +21,7 @@
  * @copyright 2023 Tamaro Walter
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die();
+
 $subplugins = (array) json_decode(file_get_contents(__DIR__ . "/subplugins.json"))->plugintypes;
