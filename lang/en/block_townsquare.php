@@ -40,3 +40,20 @@ $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare!
 
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
+
+// Setting strings.
+$string['primarycolor'] = 'Primary color';
+$string['secondarycolor'] = 'Secondary color';
+$string['bluecolor'] = 'Blue color';
+$string['orangecolor'] = 'Orange color';
+$string['redcolor'] = 'Red color';
+$string['graycolor'] = 'Gray color';
+
+$string['basiclettercolor'] = 'Color for basic letters';
+$string['completionlettercolor'] = 'Color for activity completion letters';
+$string['postlettercolor'] = 'Color for post letters';
+$string['orientationmarkercolor'] = 'Color for the orientation marker';
+$string['configbasiclettercolor'] = 'Configuration for the color of the basic notification letters';
+$string['configcompletionlettercolor'] = 'Configuration for the color of the activity completion letters';
+$string['configpostlettercolor'] = 'Configuration for the color of the post letters';
+$string['configorientationmarkercolor'] = 'Configuration for the color of the orientation marker';

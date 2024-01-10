@@ -56,11 +56,14 @@
 /* basicletter Style*/
 
 .basicletter.card {
-    border-color: var(--primary);
+    /*border-color: var(--primary);*/
+    border-color: var(--blue);
 }
 
 .basicletter_header.card-header {
-    background-color: var(--primary);
+    /*background-color: var(--primary);*/
+    background-color: var(--blue);
+
 }
 
 /* postletter Style */
@@ -89,8 +92,8 @@
 
 /* Style for the orientation marker */
 .orientationmarker.card {
-    border-color: var(--secondary);
-    background-color: var(--secondary);
+    border-color: var(--gray);
+    background-color: var(--gray);
 }
 
 .orientationmarker_body.card-body {

@@ -70,4 +70,13 @@ class block_townsquare extends block_base {
             'my' => true,
         ];
     }
+
+    /**
+     * Returns true if this block has global config.
+     *
+     * @return bool
+     */
+    public function has_config() {
+        return false;
+    }
 }
