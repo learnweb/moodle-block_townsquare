@@ -15,21 +15,29 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Form for editing townsquare block instances.
+ * Plugin upgrade steps are defined here.
  *
  * @package     block_townsquare
+ * @category    upgrade
  * @copyright   2023 Tamaro Walter
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_townsquare_edit_form extends block_edit_form {
 
-    /**
-     * Extends the configuration form for block_townsquare.
-     *
-     * @param MoodleQuickForm $mform The form being built.
-     */
-    protected function specific_definition($mform) {
-        // Section header title.
-        $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
-    }
+/**
+ * Execute block_townsquare upgrade from the given old version.
+ *
+ * @param int $oldversion
+ * @return bool
+ */
+function xmldb_block_townsquare_upgrade($oldversion) {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+
+    // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
+    //
+    // You will also have to create the db/install.xml file by using the XMLDB Editor.
+    // Documentation for the XMLDB Editor can be found at {@link https://docs.moodle.org/dev/XMLDB_editor}.
+
+    return true;
 }

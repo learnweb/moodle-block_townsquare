@@ -38,11 +38,8 @@ class activitycompletion_letter extends letter {
 
     // Attributes.
 
-    /** @var moodle_url The url to the activity */
-    private $linktoactivity;
-
     /** @var bool variable for the mustache template */
-    public $isactivitycompletion = true;
+    public bool $isactivitycompletion = true;
 
     // Constructor.
 
@@ -53,12 +50,9 @@ class activitycompletion_letter extends letter {
      * @param object $calendarevent a calendar event with information, for more see classes/townsquareevents.php
      */
     public function __construct($contentid, $calendarevent) {
-        parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename,
-                                        $calendarevent->name, $calendarevent->timestart);
+        parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename, $calendarevent->instancename,
+                                        $calendarevent->name, $calendarevent->timestart, $calendarevent->coursemoduleid);
         $this->lettertype = 'activitycompletion';
-
-        $cm = get_coursemodule_from_instance($calendarevent->modulename, $calendarevent->instance);
-        $this->linktoactivity = new moodle_url('/mod/' . $calendarevent->modulename . '/view.php', ['id' => $cm->id]);
     }
 
     // Functions.
@@ -77,30 +71,12 @@ class activitycompletion_letter extends letter {
             'isactivitycompletion' => $this->isactivitycompletion,
             'courseid' => $this->courseid,
             'coursename' => $this->coursename,
-            'modulename' => $this->modulename,
+            'instancename' => $this->instancename,
             'content' => $this->content,
             'created' => $date,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),
         ];
-    }
-
-    // Getter.
-
-    /**
-     * Overrides function from superclass.
-     * @return string
-     */
-    public function get_lettertype():string {
-        return $this->lettertype;
-    }
-
-    /**
-     * Getter for the link.
-     * @return moodle_url
-     */
-    public function get_linktoactivity():moodle_url {
-        return $this->linktoactivity;
     }
 
 }

@@ -36,13 +36,13 @@ class orientation_marker {
     // Attributes.
 
     /** @var int an ID to identify every content in townsquare */
-    private $contentid;
+    private int $contentid;
 
     /** @var int The timestamp of the current day. */
-    private $today;
+    private int $today;
 
     /** @var bool variable for the mustache template */
-    public $isorientationmarker = true;
+    public bool $isorientationmarker = true;
 
     // Constructor.
 
@@ -53,7 +53,6 @@ class orientation_marker {
      * @param int $time      A Timestamp of the time that the orientation marker is created
      */
     public function __construct($contentid, $time) {
-        global $USER;
         $this->contentid = $contentid;
         $this->today = $time;
 

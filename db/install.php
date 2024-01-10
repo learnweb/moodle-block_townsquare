@@ -15,21 +15,18 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Form for editing townsquare block instances.
+ * Code to be executed after the plugin's database scheme has been installed is defined here.
  *
  * @package     block_townsquare
+ * @category    upgrade
  * @copyright   2023 Tamaro Walter
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_townsquare_edit_form extends block_edit_form {
 
-    /**
-     * Extends the configuration form for block_townsquare.
-     *
-     * @param MoodleQuickForm $mform The form being built.
-     */
-    protected function specific_definition($mform) {
-        // Section header title.
-        $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
-    }
+/**
+ * Custom code to be run on installing the plugin.
+ */
+function xmldb_block_townsquare_install() {
+
+    return true;
 }

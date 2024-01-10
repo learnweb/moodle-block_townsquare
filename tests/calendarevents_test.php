@@ -39,7 +39,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::townsquare_get_calendarevents()
+ * @covers \block_townsquare\townsquareevents::get_calendarevents()
  */
 class calendarevents_test extends \advanced_testcase {
 
@@ -123,7 +123,7 @@ class calendarevents_test extends \advanced_testcase {
         $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
 
         // Two checks: Is every event in the course of the teacher and is the number of events correct.
-        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->teacher->id));
+        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->teacher->id, true));
         $this->assertEquals(true, $result);
         $this->assertEquals(5, count($calendarevents));
 
@@ -131,7 +131,7 @@ class calendarevents_test extends \advanced_testcase {
         $calendarevents = $this->get_calendarevents_from_user($this->testdata->student2);
 
         // Two checks: Is every event in the course of the student and is the number of events correct.
-        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->student2->id));
+        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->student2->id, true));
         $this->assertEquals(true, $result);
         $this->assertEquals(1, count($calendarevents));
     }
@@ -298,7 +298,7 @@ class calendarevents_test extends \advanced_testcase {
     private function get_calendarevents_from_user($user):array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
-        return $townsquareevents->townsquare_get_calendarevents();
+        return $townsquareevents->get_calendarevents();
     }
 
 

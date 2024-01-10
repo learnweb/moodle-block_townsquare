@@ -40,31 +40,40 @@ class letter {
     // Attributes.
 
     /** @var int an ID to identify every content in townsquare */
-    protected $contentid;
+    protected int $contentid;
 
     /** @var string Every Letter must save its letter type */
-    protected $lettertype;
+    protected string $lettertype;
+
+    /** @var int course module id of the content module */
+    protected int $cmid;
 
     /** @var int The course from the letter */
-    protected $courseid;
+    protected int $courseid;
 
     /** @var string The name of the course */
-    protected $coursename;
+    protected string $coursename;
 
     /** @var string The Name of the plugin */
-    protected $modulename;
+    protected string $modulename;
+
+    /** @var string The Name of the instance */
+    protected string $instancename;
 
     /** @var string The content of the letter */
-    protected $content;
+    protected string $content;
 
     /** @var int Timestamp When the activity was created */
-    protected $created;
+    protected int $created;
 
     /** @var bool variable for the mustache template */
-    public $isbasic = true;
+    public bool $isbasic = true;
 
     /** @var moodle_url Link to the course */
-    protected $linktocourse;
+    protected moodle_url $linktocourse;
+
+    /** @var moodle_url The url to the activity */
+    protected moodle_url $linktoactivity;
 
     // Constructor.
 
@@ -74,18 +83,23 @@ class letter {
      * @param int $contentid        internal ID in the townsquare block.
      * @param int $courseid         Course ID from where the content comes from.
      * @param string $modulename    Name of the module/activity.
+     * @param string $instancename  Name of the instance.
      * @param mixed $content        The content that will be showed in the letter.
      * @param int $created          Timestamp of creation.
+     * @param int $cmid             Course module id of the content module.
      */
-    public function __construct($contentid, $courseid, $modulename, $content, $created) {
+    public function __construct($contentid, $courseid, $modulename, $instancename, $content, $created, $cmid) {
         $this->contentid = $contentid;
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
+        $this->cmid = $cmid;
         $this->coursename = get_course($courseid)->fullname;
         $this->modulename = $modulename;
+        $this->instancename = $instancename;
         $this->content = $content;
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
+        $this->linktoactivity = new moodle_url('/mod/' . $modulename . '/view.php', ['id' => $cmid]);
     }
 
     // Functions.
@@ -104,68 +118,11 @@ class letter {
             'isbasic' => $this->isbasic,
             'courseid' => $this->courseid,
             'coursename' => $this->coursename,
-            'modulename' => $this->modulename,
+            'instancename' => $this->instancename,
             'content' => $this->content,
             'created' => $date,
             'linktocourse' => $this->linktocourse->out(),
+            'linktoactivity' => $this->linktoactivity->out(),
         ];
-    }
-
-    // Getter.
-
-    /**
-     * Getter for the letter type
-     * @return string
-     */
-    public function get_lettertype() {
-        return $this->lettertype;
-    }
-
-    /**
-     * Getter for the course id.
-     * @return int
-     */
-    public function get_courseid() {
-        return $this->courseid;
-    }
-
-    /**
-     * Getter for the course name.
-     * @return string
-     */
-    public function get_coursename() {
-        return $this->coursename;
-    }
-
-    /**
-     * Getter for the module name
-     * @return string
-     */
-    public function get_modulename() {
-        return $this->modulename;
-    }
-
-    /**
-     * Getter for the content
-     * @return string
-     */
-    public function get_content() {
-        return $this->content;
-    }
-
-    /**
-     * Getter for the link to the course
-     * @return moodle_url
-     */
-    public function get_linktocourse() {
-        return $this->linktocourse;
-    }
-
-    /**
-     * Getter for the age of the activity.
-     * @return int
-     */
-    public function get_created() {
-        return $this->created;
     }
 }

@@ -18,6 +18,16 @@
     @template block_townsquare/todayletter
 
     This template renders the letter that shows the current date.
+
+    Variables required for this template (more variables are available for testing and future features):
+    * contentid - Unique identification for every shown plugin content
+    * isorientationmarker - variable for the blockcontent template to assure this template is used
+
+    Example (json):
+    {
+        "contentid": 1,
+        "isorientationmarker": true
+    }
 }}
 <div class="orientationmarker card mb-3" id="content-nr-{{contentid}}">
     <div class="orientationmarker_body card-body">

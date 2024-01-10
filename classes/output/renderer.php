@@ -41,6 +41,6 @@ class renderer extends plugin_renderer_base {
      * @return string HTML string
      */
     public function render_main($data):string {
-        return $this->render_from_template('block_townsquare/main', $data);
+        return $this->render_from_template('block_townsquare/blockcontent', $data);
     }
 }

@@ -33,7 +33,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::townsquare_get_postevents()
+ * @covers \block_townsquare\townsquareevents::get_postevents()
  */
 class postevents_test extends \advanced_testcase {
 
@@ -178,7 +178,7 @@ class postevents_test extends \advanced_testcase {
         $posts = $this->get_postevents_from_user($this->testdata->teacher);;
 
         // Check if the teacher sees only posts of his courses.
-        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->teacher->id));
+        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->teacher->id, true));
 
         // Two Checks: Is the number of posts correct (no post is missing) and is every post in the course of the teacher.
         if ($this->moodleoverflowavailable) {
@@ -191,7 +191,7 @@ class postevents_test extends \advanced_testcase {
         // Test case 2: Post for the first student.
         $posts = $this->get_postevents_from_user($this->testdata->student1);
 
-        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student1->id));
+        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student1->id, true));
 
         if ($this->moodleoverflowavailable) {
             $this->assertEquals(3, count($posts));
@@ -203,7 +203,7 @@ class postevents_test extends \advanced_testcase {
         // Test case 3: Post for the second student.
         $posts = $this->get_postevents_from_user($this->testdata->student2);
 
-        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student2->id));
+        $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->student2->id, true));
 
         if ($this->moodleoverflowavailable) {
             $this->assertEquals(3, count($posts));
@@ -239,13 +239,13 @@ class postevents_test extends \advanced_testcase {
 
         // Iterate through all posts and save the posts from teacher and student.
         foreach ($posts as $post) {
-            if ($post->modulename == 'moodleoverflow' && $post->moodleoverflowid == $this->testdata->moodleoverflow1->id) {
+            if ($post->modulename == 'moodleoverflow' && $post->instanceid == $this->testdata->moodleoverflow1->id) {
                 if ($post->postuserid == $this->testdata->teacher->id) {
                     $firstteacherpost = $post;
                 } else if ($post->postuserid == $this->testdata->student1->id) {
                     $firststudentpost = $post;
                 }
-            } else if ($post->modulename == 'moodleoverflow' && $post->moodleoverflowid == $this->testdata->moodleoverflow2->id) {
+            } else if ($post->modulename == 'moodleoverflow' && $post->instanceid == $this->testdata->moodleoverflow2->id) {
                 if ($post->postuserid == $this->testdata->teacher->id) {
                     $secondteacherpost = $post;
                 } else if ($post->postuserid == $this->testdata->student2->id) {
@@ -254,13 +254,54 @@ class postevents_test extends \advanced_testcase {
             }
         }
 
-        // Test case 1: The teacherpost should be anonymous and the studentpost should not be anonymous (partial anonymous).
-        $this->assertEquals(true, $firstteacherpost->anonymous);
-        $this->assertEquals(false, $firststudentpost->anonymous);
+        // Test case 1: The teacherpost and studentpost are in partial anonymous mode (only questions are anonymous).
+        $this->assertEquals(true, $firstteacherpost->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS);
+        $this->assertEquals(true, $firststudentpost->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS);
 
-        // Test case 2: The teacherpost and studentpost should be anonymous (fully anonymous).
-        $this->assertEquals(true, $secondteacherpost->anonymous);
-        $this->assertEquals(true, $secondstudentpost->anonymous);
+        // Test case 2: The teacherpost and studentpost are in full anonymous mode (all posts are anonymous).
+        $this->assertEquals(true, $secondteacherpost->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS);
+        $this->assertEquals(true, $secondstudentpost->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS);
+    }
+
+    /**
+     * Test, if posts are not shown in townsquare when the forum/moodleoverflow is hidden.
+     * @return void
+     */
+    public function test_hidden(): void {
+        global $DB;
+        // Test case 1: Hide the first forum.
+        $cmid = get_coursemodule_from_instance('forum', $this->testdata->forum1->id)->id;
+        $DB->update_record('course_modules', ['id' => $cmid, 'visible' => 0]);
+
+        // Get the current post events from the teacher.
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
+
+        // Check if the first forum post is not in the post events.
+        $result = true;
+        foreach ($posts as $post) {
+            if ($post->modulename == 'forum' && $post->instanceid == $this->testdata->forum1->id) {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
+
+        // Test case 2: Hide the first moodleoverflow.
+        if ($this->moodleoverflowavailable) {
+            $cmid = get_coursemodule_from_instance('moodleoverflow', $this->testdata->moodleoverflow1->id)->id;
+            $DB->update_record('course_modules', ['id' => $cmid, 'visible' => 0]);
+
+            // Get the current post events from the teacher.
+            $posts = $this->get_postevents_from_user($this->testdata->teacher);
+
+            // Check if the first moodleoverflow post is not in the post events.
+            $result = true;
+            foreach ($posts as $post) {
+                if ($post->modulename == 'moodleoverflow' && $post->instanceid == $this->testdata->moodleoverflow1->id) {
+                    $result = false;
+                }
+            }
+            $this->assertEquals(true, $result);
+        }
     }
 
     // Helper functions.
@@ -294,7 +335,7 @@ class postevents_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($this->testdata->student2->id, $this->testdata->course2->id, 'student');
 
         // Create a moodleoverflow with 2 post in each course. (But only if it is available.
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow'])) {
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
             $this->moodleoverflowavailable = true;
             $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
 
@@ -355,7 +396,7 @@ class postevents_test extends \advanced_testcase {
     private function get_postevents_from_user($user):array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
-        return $townsquareevents->townsquare_get_postevents();
+        return $townsquareevents->get_postevents();
     }
 
     /**
