@@ -35,15 +35,16 @@ namespace block_townsquare;
 interface townsquaresupportinterface {
 
     /**
+     * Function to gather the events
+     * @return array of events that can be transformed into letters
+     */
+    public function get_events(): array;
+
+    /**
      * Export function for the mustache template
      *
      * @return array of information about the letter
      */
     public function export_letter(): array;
 
-    /**
-     * Function to gather the events
-     * @return array of events that can be transformed into letters
-     */
-    public function get_events(): array;
 }

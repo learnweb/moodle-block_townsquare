@@ -39,4 +39,32 @@ class townsquaresupport extends base {
     public function is_uninstall_allowed(): bool {
         return true;
     }
+
+    /**
+     * Checks whether sub-plugins have settings.php and adds them to the admin menu.
+     * In Case a sub-plugin is added the settings.php has to include all global variables it needs.
+     *
+     * @param \part_of_admin_tree $adminroot
+     * @param string $parentnodename
+     * @param bool $hassiteconfig
+     */
+    public function load_settings(\part_of_admin_tree $adminroot, $parentnodename, $hassiteconfig) {
+        $ADMIN = $adminroot; // May be used in settings.php.
+
+        if (!$this->is_installed_and_upgraded()) {
+            return;
+        }
+
+        if (!$hassiteconfig || !file_exists($this->full_path('settings.php'))) {
+            return;
+        }
+
+        $section = $this->get_settings_section_name();
+        $settings = new admin_settingpage($section, $this->displayname, 'moodle/site:config', $this->is_enabled() === false);
+        include($this->full_path('settings.php')); // This may also set $settings to null.
+
+        if ($settings) {
+            $ADMIN->add($parentnodename, $settings);
+        }
+    }
 }
