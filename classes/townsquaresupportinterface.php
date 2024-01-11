@@ -21,8 +21,6 @@
  * Every module that wants to show content on townsquare can implement this interface.
  * Every module must:
  * - gather "events" for a user that can be transformed into letters.
- * - declare if the basic letter structure (letter class) or a custom one is used. Custom letters must be
- *   subclasses of the townsquare basic letter.
  * - provide php_unit test to ensure the correct behaviour.
  * The townsquare block will call the export function of the (custom) letter and draw the letter on the dashboard.
  *
@@ -36,15 +34,17 @@ interface townsquaresupportinterface {
 
     /**
      * Function to gather the events
+     * Every event must gain sufficient data so that townsquare can build a letter from it.
+     * The array should contain following information:
+     * [courseid] => int           Course ID from where the content comes from.
+     * [modulename] => string      Name of the activity module.
+     * [instancename] => string    Name of the instance that shows the notification.
+     * [content] => string         The content that will be showed in the letter.
+     * [timestart] => int          Timestamp that represents the deadline/creation of a notification. Is important to sort events.
+     * [coursemoduleid] => int     Course module id of the content module.
+     * [eventtype] => string       Type of the event.
+     *
      * @return array of events that can be transformed into letters
      */
     public function get_events(): array;
-
-    /**
-     * Export function for the mustache template
-     *
-     * @return array of information about the letter
-     */
-    public function export_letter(): array;
-
 }

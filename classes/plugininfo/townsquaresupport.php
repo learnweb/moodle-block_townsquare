@@ -30,7 +30,6 @@ use core\plugininfo\base;
  */
 class townsquaresupport extends base {
 
-
     /**
      * Return if a subplugin is allowed to be deleted..
      *

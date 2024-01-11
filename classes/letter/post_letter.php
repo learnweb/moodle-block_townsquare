@@ -80,7 +80,7 @@ class post_letter extends letter {
      */
     public function __construct($contentid, $postevent) {
         parent::__construct($contentid, $postevent->courseid, $postevent->modulename, $postevent->instancename,
-                            $postevent->postmessage, $postevent->postcreated, $postevent->coursemoduleid);
+                            $postevent->postmessage, $postevent->timestart, $postevent->coursemoduleid);
 
         $this->author = new stdClass();
         $this->post = new stdClass();

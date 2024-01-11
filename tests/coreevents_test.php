@@ -33,7 +33,7 @@ use stdClass;
  */
 
 /**
- * PHPUnit tests for testing the process of collecting post events.
+ * PHPUnit tests for testing the process of collecting calendar events from core plugins.
  *
  * @package   block_townsquare
  * @copyright 2023 Tamaro Walter
@@ -41,7 +41,7 @@ use stdClass;
  *
  * @covers \block_townsquare\townsquareevents::get_coreevents()
  */
-class calendarevents_test extends \advanced_testcase {
+class coreevents_test extends \advanced_testcase {
 
     // Attributes.
 

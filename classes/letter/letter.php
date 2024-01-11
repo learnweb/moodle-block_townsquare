@@ -84,7 +84,7 @@ class letter {
      * @param int $courseid         Course ID from where the content comes from.
      * @param string $modulename    Name of the module/activity.
      * @param string $instancename  Name of the instance.
-     * @param mixed $content        The content that will be showed in the letter.
+     * @param string $content        The content that will be showed in the letter.
      * @param int $created          Timestamp of creation.
      * @param int $cmid             Course module id of the content module.
      */
@@ -109,9 +109,6 @@ class letter {
      * @return array
      */
     public function export_letter() {
-        // Change the timestamp to a date.
-        $date = date('d.m.Y', $this->created);
-
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -120,7 +117,7 @@ class letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => $date,
+            'created' => date('d.m.Y', $this->created),
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
         ];
