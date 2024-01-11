@@ -39,7 +39,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::get_calendarevents()
+ * @covers \block_townsquare\townsquareevents::get_coreevents()
  */
 class calendarevents_test extends \advanced_testcase {
 
@@ -298,7 +298,7 @@ class calendarevents_test extends \advanced_testcase {
     private function get_calendarevents_from_user($user):array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
-        return $townsquareevents->get_calendarevents();
+        return $townsquareevents->get_coreevents();
     }
 
 
