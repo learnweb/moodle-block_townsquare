@@ -1,5 +1,5 @@
 {
   "plugintypes": {
-    "ts_pluginletters": "blocks/townsquare/supportedmodules"
+    "ts_supportedmodules": "blocks/townsquare/supportedmodules"
   }
 }

@@ -39,6 +39,22 @@ function townsquare_get_courses(): array {
 }
 
 /**
+ * Function for subplugins to get the start time of the search.
+ * @return int
+ */
+function townsquare_get_timestart(): int {
+    return time() - 15768000;
+}
+
+/**
+ * Function for subplugins to get the end time of the search.
+ * @return int
+ */
+function townsquare_get_timeend(): int {
+    return time() + 15768000;
+}
+
+/**
  * Merge sort function for townsquare events.
  * @param $events
  * @return array
@@ -83,4 +99,20 @@ function townsquare_merge(array $left, array $right): array {
         }
     }
     return $result;
+}
+
+function townsquare_filter_availability($event): bool {
+    // If there is no restriction defined, the event is available.
+    if ($event->availability == null) {
+        return false;
+    }
+
+    // If there is a restriction, check if it applies to the user.
+    $modinfo = get_fast_modinfo($event->courseid);
+    $moduleinfo = $modinfo->get_cm($event->coursemoduleid);
+    if ($moduleinfo->uservisible) {
+        return false;
+    }
+
+    return true;
 }

@@ -93,7 +93,7 @@ class townsquareevents {
         // Filter the events and add the instancename.
         foreach ($coreevents as $coreevent) {
             // Filter out events that are not relevant for the user.
-            if ($this->filter_availability($coreevent) ||
+            if (townsquare_filter_availability($coreevent) ||
                 ($coreevent->modulename == "assign" && $this->filter_assignment($coreevent)) ||
                 ($coreevent->eventtype == "expectcompletionon" && $this->filter_activitycompletions($coreevent))) {
                 unset($coreevents[$coreevent->id]);
@@ -117,11 +117,12 @@ class townsquareevents {
     public function get_subpluginevents(): array {
         // Get all available subplugins.
         $events = [];
-        $subplugins = \core_plugin_manager::instance()->get_plugins_of_type('ts_pluginletters');
-
+        $subplugins = \core_plugin_manager::instance()->get_plugins_of_type('ts_supportedmodules');
+        var_dump($subplugins);
         foreach ($subplugins as $subplugin) {
             $events += $subplugin->get_events();
         }
+
         // Sort the events and return them.
         return townsquare_mergesort($events);
     }
@@ -144,7 +145,7 @@ class townsquareevents {
         }
         // TODO: implement support for moodleoverflow in a subplugin.
         if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
-            $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
+            //$moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
         }
 
         if (empty($forumposts) && empty($moodleoverflowposts)) {
@@ -159,11 +160,11 @@ class townsquareevents {
         for ($i = 0; $i < $numberofposts; $i++) {
             // Filter unavailable posts.
             // Iterate until the first post that is available. Decrement the number of posts each time a post is filtered.
-            while (current($forumposts) && $this->filter_availability(current($forumposts))) {
+            while (current($forumposts) && townsquare_filter_availability(current($forumposts))) {
                 next($forumposts);
                 $numberofposts--;
             }
-            while (current($moodleoverflowposts) && $this->filter_availability(current($moodleoverflowposts))) {
+            while (current($moodleoverflowposts) && townsquare_filter_availability(current($moodleoverflowposts))) {
                 next($moodleoverflowposts);
                 $numberofposts--;
             }
@@ -321,28 +322,6 @@ class townsquareevents {
     private function merge_events($leftarray, $rightarray, ): array {
         // TODO: merge sort events.
         return [];
-    }
-
-    /**
-     * Filter that checks if the event needs to be filtered out for the current user because it is unavailable.
-     * Applies to restrictions that are defined in the module setting (restrict access).
-     * @param object $event The event that is checked.
-     * @return bool true if the event needs to filtered out, false if not.
-     */
-    private function filter_availability($event): bool {
-        // If there is no restriction defined, the event is available.
-        if ($event->availability == null) {
-            return false;
-        }
-
-        // If there is a restriction, check if it applies to the user.
-        $modinfo = get_fast_modinfo($event->courseid);
-        $moduleinfo = $modinfo->get_cm($event->coursemoduleid);
-        if ($moduleinfo->uservisible) {
-            return false;
-        }
-
-        return true;
     }
 
     /**
