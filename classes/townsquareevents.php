@@ -145,7 +145,7 @@ class townsquareevents {
         }
         // TODO: implement support for moodleoverflow in a subplugin.
         if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
-            //$moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
+            $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
         }
 
         if (empty($forumposts) && empty($moodleoverflowposts)) {

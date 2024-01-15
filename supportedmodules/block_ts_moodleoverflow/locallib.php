@@ -22,6 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 global $CFG;
 require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
@@ -44,7 +46,7 @@ function ts_moodleoverflow_get_events($courses, $timestart): array {
     $posts = ts_moodleoverflow_get_post_from_db($courses, $timestart);
 
     // Filter posts by availability.
-    foreach($posts as $post) {
+    foreach ($posts as $post) {
         if (townsquare_filter_availability($post)) {
             unset($posts[$post->row_num]);
         }
@@ -60,9 +62,9 @@ function ts_moodleoverflow_get_post_from_db($courses, $timestart): array {
     $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
 
     $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
-                'moodleoverflow' AS modulename, 
+                'moodleoverflow' AS modulename,
                 module.id AS instanceid,
-                module.anonymous AS anonymoussetting,  
+                module.anonymous AS anonymoussetting,
                 'post' AS eventtype,
                 cm.id AS coursemoduleid,
                 cm.availability AS availability,
