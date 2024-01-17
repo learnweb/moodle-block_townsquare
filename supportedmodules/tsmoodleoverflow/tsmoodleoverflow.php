@@ -14,17 +14,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die;
+
+use block_townsquare\townsquaresupport\townsquaresupportinterface;
+
+global $CFG;
+require_once($CFG->dirroot . '/blocks/townsquare/supportedmodules/block_ts_moodleoverflow/locallib.php');
+
 /**
- * Plugin version and other meta-data are defined here.
+ * Plugin strings are defined here.
  *
- * @package     block_ts_moodleoverflow
+ * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class tsmoodleoverflow implements townsquaresupportinterface {
 
-defined('MOODLE_INTERNAL') || die();
-$plugin->component = 'block_ts_moodleoverflow';
-$plugin->release = '0.1.0';
-$plugin->version = 2024011500;
-$plugin->requires = 2022041900;
-$plugin->maturity = MATURITY_ALPHA;
+    /**
+     * Function from the interface.
+     * @return array
+     */
+    public function get_events(): array {
+        $courses = townsquare_get_courses();
+        $timestart = townsquare_get_timestart();
+        return ts_moodleoverflow_get_events($courses, $timestart);
+    }
+
+}

@@ -117,7 +117,7 @@ class townsquareevents {
     public function get_subpluginevents(): array {
         // Get all available subplugins.
         $events = [];
-        $subplugins = \core_plugin_manager::instance()->get_plugins_of_type('ts_supportedmodules');
+        $subplugins = \core_plugin_manager::instance()->get_plugins_of_type('supportedmodules');
         var_dump($subplugins);
         foreach ($subplugins as $subplugin) {
             $events += $subplugin->get_events();
