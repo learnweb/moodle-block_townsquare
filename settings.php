@@ -27,22 +27,15 @@ defined('MOODLE_INTERNAL') || die;
 if ($ADMIN->fulltree) {
     require_once($CFG->dirroot . '/blocks/townsquare/lib.php');
 
-    // Color Setting for basic letters.
-    $basicletteroptions = [];
-    $basicletteroptions[TOWNSQUARE_PRIMARY_COLOR] = get_string('primarycolor', 'block_townsquare');
-    $basicletteroptions[TOWNSQUARE_BLUE_COLOR] = get_string('bluecolor', 'block_townsquare');
-    $settings->add(new admin_setting_configselect('block_townsquare/basiclettercolor',
-                                                  get_string('basiclettercolor', 'block_townsquare'),
-                                                  get_string('configbasiclettercolor', 'block_townsquare'),
-                                 TOWNSQUARE_PRIMARY_COLOR, $basicletteroptions));
+    // Color Setting for the primary color that will be used on basic letters
+    $settings->add(new admin_setting_configcolourpicker('block_townsquare/basiclettercolor',
+                                                        get_string('basiclettercolor', 'block_townsquare'),
+                                                        get_string('configbasiclettercolor', 'block_townsquare'),
+                                                        TOWNSQUARE_PRIMARY_COLOR));
 
     // Color Setting for the orientation marker.
-    $orientationmarkeroptions = [];
-    $orientationmarkeroptions[TOWNSQUARE_SECONDARY_COLOR] = get_string('secondarycolor', 'block_townsquare');
-    $orientationmarkeroptions[TOWNSQUARE_GRAY_COLOR] = get_string('graycolor', 'block_townsquare');
-    $settings->add(new admin_setting_configselect('block_townsquare/orientationmarkercolor',
-                                                  get_string('orientationmarkercolor', 'block_townsquare'),
-                                                  get_string('configorientationmarkercolor', 'block_townsquare'),
-                                 TOWNSQUARE_SECONDARY_COLOR, $orientationmarkeroptions));
-
+    $settings->add(new admin_setting_configcolourpicker('block_townsquare/orientationmarkercolor',
+                                                        get_string('orientationmarkercolor', 'block_townsquare'),
+                                                        get_string('configorientationmarkercolor', 'block_townsquare'),
+                                                        TOWNSQUARE_SECONDARY_COLOR));
 }

@@ -77,6 +77,6 @@ class block_townsquare extends block_base {
      * @return bool
      */
     public function has_config() {
-        return false;
+        return true;
     }
 }

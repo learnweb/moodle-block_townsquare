@@ -56,14 +56,11 @@
 /* basicletter Style*/
 
 .basicletter.card {
-    /*border-color: var(--primary);*/
     border-color: var(--blue);
 }
 
 .basicletter_header.card-header {
-    /*background-color: var(--primary);*/
     background-color: var(--blue);
-
 }
 
 /* postletter Style */

@@ -15,13 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Library for the townsquare block.
+ * Internal library of functions for the townsquare block
  *
- * @package   block_townsquare
+ * @package block_townsquare
  * @copyright 2024 Tamaro Walter
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Color constants from bootstrap.
-define('TOWNSQUARE_PRIMARY_COLOR', '#0f6cbf');
-define('TOWNSQUARE_SECONDARY_COLOR', '#6a737b');
+function townsquare_get_basiclettercolor() {
+    return get_config('block_townsquare', 'basiclettercolor');
+}
+
+function townsquare_get_orientationmarkercolor() {
+    return get_config('block_townsquare', 'orientationmarkercolor');
+}
