@@ -21,10 +21,7 @@
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace block_townsquare\letter;
-
-use moodle_url;
 
 /**
  * Class that represents an activity completion reminder.
@@ -53,6 +50,7 @@ class activitycompletion_letter extends letter {
         parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename, $calendarevent->instancename,
                                         $calendarevent->name, $calendarevent->timestart, $calendarevent->coursemoduleid);
         $this->lettertype = 'activitycompletion';
+        $this->lettercolor = townsquare_get_colorsetting('completionletter');
     }
 
     // Functions.
@@ -76,6 +74,7 @@ class activitycompletion_letter extends letter {
             'created' => $date,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),
+            'completionlettercolor' => $this->lettercolor,
         ];
     }
 

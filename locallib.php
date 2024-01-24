@@ -22,10 +22,19 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-function townsquare_get_basiclettercolor() {
-    return get_config('block_townsquare', 'basiclettercolor');
-}
-
-function townsquare_get_orientationmarkercolor() {
-    return get_config('block_townsquare', 'orientationmarkercolor');
+/**
+ * Function to get the color of a letter.
+ *
+ * @param string $lettertype        The type of the letter that wants to retrieve its color setting.
+ * @return false|mixed              The color of the letter.
+ * @throws moodle_exception
+ */
+function townsquare_get_colorsetting($lettertype) {
+    return match ($lettertype) {
+        'basicletter' => get_config('block_townsquare', 'basiclettercolor'),
+        'postletter' => get_config('block_townsquare', 'postlettercolor'),
+        'completionletter' => get_config('block_townsquare', 'completionlettercolor'),
+        'orientationmarker' => get_config('block_townsquare', 'orientationmarkercolor'),
+        default => throw new \moodle_exception('invalidlettertype', 'block_townsquare'),
+    };
 }

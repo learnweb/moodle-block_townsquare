@@ -40,8 +40,9 @@
         "linktocourse": "http://localhost/moodle/course/view.php?id=3"
     }
 }}
-<div class="townsquare_letter completionletter card mb-3" id="content-nr-{{contentid}}">
-    <div class="townsquareletter_header completionletter_header card-header">
+<div class="townsquare_letter completionletter card mb-3" id="content-nr-{{contentid}}"
+     style="border-color: {{completionlettercolor}}">
+    <div class="townsquareletter_header completionletter_header card-header" style="background-color: {{completionlettercolor}}">
         <div class = "townsquareletter_top completionletter_top">
             <div class = "townsquareletter_course completionletter_course">
                 {{#str}} coursetitle, moodle, {"course":

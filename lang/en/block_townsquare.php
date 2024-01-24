@@ -31,6 +31,9 @@ $string['pluginname'] = 'Town Square';
 $string['pluginname:addinstance'] = 'Add the Town Square block';
 $string['pluginname:myaddinstance'] = 'Add the Town Square block to the dashboard';
 
+// Error strings.
+$string['invalidlettertype'] = 'Invalid function parameter, please use a valid letter type';
+
 // Mustache templates strings.
 $string['completionletterorigin'] = '{$a->modulename} should be completed until {$a->date}';
 $string['basicletterorigin'] = 'A notification from {$a->modulename}:';
@@ -42,14 +45,12 @@ $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare!
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
 
 // Setting strings.
-$string['primarycolor'] = 'Primary color';
-$string['secondarycolor'] = 'Secondary color';
-$string['bluecolor'] = 'Blue color';
-$string['orangecolor'] = 'Orange color';
-$string['redcolor'] = 'Red color';
-$string['graycolor'] = 'Gray color';
-
 $string['basiclettercolor'] = 'Color for basic letters';
+$string['postlettercolor'] = 'Color for post letters';
+$string['completionlettercolor'] = 'Color for activity completion letters';
 $string['orientationmarkercolor'] = 'Color for the orientation marker';
+
 $string['configbasiclettercolor'] = 'Configuration for the color of the basic notification letters';
+$string['configpostlettercolor'] = 'Configuration for the color of the post letters';
+$string['configcompletionlettercolor'] = 'Configuration for the color of the activity completion letters';
 $string['configorientationmarkercolor'] = 'Configuration for the color of the orientation marker';
