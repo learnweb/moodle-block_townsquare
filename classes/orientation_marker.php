@@ -24,6 +24,11 @@
 
 namespace block_townsquare;
 
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
+
 /**
  * Class that represent a orientation marker.
  *

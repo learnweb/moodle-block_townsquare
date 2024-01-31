@@ -43,11 +43,15 @@ class contentcontroller {
     /** @var array letters and other content that will be shown to the user */
     public array $content;
 
+    /** @var array courses that show content in townsquare (not the same as enrolled courses) */
+    public array $courses;
+
     /**
      * Constructor for the controller.
      */
     public function __construct() {
         $this->townsquareevents = new townsquareevents();
+        $this->courses = [];
         $this->content = $this->build_content();
     }
 
@@ -57,12 +61,13 @@ class contentcontroller {
      * Builds the content from events.
      * @return array
      */
-    public function build_content():array {
+    public function build_content(): array {
         $this->events = $this->townsquareevents->get_all_events_sorted();
 
         $orientationmarkerset = false;
         $index = 0;
         $time = time();
+        $appearedcourses = [];
         // Build a letter for each event.
         foreach ($this->events as $event) {
             // Display a orientation marker on the current date between the other events.
@@ -74,6 +79,7 @@ class contentcontroller {
                 $tempcontent = new orientation_marker($index, $time);
                 $this->content[$index] = $tempcontent->export_data();
                 $index++;
+                continue;
             }
             if (isset($event->eventtype) && $event->eventtype == 'post') {
                 $templetter = new letter\post_letter($index, $event);
@@ -84,6 +90,13 @@ class contentcontroller {
                                                         $event->name, $event->timestart, $event->coursemoduleid);
             }
             $this->content[$index] = $templetter->export_letter();
+
+            // Collect the courses shown in the townsquare to be able to filter them afterwards.
+            if (!array_key_exists($this->content[$index]['courseid'], $appearedcourses)) {
+                $this->courses[] = ['courseid' => $this->content[$index]['courseid'],
+                                    'coursename' => $this->content[$index]['coursename'], ];
+                $appearedcourses[$event->courseid] = true;
+            }
             $index++;
         }
         return $this->content;

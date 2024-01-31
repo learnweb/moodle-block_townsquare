@@ -30,7 +30,7 @@ use dml_exception;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
-
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 /**
  * Class to get events and posts that will be shown in the townsquare block..
  *

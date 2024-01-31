@@ -1,7 +1,9 @@
 /* Style for the blockcontent template*/
-.townsquare_sidepanel {
+.townsquare_sidepanel.col-md-3 {
     background-color: #eee;
     border-radius: 0.5rem;
+    padding-left: 0.0rem;
+    padding-right: 0.0rem;
 }
 
 .townsquare_content {
@@ -11,6 +13,8 @@
     max-width: 100%;
     overflow-x: hidden;
 }
+
+/* Style for the side panel filter */
 
 /* Style for all letter or content templates */
 
