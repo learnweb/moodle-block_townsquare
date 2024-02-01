@@ -23,6 +23,7 @@
     * contentid - Unique identification for every shown plugin content
     * ispost - Variable for the blockcontent template to assure this template is used.
     * coursename - Name of the course
+    * courseid - Id of the course
     * instancename - Name of the forum/moodleoverflow
     * discussionsubject - Name of the discussion
     * anonymous - if the post is anonymous
@@ -41,6 +42,7 @@
         "contentid": 27,
         "ispost": true,
         "coursename": "Moodle Engineering",
+        "courseid": 3,
         "instancename": "Exam Questions",
         "discussionsubject": "Hour of Exam",
         "anonymous": false,
@@ -58,7 +60,7 @@
 <div class="townsquare_letter postletter card mb-3" id="content-nr-{{contentid}}" style="border-color: {{postlettercolor}}">
     <div class="townsquareletter_header postletter_header card-header" style="background-color: {{postlettercolor}}">
         <div class = "townsquareletter_top postletter_top">
-            <div class = "townsquareletter_course postletter_course">
+            <div class = "townsquareletter_course postletter_course" id="{{courseid}}">
                 {{#str}} coursetitle, moodle, {
                     "course": {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a>
                               {{/quote}} }

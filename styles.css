@@ -16,6 +16,9 @@
 
 /* Style for the side panel filter */
 
+.ts_time_buttons.btn-group {
+    display: block;
+}
 /* Style for all letter or content templates */
 
 .townsquareletter_header.card-header {

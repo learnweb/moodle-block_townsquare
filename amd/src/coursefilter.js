@@ -24,28 +24,33 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const checkboxes = document.querySelectorAll("input[type=checkbox][name=ts_course_checkbox]");
-let enabledSettings = [];
+//const checkboxes = document.querySelectorAll("input[type=checkbox][name=ts_course_checkbox]");
+const checkboxes = document.querySelectorAll('.ts_course_checkbox');
 
 /**
  * Init function
  */
 export function init() {
-    checkboxes.forEach(
-        (element) => {
-            element.addEventListener('change', executecoursefilter);
-        }
-    );
-}
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            // Get the courseid associated with the checkbox
+            const courseid = checkbox.id;
 
-/**
- * Checks if the checkboxes are checked.
- */
-function executecoursefilter() {
-    enabledSettings =
-        Array.from(checkboxes) // Convert checkboxes to an array to use filter and map.
-            .filter(i => i.checked) // Use Array.filter to remove unchecked checkboxes.
-            .map(i => i.value); // Use Array.map to extract only the checkbox values from the array of objects.
+            // Get all letters with the corresponding courseid
+            const letters = document.querySelectorAll('.townsquare_letter');
 
-    window.alert(enabledSettings);
+            // Loop through each letter and hide/show based on checkbox state
+            letters.forEach(function(letter) {
+                let letterCourseId = letter.querySelector('.townsquareletter_course').id;
+
+                if (courseid === letterCourseId) {
+                    if (checkbox.checked) {
+                        letter.style.display = 'block'; // Show the letter
+                    } else {
+                        letter.style.display = 'none'; // Hide the letter
+                    }
+                }
+            });
+        });
+    });
 }

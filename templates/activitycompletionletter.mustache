@@ -23,6 +23,7 @@
     * contentid - Unique identification for every shown plugin content
     * isactivitycompletion - Variable for the blockcontent template to assure this template is used.
     * coursename - Name of the course
+    * courseid - Id of the course
     * instancename - Name of the instance
     * created - Due date of activity completions
     * linktocourse - Link to the course
@@ -34,6 +35,7 @@
         "contentid": 28,
         "isactivitycompletion": true,
         "coursename": "Moodle Engineering",
+        "courseid": 3,
         "modulename": "survey",
         "instancename": "How difficult was the exam?",
         "created": "28.10.2023",
@@ -46,7 +48,7 @@
      style="border-color: {{completionlettercolor}}">
     <div class="townsquareletter_header completionletter_header card-header" style="background-color: {{completionlettercolor}}">
         <div class = "townsquareletter_top completionletter_top">
-            <div class = "townsquareletter_course completionletter_course">
+            <div class = "townsquareletter_course completionletter_course" id="{{courseid}}">
                 {{#str}} coursetitle, moodle, {"course":
                     {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}} </a> {{/quote}} }
                 {{/str}}
