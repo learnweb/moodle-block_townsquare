@@ -69,7 +69,7 @@ export function init() {
             // Get all the right letters.
             const letters = document.querySelectorAll('.townsquare_letter');
 
-            // Loop through each letter and hide/show based on radiobutton state
+            // Loop through each letter and hide/show based on radiobutton state.
             letters.forEach(function(letter) {
                 // Get the created time stamp of each letter.
                 let lettertime = letter.querySelector('.townsquareletter_date').id;
@@ -77,12 +77,12 @@ export function init() {
                 // If the radio button is checked and the letter is in the time span, show it.
                 if (radiobutton.checked) {
                     if (lettertime >= timestart && lettertime <= timeend) {
-                        letter.style.display = 'block'; // Show the letter
+                        letter.style.display = 'block'; // Show the letter.
                     } else {
-                        letter.style.display = 'none'; // Hide the letter
+                        letter.style.display = 'none'; // Hide the letter.
                     }
                 } else {
-                    letter.style.display = 'block'; // Show the letter
+                    letter.style.display = 'block'; // Show the letter.
                 }
 
             });

@@ -34,18 +34,18 @@ export function init() {
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
 
-            // Get the letter name associated with the checkbox
+            // Get the letter name associated with the checkbox.
             const lettername = checkbox.id;
 
             // Get all the right letters.
             const letters = document.querySelectorAll('.townsquare_letter.' + lettername);
 
-            // Loop through each letter and hide/show based on checkbox state
+            // Loop through each letter and hide/show based on checkbox state.
             letters.forEach(function(letter) {
                 if (checkbox.checked) {
-                    letter.style.display = 'block'; // Show the letter
+                    letter.style.display = 'block'; // Show the letter.
                 } else {
-                    letter.style.display = 'none'; // Hide the letter
+                    letter.style.display = 'none'; // Hide the letter.
                 }
             });
         });
