@@ -30,7 +30,7 @@
  * @return bool
  */
 function xmldb_block_townsquare_upgrade($oldversion) {
-    global $DB;
+    global $DB, $CFG;
 
     $dbman = $DB->get_manager();
 
@@ -38,6 +38,28 @@ function xmldb_block_townsquare_upgrade($oldversion) {
     //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
     // Documentation for the XMLDB Editor can be found at {@link https://docs.moodle.org/dev/XMLDB_editor}.
+
+    if ($oldversion < 2024020700) {
+        // Define new table townsquare_usersettings to be created.
+        $table = new xmldb_table('townsquare_usersettings');
+
+        // Adding fields to table townsquare_usersettings.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timefilter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('letterfilter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table townsquare_usersettings.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for townsquare_usersettings.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Moodleoverflow savepoint reached.
+        upgrade_block_savepoint(true, 2024020700, 'townsquare');
+    }
 
     return true;
 }
