@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_townsquare/main
+    @template block_townsquare/blockcontent
 
     This template renders the main content area for the townsquare block.
 
@@ -74,73 +74,10 @@
 }}
 <div id="townsquare_root" class="townsquare_root container-fluid">
     <div class="row townsquare_main">
-            <div class="col-md-3 townsquare_sidepanel">
-                <div class="townsquare_filter_menu accordion" id="ts_filter">
-                    <div class="card">
-                        <div class="card-header" id="ts_course_filter">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_user_courses" aria-expanded="true" aria-controls="ts_user_courses">
-                                    Course Filter
-                                </button>
-                            </h2>
-                        </div>
 
-                        <div id="ts_user_courses" class="collapse show" aria-labelledby="ts_course_filter" data-parent="#ts_filter">
-                            <div class="card-body">
-                                {{#courses}}
-                                    <div class="form-check">
-                                        <input class="ts_course_checkbox form-check-input" name="ts_course_checkbox" type="checkbox" value="" id="{{courseid}}" checked>
-                                        <label class="form-check-label" for="{{courseid}}">
-                                            {{coursename}}
-                                        </label>
-                                    </div>
-                                {{/courses}}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header" id="ts_time_filter">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_times" aria-expanded="true" aria-controls="ts_times">
-                                    Time Filter
-                                </button>
-                            </h2>
-                        </div>
-                        <div id="ts_times" class="collapse" aria-labelledby="ts_time_filter" data-parent="#ts_filter">
-                            <div class="card-body">
-                                <div class="ts_time_buttons btn-group btn-group-toggle" data-toggle="buttons">
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="options" id="option1" autocomplete="off" checked> Active
-                                    </label>
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="options" id="option2" autocomplete="off"> Radio
-                                    </label>
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="options" id="option3" autocomplete="off"> Radio
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{!
-                    <div class="card">
-                        <div class="card-header" id="headingThree">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                    Letter Filter
-                                </button>
-                            </h2>
-                        </div>
-                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                            <div class="card-body">
-                                Third Card Body
-                            </div>
-                        </div>
-                    </div>}}
-                </div>
-
-            </div>
+        <div class="col-md-3 townsquare_sidepanel">
+            {{> block_townsquare/sidepanel}}
+        </div>
 
         <div class=" col-md-9 townsquare_content">
             <div class="townsquare_letters">

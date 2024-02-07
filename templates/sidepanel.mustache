@@ -1,0 +1,108 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_townsquare/blockcontent
+
+    This template renders the side panel with the filters for the townsquare content.
+}}
+<div class="townsquare_filter_menu accordion" id="ts_filter">
+    <div class="card">
+        <div class="card-header" id="ts_course_filter">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_user_courses" aria-expanded="true" aria-controls="ts_user_courses">
+                    Course Filter
+                </button>
+            </h2>
+        </div>
+
+        <div id="ts_user_courses" class="collapse show" aria-labelledby="ts_course_filter" data-parent="#ts_filter">
+            <div class="card-body">
+                {{#courses}}
+                    <div class="form-check">
+                        <input class="ts_course_checkbox form-check-input" name="ts_course_checkbox" type="checkbox" value="" id="{{courseid}}" checked>
+                        <label class="form-check-label" for="{{courseid}}">
+                            {{coursename}}
+                        </label>
+                    </div>
+                {{/courses}}
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header" id="ts_time_filter">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_times" aria-expanded="true" aria-controls="ts_times">
+                    Time Filter
+                </button>
+            </h2>
+        </div>
+        <div id="ts_times" class="collapse" aria-labelledby="ts_time_filter" data-parent="#ts_filter">
+            <div class="card-body">
+                <div class="ts_time_buttons btn-group-vertical btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-secondary">
+                        <input type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > All Notifications
+                    </label>
+                    <label class="btn btn-secondary">
+                        <input type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> Next Week
+                    </label>
+                    <label class="btn btn-secondary">
+                        <input type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> Next Month
+                    </label>
+                    <label class="btn btn-secondary">
+                        <input type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> Last Week
+                    </label>
+                    <label class="btn btn-secondary">
+                        <input type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> Last Month
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header" id="ts_letter_filter">
+            <h2 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_fletters" aria-expanded="false" aria-controls="ts_fletters">
+                    Letter Filter
+                </button>
+            </h2>
+        </div>
+        <div id="ts_fletters" class="collapse" aria-labelledby="ts_letter_filter" data-parent="#ts_filter">
+            <div class="card-body">
+                <div class="form-check">
+                    <input class="ts_basicletter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="ts_basicletter_check" checked>
+                    <label class="form-check-label" for="ts_basicletter_check">
+                        Basic Letters
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="ts_completionletter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="ts_completionletter_check" checked>
+                    <label class="form-check-label" for="ts_completionletter_check">
+                        Activity Completions
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="ts_postletter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="ts_postletter_check" checked>
+                    <label class="form-check-label" for="ts_postletter_check">
+                        Forum Posts
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

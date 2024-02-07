@@ -16,9 +16,10 @@
 
 /* Style for the side panel filter */
 
-.ts_time_buttons.btn-group {
-    display: block;
+.ts_time_buttons.btn-group-vertical {
+    width: 100%;
 }
+
 /* Style for all letter or content templates */
 
 .townsquareletter_header.card-header {
