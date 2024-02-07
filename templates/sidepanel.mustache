@@ -24,7 +24,7 @@
         <div class="card-header" id="ts_course_filter">
             <h2 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_user_courses" aria-expanded="true" aria-controls="ts_user_courses">
-                    Course Filter
+                    {{#str}}coursefilter, block_townsquare{{/str}}
                 </button>
             </h2>
         </div>
@@ -47,27 +47,27 @@
         <div class="card-header" id="ts_time_filter">
             <h2 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_times" aria-expanded="true" aria-controls="ts_times">
-                    Time Filter
+                    {{#str}}coursefilter, block_townsquare{{/str}}
                 </button>
             </h2>
         </div>
         <div id="ts_times" class="collapse" aria-labelledby="ts_time_filter" data-parent="#ts_filter">
             <div class="card-body">
-                <div class="ts_time_buttons btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
-                    <label class="btn btn-secondary active">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > All Notifications
+                <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
+                    <label class="ts_time_buttons btn btn-secondary active">
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > {{#str}}allnotifications, block_townsquare{{/str}}
                     </label>
-                    <label class="btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> Next Week
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> {{#str}}nextweeknotifications, block_townsquare{{/str}}
                     </label>
-                    <label class="btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> Next Month
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> {{#str}}nextmonthnotifications, block_townsquare{{/str}}
                     </label>
-                    <label class="btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> Last Week
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> {{#str}}lastweeknotifications, block_townsquare{{/str}}
                     </label>
-                    <label class="btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> Last Month
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> {{#str}}lastmonthnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
             </div>
@@ -78,7 +78,7 @@
         <div class="card-header" id="ts_letter_filter">
             <h2 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#ts_fletters" aria-expanded="false" aria-controls="ts_fletters">
-                    Letter Filter
+                    {{#str}}letterfilter, block_townsquare{{/str}}
                 </button>
             </h2>
         </div>
@@ -87,19 +87,19 @@
                 <div class="form-check">
                     <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="basicletter" checked>
                     <label class="form-check-label" for="ts_basicletter_check">
-                        Basic Letters
+                        {{#str}}basicletters, block_townsquare{{/str}}
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="completionletter" checked>
                     <label class="form-check-label" for="ts_completionletter_check">
-                        Activity Completions
+                        {{#str}}completionletters, block_townsquare{{/str}}
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="postletter" checked>
                     <label class="form-check-label" for="ts_postletter_check">
-                        Forum Posts
+                        {{#str}}postletters, block_townsquare{{/str}}
                     </label>
                 </div>
             </div>

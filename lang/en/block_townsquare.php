@@ -41,6 +41,19 @@ $string['postletternotification'] = 'New {$a->modulename} post!';
 $string['postletterorigin'] = '{$a->authorname} posted in {$a->instancename} -> {$a->discussionname}:';
 $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare! Today is the {$a->date}';
 
+// Side panel filter strings.
+$string['coursefilter'] = 'Course filter';
+$string['timefilter'] = 'Time filter';
+$string['letterfilter'] = 'Letter filter';
+$string['allnotifications'] = 'All notifications';
+$string['nextweeknotifications'] = 'Next week';
+$string['nextmonthnotifications'] = 'Next month';
+$string['lastweeknotifications'] = 'Last week';
+$string['lastmonthnotifications'] = 'Last month';
+$string['basicletters'] = 'Basic letters';
+$string['completionletters'] = 'Activity Completions';
+$string['postletters'] = 'Forum Posts';
+
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
 
