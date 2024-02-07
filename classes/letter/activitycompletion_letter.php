@@ -60,9 +60,6 @@ class activitycompletion_letter extends letter {
      * return array
      */
     public function export_letter():array {
-        // Change the timestamp to a date.
-        $date = date('d.m.Y', $this->created);
-
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -71,7 +68,8 @@ class activitycompletion_letter extends letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => $date,
+            'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),
             'completionlettercolor' => $this->lettercolor,

@@ -53,21 +53,21 @@
         </div>
         <div id="ts_times" class="collapse" aria-labelledby="ts_time_filter" data-parent="#ts_filter">
             <div class="card-body">
-                <div class="ts_time_buttons btn-group-vertical btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-secondary">
-                        <input type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > All Notifications
+                <div class="ts_time_buttons btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
+                    <label class="btn btn-secondary active">
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > All Notifications
                     </label>
                     <label class="btn btn-secondary">
-                        <input type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> Next Week
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> Next Week
                     </label>
                     <label class="btn btn-secondary">
-                        <input type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> Next Month
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> Next Month
                     </label>
                     <label class="btn btn-secondary">
-                        <input type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> Last Week
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> Last Week
                     </label>
                     <label class="btn btn-secondary">
-                        <input type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> Last Month
+                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> Last Month
                     </label>
                 </div>
             </div>
@@ -85,19 +85,19 @@
         <div id="ts_fletters" class="collapse" aria-labelledby="ts_letter_filter" data-parent="#ts_filter">
             <div class="card-body">
                 <div class="form-check">
-                    <input class="ts_basicletter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="ts_basicletter_check" checked>
+                    <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="basicletter" checked>
                     <label class="form-check-label" for="ts_basicletter_check">
                         Basic Letters
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="ts_completionletter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="ts_completionletter_check" checked>
+                    <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="completionletter" checked>
                     <label class="form-check-label" for="ts_completionletter_check">
                         Activity Completions
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="ts_postletter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="ts_postletter_check" checked>
+                    <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="postletter" checked>
                     <label class="form-check-label" for="ts_postletter_check">
                         Forum Posts
                     </label>

@@ -122,6 +122,7 @@ class post_letter extends letter {
             'postid' => $this->post->id,
             'message' => format_text($this->post->message),
             'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
             'linktopost' => $this->posturls->linktopost->out(),

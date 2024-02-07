@@ -117,8 +117,6 @@ class letter {
      */
     public function export_letter() {
         // Change the timestamp to a date.
-        $date = date('d.m.Y', $this->created);
-
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -127,7 +125,8 @@ class letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => $date,
+            'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
             'basiclettercolor' => $this->lettercolor,

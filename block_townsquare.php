@@ -55,6 +55,8 @@ class block_townsquare extends block_base {
         // Load all javascripts.
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/coursefilter', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/timefilter', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/letterfilter', 'init');
         return $this->content;
     }
 
