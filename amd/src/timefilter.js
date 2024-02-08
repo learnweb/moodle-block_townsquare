@@ -25,67 +25,171 @@
  */
 
 // Get the relevant radio buttons.
-const radiobuttons = document.querySelectorAll('.ts_time_button');
+const alltimebutton = document.querySelectorAll('.ts_all_time_button');
+const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
+const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
+
+// Define to change the time span, an additional time span and the current time.
+let currenttime;
+let timestart;
+let timeend;
+let addstarttime;
+let addendtime;
 
 /**
  * Init function
  */
 export function init() {
-    radiobuttons.forEach(function(radiobutton) {
-        radiobutton.addEventListener('change', function() {
-            // Get the current time in seconds.
-            let currenttime = new Date().getTime() / 1000;
-            let timestart;
-            let timeend;
+    // Set the current time.
+    currenttime = new Date().getTime() / 1000;
 
-            // Depending on the radiobutton id, set a time span.
-            switch (radiobutton.id) {
-                case "ts_time_all":
-                    timestart = -9999999999;
-                    timeend = 9999999999;
-                    break;
-                case "ts_time_next_week":
-                    timestart = currenttime;
-                    timeend = currenttime + 604800;
-                    break;
-                case "ts_time_next_month":
-                    timestart = currenttime;
-                    timeend = currenttime + 2629743;
-                    break;
-                case "ts_time_last_week":
-                    timestart = currenttime - 604800;
-                    timeend = currenttime;
-                    break;
-                case "ts_time_last_month":
-                    timestart = currenttime - 2629743;
-                    timeend = currenttime;
-                    break;
-                default:
-                    timestart = -9999999999;
-                    timeend = 9999999999;
-                    break;
-            }
+    // Add event listeners to the all kind of buttons.
+    alltimeaddEventListener();
+    futuretimeaddEventListener();
+    pasttimeaddEventListener();
+}
 
-            // Get all the right letters.
-            const letters = document.querySelectorAll('.townsquare_letter');
+/**
+ * Function to execute the filter
+ * @param {int} starttime   Start of time span for filtering of the current pressed button
+ * @param {int} endtime     End of time span for filtering of the current pressed
+ * @param {int} addstarttime Start of time span for filtering of an additional radio button.
+ * @param {int} addendtime   End of time span for filtering of an additional radio button.
+ * @param {bool} buttonstate State of the radio button (true of false)
+ */
+function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate) {
+    // Get all the letters.
+    const letters = document.querySelectorAll('.townsquare_letter');
 
-            // Loop through each letter and hide/show based on radiobutton state.
-            letters.forEach(function(letter) {
-                // Get the created time stamp of each letter.
-                let lettertime = letter.querySelector('.townsquareletter_date').id;
+    // Loop through each letter and hide/show based on radiobutton state.
+    letters.forEach(function(letter) {
+        // First hide all letters, as different time spans can overlap.
+        letter.style.display = 'none';
 
-                // If the radio button is checked and the letter is in the time span, show it.
-                if (radiobutton.checked) {
-                    if (lettertime >= timestart && lettertime <= timeend) {
-                        letter.style.display = 'block'; // Show the letter.
-                    } else {
-                        letter.style.display = 'none'; // Hide the letter.
-                    }
-                } else {
-                    letter.style.display = 'block'; // Show the letter.
-                }
+        // Get the created time stamp of each letter.
+        let lettertime = letter.querySelector('.townsquareletter_date').id;
+
+        // If the radio button is checked and the letter is in the time span, show it.
+        if ((buttonstate && (lettertime >= starttime && lettertime <= endtime)) ||
+            (lettertime >= addstarttime && lettertime <= addendtime)) {
+            letter.style.display = 'block';
+        }
+    });
+}
+
+/**
+ * Function to add event listeners to the all_time button.
+ */
+function alltimeaddEventListener() {
+    alltimebutton.forEach(function(button) {
+        button.addEventListener('change', function() {
+            // Set the time span to show all letters.
+            timestart = currenttime - convertidtotime(button.id);
+            timeend = currenttime + convertidtotime(button.id);
+            addstarttime = 0;
+            addendtime = 0;
+
+            // Disable all other radio buttons that filter more specific times.
+            futureradiobuttons.forEach(function(futureradiobutton) {
+                futureradiobutton.checked = false;
+                futureradiobutton.parentNode.classList.remove("active");
+            });
+            pastradiobuttons.forEach(function(pastradiobutton) {
+                pastradiobutton.checked = false;
+                pastradiobutton.parentNode.classList.remove("active");
 
             });
+
+            // Execute the filter function.
+            executefilter(timestart, timeend, addstarttime,addendtime, button.checked);
         });
     });
+}
+
+/**
+ * Function to add event listeners to the future time radio buttons.
+ */
+function futuretimeaddEventListener() {
+    futureradiobuttons.forEach(function(button) {
+        button.addEventListener('change', function() {
+            // Disable the all_time button.
+            alltimebutton.forEach(function(alltimebutton) {
+                alltimebutton.checked = false;
+                alltimebutton.parentNode.classList.remove('active');
+            });
+
+            // Set the time span based on the radiobutton id.
+            timestart = currenttime;
+            timeend = currenttime + convertidtotime(button.id);
+
+            // Check if one past time button is checked. If yes, set the additional time span based on its id.
+            addstarttime = 0;
+            addendtime = 0;
+            pastradiobuttons.forEach(function(pastradiobutton) {
+                if (pastradiobutton.parentNode.classList.contains('active')) {
+                    addstarttime = currenttime - convertidtotime(pastradiobutton.id);
+                    addendtime = currenttime;
+                }
+            });
+
+            // Execute the filter function.
+            executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
+        });
+    });
+}
+
+/**
+ * Function to add event listeners to the past time radio buttons.
+ */
+function pasttimeaddEventListener() {
+    pastradiobuttons.forEach(function(button) {
+        button.addEventListener('change', function() {
+            // Disable the all_time button.
+            alltimebutton.forEach(function(alltimebutton) {
+                alltimebutton.checked = false;
+                alltimebutton.parentNode.classList.remove('active');
+            });
+
+            // Set the time span based on the radiobutton id.
+            timestart = currenttime - convertidtotime(button.id);
+            timeend = currenttime;
+
+            // Check if one future time button is checked. If yes, set the additional time span based on its id.
+            addstarttime = 0;
+            addendtime = 0;
+            futureradiobuttons.forEach(function(futureradiobutton) {
+                if (futureradiobutton.parentNode.classList.contains('active')) {
+                    addstarttime = currenttime;
+                    addendtime = currenttime + convertidtotime(futureradiobutton.id);
+                }
+            });
+
+            // Execute the filter function.
+            executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
+        });
+    });
+}
+
+/**
+ * Function to convert the radio button id to a useable time span.
+ * @param {string} id  The id of the radio button
+ * @returns {number}
+ */
+function convertidtotime(id) {
+    switch(id) {
+        case "ts_time_all":
+            return 15778463;
+        case "ts_time_next_twodays":
+        case "ts_time_last_twodays":
+            return 172800;
+        case "ts_time_next_fivedays":
+        case "ts_time_last_fivedays":
+            return 432000;
+        case "ts_time_next_week":
+        case "ts_time_last_week":
+            return 604800;
+        case "ts_time_next_month":
+        case "ts_time_last_month":
+            return 2592000;
+    }
 }

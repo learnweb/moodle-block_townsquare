@@ -54,20 +54,39 @@
         <div id="ts_times" class="collapse" aria-labelledby="ts_time_filter" data-parent="#ts_filter">
             <div class="card-body">
                 <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
-                    <label class="ts_time_buttons btn btn-secondary active">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > {{#str}}allnotifications, block_townsquare{{/str}}
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_all_time_button" type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > {{#str}}allnotifications, block_townsquare{{/str}}
+                    </label>
+                </div>
+
+                <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_twodays" autocomplete="off"> {{#str}}nexttwodaysnotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> {{#str}}nextweeknotifications, block_townsquare{{/str}}
+                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_fivedays" autocomplete="off"> {{#str}}nextfivedaysnotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> {{#str}}nextmonthnotifications, block_townsquare{{/str}}
+                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> {{#str}}nextweeknotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> {{#str}}lastweeknotifications, block_townsquare{{/str}}
+                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> {{#str}}nextmonthnotifications, block_townsquare{{/str}}
+                    </label>
+                </div>
+
+                <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_twodays" autocomplete="off"> {{#str}}lasttwodaysnotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_time_button" type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> {{#str}}lastmonthnotifications, block_townsquare{{/str}}
+                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_fivedays" autocomplete="off"> {{#str}}lastfivedaysnotifications, block_townsquare{{/str}}
+                    </label>
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> {{#str}}lastweeknotifications, block_townsquare{{/str}}
+                    </label>
+                    <div class="divider"></div>
+                    <label class="ts_time_buttons btn btn-secondary">
+                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> {{#str}}lastmonthnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
             </div>
