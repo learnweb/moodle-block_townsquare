@@ -50,8 +50,10 @@ class block_townsquare extends block_base {
         $mustachedata = new stdClass();
         $mustachedata->content = $controller->content;
         $mustachedata->courses = $controller->courses;
+        $mustachedata->helpicon = ['text' => get_string('savehelpicontext', 'block_townsquare')];
         $this->content = new stdClass();
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
+
         // Load all javascripts.
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/coursefilter', 'init');

@@ -54,8 +54,8 @@
         <div id="ts_times" class="collapse" aria-labelledby="ts_time_filter" data-parent="#ts_filter">
             <div class="card-body">
                 <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
-                    <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_all_time_button" type="radio" name="ts_time_options" id="ts_time_all" autocomplete="off" > {{#str}}allnotifications, block_townsquare{{/str}}
+                    <label class="ts_time_buttons btn btn-secondary active">
+                        <input class="ts_all_time_button" type="radio" checked="checked" name="ts_time_options" id="ts_time_all" autocomplete="off" > {{#str}}allnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
 
@@ -124,4 +124,16 @@
             </div>
         </div>
     </div>
+    <div class = "dropdown-divider"></div>
+    <div class="ts_usersettings_save">
+        <div class="ts_usersettings_button btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
+            <button type="button" class="btn btn-secondary" id="ts_usersettings_savebutton">{{#str}}savebutton, block_townsquare{{/str}}</button>
+        </div>
+        <div class="ts_usersettings_help">
+            {{#helpicon}}
+                {{>core/help_icon}}
+            {{/helpicon}}
+        </div>
+    </div>
+    <div class = "dropdown-divider"></div>
 </div>

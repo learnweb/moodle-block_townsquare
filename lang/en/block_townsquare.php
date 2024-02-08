@@ -42,9 +42,13 @@ $string['postletterorigin'] = '{$a->authorname} posted in {$a->instancename} -> 
 $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare! Today is the {$a->date}';
 
 // Side panel filter strings.
+
+// Filter headers.
 $string['coursefilter'] = 'Course filter';
 $string['timefilter'] = 'Time filter';
 $string['letterfilter'] = 'Letter filter';
+
+// Time filter options.
 $string['allnotifications'] = 'All notifications';
 $string['nexttwodaysnotifications'] = 'Next two days';
 $string['nextfivedaysnotifications'] = 'Next five days';
@@ -54,9 +58,15 @@ $string['lasttwodaysnotifications'] = 'last two days';
 $string['lastfivedaysnotifications'] = 'last five days';
 $string['lastweeknotifications'] = 'Last week';
 $string['lastmonthnotifications'] = 'Last month';
+
+// Letter filter options.
 $string['basicletters'] = 'Basic letters';
 $string['completionletters'] = 'Activity Completions';
 $string['postletters'] = 'Forum Posts';
+
+// Save button strings.
+$string['savebutton'] = 'Save settings';
+$string['savehelpicontext'] = 'Save Settings for the future';
 
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';

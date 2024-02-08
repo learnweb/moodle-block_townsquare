@@ -15,6 +15,13 @@
 }
 
 /* Style for the side panel filter */
+.ts_usersettings_save {
+    display: flex;
+}
+
+.ts_usersettings_button {
+    flex: 1;
+}
 
 /* Style for all letter or content templates */
 
