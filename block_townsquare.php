@@ -40,7 +40,7 @@ class block_townsquare extends block_base {
      * @return object|null The block HTML.
      */
     public function get_content():object {
-        global $OUTPUT;
+        global $OUTPUT, $DB, $USER;
 
         if ($this->content !== null) {
             return $this->content;
@@ -54,11 +54,15 @@ class block_townsquare extends block_base {
         $this->content = new stdClass();
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
 
+        // Get the user settings if available.
+        $usersettings = $DB->get_record('townsquare_usersettings', ['userid' => $USER->id]);
+
         // Load all javascripts.
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/coursefilter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/timefilter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/letterfilter', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/usersettings_save', 'init', [$USER->id, $usersettings]);
         return $this->content;
     }
 
