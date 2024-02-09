@@ -47,7 +47,9 @@ class block_townsquare_external extends external_api {
                 'userid' => new external_value(PARAM_INT, 'the user id'),
                 'timefilterpast' => new external_value(PARAM_INT, 'time span for filtering the past'),
                 'timefilterfuture' => new external_value(PARAM_INT, 'time span for filtering the future'),
-                'letterfilter' => new external_value(PARAM_INT, 'setting of the letter filter'),
+                'basicletter' => new external_value(PARAM_INT, 'Setting of the letter filter for basic letters'),
+                'completionletter' => new external_value(PARAM_INT, 'Setting of the letter filter for completion letters'),
+                'postletter' => new external_value(PARAM_INT, 'Setting of the letter filter for post letters'),
             ]
         );
     }
@@ -69,7 +71,8 @@ class block_townsquare_external extends external_api {
      * @param int $letterfilter         Setting of the letter filter
      * @return bool
      */
-    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture, $letterfilter) {
+    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
+                                               $basicletter, $completionletter, $postletter) {
         global $DB;
         echo '<script>alert("Ich werde aufgerufen")</script>';
         $transaction = $DB->start_delegated_transaction();
@@ -91,7 +94,9 @@ class block_townsquare_external extends external_api {
                 $record = reset($records);
                 $record->timefilterpast = $timefilterpast;
                 $record->timefilterfuture = $timefilterfuture;
-                $record->letterfilter = $letterfilter;
+                $record->basicletter = $basicletter;
+                $record->completionletter = $completionletter;
+                $record->postletter = $postletter;
                 $DB->update_record('townsquare_usersettings', $record);
                 return true;
             }
@@ -100,7 +105,9 @@ class block_townsquare_external extends external_api {
         $record->userid = $userid;
         $record->timefilterpast = $timefilterpast;
         $record->timefilterfuture = $timefilterfuture;
-        $record->letterfilter = $letterfilter;
+        $record->basicletter = $basicletter;
+        $record->completionletter = $completionletter;
+        $record->postletter = $postletter;
         $DB->insert_record('townsquare_usersettings', $record);
         return true;
     }

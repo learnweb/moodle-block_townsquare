@@ -54,7 +54,8 @@ export function init(userid, settingsfromdb) {
         let letterfilter = collectletterfiltersettings();
 
         // Second step: store the usersettings in the database.
-        await saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter);
+        await saveusersettings(userid, timespans['timepast'], timespans['timefuture'],
+                               letterfilter['basicletter'], letterfilter['completionletter'], letterfilter['postletter']);
     });
 }
 
@@ -63,22 +64,22 @@ export function init(userid, settingsfromdb) {
  * @param {number} userid
  * @param {number} timefilterpast
  * @param {number} timefilterfuture
- * @param {number} letterfilter
+ * @param {number} basicletter
+ * @param {number} completionletter
+ * @param {number} postletter
  * @returns {Promise<*>}
  */
-async function saveusersettings(userid, timefilterpast, timefilterfuture, letterfilter) {
+async function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter) {
     window.alert('Settings here.');
-    window.alert(userid);
-    window.alert(timefilterpast);
-    window.alert(timefilterfuture);
-    window.alert(letterfilter);
     let result = await Ajax.call([{
         methodname: 'block_townsquare_record_usersettings',
         args: {
             userid: userid,
             timefilterpast: timefilterpast,
             timefilterfuture: timefilterfuture,
-            letterfilter: letterfilter
+            basicletter: basicletter,
+            completionletter: completionletter,
+            postletter: postletter
         }
     }]);
     window.alert('im done');
@@ -87,58 +88,63 @@ async function saveusersettings(userid, timefilterpast, timefilterfuture, letter
 
 /**
  * Function to execute existing user settings when loading the townsquare.
- * @param {number} settingsfromdb
+ * @param {Object} settingsfromdb
  */
 function executeusersettings(settingsfromdb) {
     // Load the settings.
     let timefilterfuture = settingsfromdb['timefilterfuture'];
     let timefilterpast = settingsfromdb['timefilterpast'];
-    let letterfilter = settingsfromdb['letterfilter'];
+    let basicletter = settingsfromdb['basicletter'];
+    let completionletter = settingsfromdb['completionletter'];
+    let postletter = settingsfromdb['postletter'];
 
     // First step: set the time filter settings.
     // Change the time into the correct radio button id.
     let futurebuttonid = converttimetoid(timefilterfuture, true);
     let pastbuttonid = converttimetoid(timefilterpast, false);
+
     // If the time span is a combination of past and future, go through the two radio buttons and click them to activate the filter.
     if (futurebuttonid !== "ts_time_all") {
         futureradiobuttons.forEach(function(button) {
-            if (button.id === futurebuttonid) {
-                button.click();
+            if (button.id == futurebuttonid) {
+                button.checked = true;
+                button.parentNode.classList.add('active');
+
             }
         });
         pastradiobuttons.forEach(function(button) {
-            if (button.id === pastbuttonid) {
-                button.click();
+            if (button.id == pastbuttonid) {
+                button.checked = true;
+                button.parentNode.classList.add('active');
+                //button.parentNode.click();
             }
         });
     } else {
         // If the time span is the all time filter, click the all time button.
         alltimebutton.forEach(function(button) {
-            if (button.id === futurebuttonid) {
-                button.click();
+            if (button.id == futurebuttonid) {
+                button.checked = true;
+                button.parentNode.classList.add('active');
+               // button.parentNode.click();
             }
         });
     }
 
     // Second step: set the letter filter settings.
-    let letterfilters = convertletterfiltersetting(letterfilter);
     checkboxes.forEach(function(checkbox) {
-        if (checkbox.id === "basicletter" && letterfilters['basicletter'] === 1) {
+        let basiclettercheck = checkbox.id === 'basicletter' && basicletter === "1";
+        let completionlettercheck = checkbox.id === 'completionletter' && completionletter === "1";
+        let postlettercheck = checkbox.id === 'postletter' && postletter === "1";
+
+        if (basiclettercheck || completionlettercheck || postlettercheck) {
             checkbox.click();
-            checkbox.checked = true;
-        } else if (checkbox.id === "completionletter" && letterfilters['completionletter'] === 1) {
-            checkbox.click();
-            checkbox.checked = true;
-        } else if (checkbox.id === "postletter" && letterfilters['postletter'] === 1) {
-            checkbox.click();
-            checkbox.checked = true;
         }
     });
 }
 
 /**
  * Function to collect the letter filter settings.
- * @returns {number} The setting number.
+ * @returns {{basicletter: number, completionletter: number, postletter: number}}
  */
 function collectletterfiltersettings() {
     let settings = {'basicletter': 0, 'completionletter': 0, 'postletter': 0 };
@@ -160,7 +166,7 @@ function collectletterfiltersettings() {
         }
     });
     // Calculate the setting number. It is a number between 0 and 7, and each letter represents a bit.
-    return 4 * settings['basicletter'] + 2 * settings['completionletter'] + 1 * settings['postletter'];
+    return settings;
 }
 
 /**
@@ -231,60 +237,34 @@ function convertidtotime(id) {
 
 /**
  * Function to convert the time span to a radio button id.
- * @param {number} time
- * @param {bool} future
+ * @param {string} time
+ * @param {boolean} future
  * @returns {string}
  */
 function converttimetoid(time, future) {
     switch (time) {
-        case 15778463:
+        case "15778463":
             return "ts_time_all";
-        case 172800:
+        case "172800":
             if (future) {
                 return "ts_time_next_twodays";
             }
             return "ts_time_past_twodays";
-        case 432000:
+        case "432000":
             if (future) {
                 return "ts_time_next_fivedays";
             }
             return "ts_time_last_fivedays";
-        case 604800:
+        case "604800":
             if (future) {
                 return "ts_time_next_week";
             }
             return "ts_time_last_week";
-        case 2592000:
+        case "2592000":
             if (future) {
                 return "ts_time_next_month";
 
             }
             return "ts_time_last_month";
     }
-}
-
-/**
- * Converts the number of the letter filter to an object that has the activated letter filters.
- * @param {number} settingnumber
- */
-function convertletterfiltersetting(settingnumber) {
-    let settings = {'basicletter': 0, 'completionletter': 0, 'postletter': 0 };
-
-    // Check if the basicletter is active.
-    if (settingnumber >= 4) {
-        settings['basicletter'] = 1;
-    }
-
-    // Check if the completionletter is active.
-    if (settingnumber === 2 || settingnumber === 3 || settingnumber === 6 || settingnumber === 7) {
-        settings['completionletter'] = 1;
-    }
-
-    // check if the postletter is active.
-    if (settingnumber % 2 === 1) {
-        settings['postletter'] = 1;
-    }
-
-    return settings;
-
 }

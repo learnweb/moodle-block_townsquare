@@ -10,7 +10,9 @@
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User that set personal filter settings"/>
                 <FIELD NAME="timefilterpast" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the time filter, start of the timespan"/>
                 <FIELD NAME="timefilterfuture" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the time filter, end of the timespan"/>
-                <FIELD NAME="letterfilter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the letter filter. Always a number from 0 to 7"/>
+                <FIELD NAME="basicletter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the letter filter for basic letters. Always 1 or 0 (on/off)"/>
+                <FIELD NAME="completionletter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the letter filter for completion letters."/>
+                <FIELD NAME="postletter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the letter filter for post letters."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

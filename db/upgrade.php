@@ -48,7 +48,9 @@ function xmldb_block_townsquare_upgrade($oldversion) {
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timefilterpast', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timefilterfuture', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('letterfilter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('basicletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('completionletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('postletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table townsquare_usersettings.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
