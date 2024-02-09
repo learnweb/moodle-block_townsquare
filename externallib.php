@@ -71,7 +71,7 @@ class block_townsquare_external extends external_api {
      */
     public static function record_usersettings($userid, $timefilterpast, $timefilterfuture, $letterfilter) {
         global $DB;
-
+        echo '<script>alert("Ich werde aufgerufen")</script>';
         $transaction = $DB->start_delegated_transaction();
 
         // Check if the user already has a record in the database
