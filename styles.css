@@ -9,7 +9,7 @@
 .townsquare_content {
     max-height: 750px;
     border-radius: 0.5rem;
-    overflow:scroll;
+    overflow: scroll;
     max-width: 100%;
     overflow-x: hidden;
 }
@@ -47,7 +47,7 @@
     color: #fff;
     text-decoration: underline;
 }
-.townsquareletter_courselink{
+.townsquareletter_courselink {
     color: #fff;
     text-decoration: none;
 }

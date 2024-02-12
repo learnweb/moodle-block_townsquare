@@ -37,15 +37,19 @@ export function init() {
             // Get the letter name associated with the checkbox.
             const lettername = checkbox.id;
 
-            // Get all the right letters.
-            const letters = document.querySelectorAll('.townsquare_letter.' + lettername);
+            // Get all letters that are "activated".
+            // Activated means that all filters accept the letter and want to show it.
+            const letters = document.querySelectorAll('.townsquare_letter.' + lettername +
+                                                      '.ts_timefilter_active.ts_coursefilter_active');
 
             // Loop through each letter and hide/show based on checkbox state.
             letters.forEach(function(letter) {
                 if (checkbox.checked) {
-                    letter.style.display = 'block'; // Show the letter.
+                    letter.classList.add('ts_letterfilter_active'); // Mark the letter as "active".
+                    //letter.style.display = 'block'; // Show the letter.
                 } else {
-                    letter.style.display = 'none'; // Hide the letter.
+                    letter.classList.remove('ts_letterfilter_active'); // Mark the letter as "not active".
+                    //letter.style.display = 'none'; // Hide the letter.
                 }
             });
         });

@@ -36,18 +36,23 @@ export function init() {
             // Get the courseid associated with the checkbox
             const courseid = checkbox.id;
 
-            // Get all letters.
-            const letters = document.querySelectorAll('.townsquare_letter');
+            // Get all letters that are "activated".
+            // Activated means that all filters accept the letter and want to show it.
+            const letters = document.querySelectorAll('.townsquare_letter.ts_timefilter_active.ts_letterfilter_active');
 
-            // Loop through each letter and hide/show based on checkbox state and the letter id.
+            // Loop through each letter mark it as "active" or not based on checkbox state and the letter id.
             letters.forEach(function(letter) {
                 let letterCourseId = letter.querySelector('.townsquareletter_course').id;
 
                 if (courseid === letterCourseId) {
                     if (checkbox.checked) {
-                        letter.style.display = 'block'; // Show the letter
+                        //window.alert('activated');
+                        letter.classList.add('ts_coursefilter_active'); // Mark the letter as "active".
+                        //letter.style.display = 'block'; // Show the letter
                     } else {
-                        letter.style.display = 'none'; // Hide the letter
+                        //window.alert('not activated');
+                        letter.classList.remove('ts_coursefilter_active'); // Mark the letter as "not active".
+                        //letter.style.display = 'none'; // Hide the letter.
                     }
                 }
             });
