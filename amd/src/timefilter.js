@@ -55,7 +55,7 @@ export function init() {
  * @param {int} endtime     End of time span for filtering of the current pressed
  * @param {int} addstarttime Start of time span for filtering of an additional radio button.
  * @param {int} addendtime   End of time span for filtering of an additional radio button.
- * @param {bool} buttonstate State of the radio button (true of false)
+ * @param {boolean} buttonstate State of the radio button (true or false)
  */
 function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate) {
     // Get all letters that are "activated".
@@ -64,9 +64,6 @@ function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate
 
     // Loop through each letter and hide/show based on radiobutton state.
     letters.forEach(function(letter) {
-        // First deactiveate all letters, as different time spans can overlap.
-        letter.classList.remove('ts_timefilter_active'); // Mark the letter as "not active".
-        //letter.style.display = 'none';
 
         // Get the created time stamp of each letter.
         let lettertime = letter.querySelector('.townsquareletter_date').id;
@@ -75,7 +72,8 @@ function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate
         if ((buttonstate && (lettertime >= starttime && lettertime <= endtime)) ||
             (lettertime >= addstarttime && lettertime <= addendtime)) {
             letter.classList.add('ts_timefilter_active'); // Mark the letter as "active".
-            //letter.style.display = 'block';
+        } else {
+            letter.classList.remove('ts_timefilter_active'); // Mark the letter as "not active".
         }
     });
 }

@@ -46,13 +46,9 @@ export function init() {
 
                 if (courseid === letterCourseId) {
                     if (checkbox.checked) {
-                        //window.alert('activated');
                         letter.classList.add('ts_coursefilter_active'); // Mark the letter as "active".
-                        //letter.style.display = 'block'; // Show the letter
                     } else {
-                        //window.alert('not activated');
                         letter.classList.remove('ts_coursefilter_active'); // Mark the letter as "not active".
-                        //letter.style.display = 'none'; // Hide the letter.
                     }
                 }
             });

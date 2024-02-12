@@ -33,7 +33,6 @@ const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
 export function init() {
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
-
             // Get the letter name associated with the checkbox.
             const lettername = checkbox.id;
 
@@ -46,10 +45,8 @@ export function init() {
             letters.forEach(function(letter) {
                 if (checkbox.checked) {
                     letter.classList.add('ts_letterfilter_active'); // Mark the letter as "active".
-                    //letter.style.display = 'block'; // Show the letter.
                 } else {
                     letter.classList.remove('ts_letterfilter_active'); // Mark the letter as "not active".
-                    //letter.style.display = 'none'; // Hide the letter.
                 }
             });
         });
