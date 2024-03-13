@@ -28,9 +28,13 @@ import Ajax from 'core/ajax';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
+
+// Get the buttons from the time filter.
 const alltimebutton = document.querySelectorAll('.ts_all_time_button');
 const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
 const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
+
+// Get the checkboxes from the letter filter.
 const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
 
 /**
@@ -49,7 +53,7 @@ export function init(userid, settingsfromdb) {
     savebutton.addEventListener('click', async function() {
 
         // First step: collect the current settings.
-        // Get the relevant time spans of the time filter and the setting of the letter filter checkboxes..
+        // Get the relevant time spans of the time filter and the setting of the letter filter checkboxes.
         let timespans = collecttimefiltersettings();
         let letterfilter = collectletterfiltersettings();
 
@@ -71,18 +75,38 @@ export function init(userid, settingsfromdb) {
  */
 async function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter) {
     window.alert('Settings here.');
-    let result = await Ajax.call([{
-        methodname: 'block_townsquare_record_usersettings',
-        args: {
-            userid: userid,
+    let result ;
+    try {
+        console.log({
+            userid: parseInt(userid),
             timefilterpast: timefilterpast,
             timefilterfuture: timefilterfuture,
             basicletter: basicletter,
             completionletter: completionletter,
             postletter: postletter
-        }
-    }]);
+        });
+        result = await Ajax.call([{
+            methodname: 'block_townsquare_record_usersettings',
+            args: JSON.stringify({
+                userid: parseInt(userid),
+                timefilterpast: timefilterpast,
+                timefilterfuture: timefilterfuture,
+                basicletter: basicletter,
+                completionletter: completionletter,
+                postletter: postletter
+            }),
+        }]);
+        window.alert('im in a try');
+    } catch (error) {
+        console.log(error);
+    }
     window.alert('im done');
+    console.log(await result);
+    const responses = await Promise.all(result);
+
+    responses.forEach(response => {
+        console.log(response);
+    });
     return result;
 }
 

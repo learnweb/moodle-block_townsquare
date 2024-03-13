@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 $functions = [
     'block_townsquare_record_usersettings' => [
         'classname' => 'block_townsquare_external',
-        'methodname' => 'record_usersettings',
+        'methodname' => 'execute',
         'classpath' => 'blocks/townsquare/externallib.php',
         'description' => 'Records the user settings for the townsquare block',
         'type' => 'write',

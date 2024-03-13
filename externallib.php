@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
-require_once($CFG->dirroot . '/mod/moodleoverflow/locallib.php');
 
 /**
  * Class implementing the external API, esp. for AJAX functions.
@@ -35,13 +34,13 @@ require_once($CFG->dirroot . '/mod/moodleoverflow/locallib.php');
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_townsquare_external extends external_api {
+class block_townsquare_external extends \core_external\external_api {
 
     /**
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function record_usersettings_parameters() {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             [
                 'userid' => new external_value(PARAM_INT, 'the user id'),
@@ -58,7 +57,7 @@ class block_townsquare_external extends external_api {
      * Return the result of the record_usersettings function
      * @return external_value
      */
-    public static function record_usersettings_returns() {
+    public static function execute_returns() {
         return new external_value(PARAM_BOOL, 'true if successful');
     }
 
@@ -71,11 +70,10 @@ class block_townsquare_external extends external_api {
      * @param int $letterfilter         Setting of the letter filter
      * @return bool
      */
-    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
-                                               $basicletter, $completionletter, $postletter) {
+    public static function execute($userid, $timefilterpast, $timefilterfuture, $basicletter, $completionletter, $postletter) {
         global $DB;
-        echo '<script>alert("Ich werde aufgerufen")</script>';
-        $transaction = $DB->start_delegated_transaction();
+        //echo '<script>window.alert("Ich werde aufgerufen")</script>';
+        //$transaction = $DB->start_delegated_transaction();
 
         // Check if the user already has a record in the database
         if ($records = $DB->get_records('townsquare_usersettings', ['userid' => $userid])) {
@@ -86,7 +84,7 @@ class block_townsquare_external extends external_api {
                         $DB->delete_records('townsquare_usersettings', ['id' => $record->id]);
                     }
                 } catch (Exception $e) {
-                    $transaction->rollback($e);
+          //          $transaction->rollback($e);
                     return false;
                 }
             } else {
@@ -98,6 +96,7 @@ class block_townsquare_external extends external_api {
                 $record->completionletter = $completionletter;
                 $record->postletter = $postletter;
                 $DB->update_record('townsquare_usersettings', $record);
+            //    $transaction->allow_commit();
                 return true;
             }
         }
@@ -109,6 +108,7 @@ class block_townsquare_external extends external_api {
         $record->completionletter = $completionletter;
         $record->postletter = $postletter;
         $DB->insert_record('townsquare_usersettings', $record);
+        //$transaction->allow_commit();
         return true;
     }
 
