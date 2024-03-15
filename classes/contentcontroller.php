@@ -52,7 +52,8 @@ class contentcontroller {
     public function __construct() {
         $this->townsquareevents = new townsquareevents();
         $this->courses = [];
-        $this->content = $this->build_content();
+        $this->content = [];
+        $this->build_content();
     }
 
     // Core functions.

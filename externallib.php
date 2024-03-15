@@ -40,7 +40,7 @@ class block_townsquare_external extends \core_external\external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function execute_parameters(): external_function_parameters {
+    public static function record_usersettings_parameters(): external_function_parameters {
         return new external_function_parameters(
             [
                 'userid' => new external_value(PARAM_INT, 'the user id'),
@@ -57,7 +57,7 @@ class block_townsquare_external extends \core_external\external_api {
      * Return the result of the record_usersettings function
      * @return external_value
      */
-    public static function execute_returns() {
+    public static function record_usersettings_returns() {
         return new external_value(PARAM_BOOL, 'true if successful');
     }
 
@@ -70,7 +70,7 @@ class block_townsquare_external extends \core_external\external_api {
      * @param int $letterfilter         Setting of the letter filter
      * @return bool
      */
-    public static function execute($userid, $timefilterpast, $timefilterfuture, $basicletter, $completionletter, $postletter) {
+    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture, $basicletter, $completionletter, $postletter) {
         global $DB;
         //echo '<script>window.alert("Ich werde aufgerufen")</script>';
         //$transaction = $DB->start_delegated_transaction();

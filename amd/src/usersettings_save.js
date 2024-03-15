@@ -74,39 +74,18 @@ export function init(userid, settingsfromdb) {
  * @returns {Promise<*>}
  */
 async function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter) {
-    window.alert('Settings here.');
     let result ;
-    try {
-        console.log({
+    result = await Ajax.call([{
+        methodname: 'block_townsquare_record_usersettings',
+        args: {
             userid: parseInt(userid),
             timefilterpast: timefilterpast,
             timefilterfuture: timefilterfuture,
             basicletter: basicletter,
             completionletter: completionletter,
             postletter: postletter
-        });
-        result = await Ajax.call([{
-            methodname: 'block_townsquare_record_usersettings',
-            args: JSON.stringify({
-                userid: parseInt(userid),
-                timefilterpast: timefilterpast,
-                timefilterfuture: timefilterfuture,
-                basicletter: basicletter,
-                completionletter: completionletter,
-                postletter: postletter
-            }),
-        }]);
-        window.alert('im in a try');
-    } catch (error) {
-        console.log(error);
-    }
-    window.alert('im done');
-    console.log(await result);
-    const responses = await Promise.all(result);
-
-    responses.forEach(response => {
-        console.log(response);
-    });
+        },
+    }]);
     return result;
 }
 
