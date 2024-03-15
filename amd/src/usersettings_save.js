@@ -46,6 +46,7 @@ const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
 export function init(userid, settingsfromdb) {
     // When the page is loaded, set the settings from the database.
     if (settingsfromdb) {
+        console.log(settingsfromdb);
         executeusersettings(settingsfromdb);
     }
 
@@ -110,34 +111,48 @@ function executeusersettings(settingsfromdb) {
     if (futurebuttonid !== "ts_time_all") {
         futureradiobuttons.forEach(function(button) {
             if (button.id == futurebuttonid) {
-                button.checked = true;
                 button.parentNode.classList.add('active');
-
+                button.checked = true;
+                alltimebutton.forEach(function(alltimebutton) {
+                    alltimebutton.checked = false;
+                    alltimebutton.parentNode.classList.remove('active');
+                });
             }
         });
         pastradiobuttons.forEach(function(button) {
             if (button.id == pastbuttonid) {
-                button.checked = true;
                 button.parentNode.classList.add('active');
-                //button.parentNode.click();
+                button.checked = true;
+                alltimebutton.forEach(function(alltimebutton) {
+                    alltimebutton.checked = false;
+                    alltimebutton.parentNode.classList.remove('active');
+                });
             }
         });
     } else {
         // If the time span is the all time filter, click the all time button.
         alltimebutton.forEach(function(button) {
-            if (button.id == futurebuttonid) {
-                button.checked = true;
+           // if (button.id == futurebuttonid) {
                 button.parentNode.classList.add('active');
-               // button.parentNode.click();
-            }
+                button.checked = true;
+                futureradiobuttons.forEach(function(futureradiobutton) {
+                    futureradiobutton.checked = false;
+                    futureradiobutton.parentNode.classList.remove('active');
+                });
+                pastradiobuttons.forEach(function(pastradiobutton) {
+                    pastradiobutton.checked = false;
+                    pastradiobutton.parentNode.classList.remove('active');
+                });
+            //}
         });
     }
 
     // Second step: set the letter filter settings.
+    // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
     checkboxes.forEach(function(checkbox) {
-        let basiclettercheck = checkbox.id === 'basicletter' && basicletter === "1";
-        let completionlettercheck = checkbox.id === 'completionletter' && completionletter === "1";
-        let postlettercheck = checkbox.id === 'postletter' && postletter === "1";
+        let basiclettercheck = checkbox.id === 'basicletter' && basicletter === "";
+        let completionlettercheck = checkbox.id === 'completionletter' && completionletter === "0";
+        let postlettercheck = checkbox.id === 'postletter' && postletter === "0";
 
         if (basiclettercheck || completionlettercheck || postlettercheck) {
             checkbox.click();
