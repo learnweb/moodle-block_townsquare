@@ -67,15 +67,18 @@ class block_townsquare_external extends \core_external\external_api {
      * @param int $userid               The user id
      * @param int $timefilterpast       Time span for filtering the past
      * @param int $timefilterfuture     Time span for filtering the future
-     * @param int $letterfilter         Setting of the letter filter
+     * @param int $basicletter          If basic letters should be shown
+     * @param int $completionletter     If completion letters should be shown
+     * @param int $postletter           If post letters should be shown
      * @return bool
      */
-    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture, $basicletter, $completionletter, $postletter) {
+    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
+                                               $basicletter, $completionletter, $postletter) {
         global $DB;
-        //echo '<script>window.alert("Ich werde aufgerufen")</script>';
-        //$transaction = $DB->start_delegated_transaction();
 
-        // Check if the user already has a record in the database
+        $transaction = $DB->start_delegated_transaction();
+
+        // Check if the user already has a record in the database.
         if ($records = $DB->get_records('townsquare_usersettings', ['userid' => $userid])) {
             // If there more than a record (it only should be only one), delete all of them and insert the new one.
             if (count($records) > 1) {
@@ -84,7 +87,7 @@ class block_townsquare_external extends \core_external\external_api {
                         $DB->delete_records('townsquare_usersettings', ['id' => $record->id]);
                     }
                 } catch (Exception $e) {
-          //          $transaction->rollback($e);
+                    $transaction->rollback($e);
                     return false;
                 }
             } else {
@@ -96,7 +99,7 @@ class block_townsquare_external extends \core_external\external_api {
                 $record->completionletter = $completionletter;
                 $record->postletter = $postletter;
                 $DB->update_record('townsquare_usersettings', $record);
-            //    $transaction->allow_commit();
+                $transaction->allow_commit();
                 return true;
             }
         }
@@ -108,7 +111,7 @@ class block_townsquare_external extends \core_external\external_api {
         $record->completionletter = $completionletter;
         $record->postletter = $postletter;
         $DB->insert_record('townsquare_usersettings', $record);
-        //$transaction->allow_commit();
+        $transaction->allow_commit();
         return true;
     }
 
