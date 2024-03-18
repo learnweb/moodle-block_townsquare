@@ -46,7 +46,6 @@ const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
 export function init(userid, settingsfromdb) {
     // When the page is loaded, set the settings from the database.
     if (settingsfromdb) {
-        console.log(settingsfromdb);
         executeusersettings(settingsfromdb);
     }
 
@@ -95,24 +94,19 @@ async function saveusersettings(userid, timefilterpast, timefilterfuture, basicl
  * @param {Object} settingsfromdb
  */
 function executeusersettings(settingsfromdb) {
-    // Load the settings.
-    let timefilterfuture = settingsfromdb['timefilterfuture'];
-    let timefilterpast = settingsfromdb['timefilterpast'];
-    let basicletter = settingsfromdb['basicletter'];
-    let completionletter = settingsfromdb['completionletter'];
-    let postletter = settingsfromdb['postletter'];
 
     // First step: set the time filter settings.
     // Change the time into the correct radio button id.
-    let futurebuttonid = converttimetoid(timefilterfuture, true);
-    let pastbuttonid = converttimetoid(timefilterpast, false);
+    let futurebuttonid = converttimetoid(settingsfromdb['timefilterfuture'], true);
+    let pastbuttonid = converttimetoid(settingsfromdb['timefilterpast'], false);
 
-    // If the time span is a combination of past and future, go through the two radio buttons and click them to activate the filter.
+    // If the time span is a combination of past and future, go through the two radio buttons and activate the filter.
     if (futurebuttonid !== "ts_time_all") {
         futureradiobuttons.forEach(function(button) {
-            if (button.id == futurebuttonid) {
+            if (button.id === futurebuttonid) {
                 button.parentNode.classList.add('active');
                 button.checked = true;
+                button.dispatchEvent(new Event('change'));
                 alltimebutton.forEach(function(alltimebutton) {
                     alltimebutton.checked = false;
                     alltimebutton.parentNode.classList.remove('active');
@@ -120,9 +114,10 @@ function executeusersettings(settingsfromdb) {
             }
         });
         pastradiobuttons.forEach(function(button) {
-            if (button.id == pastbuttonid) {
+            if (button.id === pastbuttonid) {
                 button.parentNode.classList.add('active');
                 button.checked = true;
+                button.dispatchEvent(new Event('change'));
                 alltimebutton.forEach(function(alltimebutton) {
                     alltimebutton.checked = false;
                     alltimebutton.parentNode.classList.remove('active');
@@ -130,29 +125,20 @@ function executeusersettings(settingsfromdb) {
             }
         });
     } else {
-        // If the time span is the all time filter, click the all time button.
+        // If the time span is set to all time, activate the all time button.
         alltimebutton.forEach(function(button) {
-           // if (button.id == futurebuttonid) {
-                button.parentNode.classList.add('active');
-                button.checked = true;
-                futureradiobuttons.forEach(function(futureradiobutton) {
-                    futureradiobutton.checked = false;
-                    futureradiobutton.parentNode.classList.remove('active');
-                });
-                pastradiobuttons.forEach(function(pastradiobutton) {
-                    pastradiobutton.checked = false;
-                    pastradiobutton.parentNode.classList.remove('active');
-                });
-            //}
+            button.parentNode.classList.add('active');
+            button.checked = true;
+            button.dispatchEvent(new Event('change'));
         });
     }
 
     // Second step: set the letter filter settings.
     // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
     checkboxes.forEach(function(checkbox) {
-        let basiclettercheck = checkbox.id === 'basicletter' && basicletter === "";
-        let completionlettercheck = checkbox.id === 'completionletter' && completionletter === "0";
-        let postlettercheck = checkbox.id === 'postletter' && postletter === "0";
+        let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb['basicletter'] === "";
+        let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb['completionletter'] === "0";
+        let postlettercheck = checkbox.id === 'postletter' && settingsfromdb['postletter'] === "0";
 
         if (basiclettercheck || completionlettercheck || postlettercheck) {
             checkbox.click();
