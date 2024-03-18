@@ -86,6 +86,21 @@ async function saveusersettings(userid, timefilterpast, timefilterfuture, basicl
             postletter: postletter
         },
     }]);
+
+    //if (result === true) {
+
+    //}
+    //window.alert('Settings saved');
+    // Show a success message.
+    let el = document.getElementById('ts_usersettings_successlabel');
+    el.style.opacity = 1;
+    el.style.display = 'block';
+    /*setInterval(function() {
+        if (el.style.opacity > 0) {
+            el.style.opacity -= 0.1;
+        }
+    }, 100);
+    el.style.display = 'none';*/
     return result;
 }
 

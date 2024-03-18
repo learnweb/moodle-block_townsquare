@@ -67,6 +67,7 @@ $string['postletters'] = 'Forum Posts';
 // Save button strings.
 $string['savebutton'] = 'Save settings';
 $string['savehelpicontext'] = 'Save Settings for the future';
+$string['savemessage'] = 'Settings successfully saved!';
 
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';

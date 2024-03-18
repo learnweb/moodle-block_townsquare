@@ -23,6 +23,11 @@
     flex: 1;
 }
 
+.ts_usersettings_message {
+    display: none;
+    opacity: 1.0;
+}
+
 /* Style for all letter or content templates */
 
 .townsquareletter_header.card-header {
