@@ -69,6 +69,8 @@ $string['savebutton'] = 'Save settings';
 $string['savehelpicontext'] = 'Save Settings for the future';
 $string['savemessage'] = 'Settings successfully saved!';
 
+// End of the side panel filter strings.
+
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
 

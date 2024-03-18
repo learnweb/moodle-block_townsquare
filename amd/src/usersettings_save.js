@@ -58,8 +58,8 @@ export function init(userid, settingsfromdb) {
         let letterfilter = collectletterfiltersettings();
 
         // Second step: store the usersettings in the database.
-        await saveusersettings(userid, timespans['timepast'], timespans['timefuture'],
-                               letterfilter['basicletter'], letterfilter['completionletter'], letterfilter['postletter']);
+        await saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter['basicletter'],
+                               letterfilter['completionletter'], letterfilter['postletter']);
     });
 }
 
@@ -87,20 +87,28 @@ async function saveusersettings(userid, timefilterpast, timefilterfuture, basicl
         },
     }]);
 
-    //if (result === true) {
-
-    //}
-    //window.alert('Settings saved');
     // Show a success message.
     let el = document.getElementById('ts_usersettings_successlabel');
-    el.style.opacity = 1;
     el.style.display = 'block';
-    /*setInterval(function() {
-        if (el.style.opacity > 0) {
-            el.style.opacity -= 0.1;
-        }
-    }, 100);
-    el.style.display = 'none';*/
+    el.style.opacity = 1.0;
+
+    // Start a new setInterval timer to gradually fade out the label.
+    if (el.fadeOutTimer) {
+        clearInterval(el.fadeOutTimer);
+    }
+    setTimeout(function () {
+        el.fadeOutTimer = setInterval(function () {
+            if (el.style.opacity > 0.4) {
+                el.style.opacity -= 0.1;
+            } else if (el.style.opacity > 0) {
+                el.style.opacity -= 0.2;
+            } else {
+                // Once opacity reaches 0, clear the timer and hide the label.
+                clearInterval(el.fadeOutTimer);
+                el.style.display = 'none';
+            }
+        }, 100);
+    }, 3000);
     return result;
 }
 

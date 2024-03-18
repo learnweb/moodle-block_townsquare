@@ -24,8 +24,8 @@
 }
 
 .ts_usersettings_message {
+    background-color: #eee;
     display: none;
-    opacity: 1.0;
 }
 
 /* Style for all letter or content templates */
