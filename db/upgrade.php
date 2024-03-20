@@ -40,10 +40,10 @@ function xmldb_block_townsquare_upgrade($oldversion) {
     // Documentation for the XMLDB Editor can be found at {@link https://docs.moodle.org/dev/XMLDB_editor}.
 
     if ($oldversion < 2024020700) {
-        // Define new table townsquare_usersettings to be created.
-        $table = new xmldb_table('townsquare_usersettings');
+        // Define new table block_townsquare_usersettings to be created.
+        $table = new xmldb_table('block_townsquare_usersettings');
 
-        // Adding fields to table townsquare_usersettings.
+        // Adding fields to table block_townsquare_usersettings.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timefilterpast', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
@@ -52,10 +52,10 @@ function xmldb_block_townsquare_upgrade($oldversion) {
         $table->add_field('completionletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('postletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
-        // Adding keys to table townsquare_usersettings.
+        // Adding keys to table block_townsquare_usersettings.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
-        // Conditionally launch create table for townsquare_usersettings.
+        // Conditionally launch create table for block_townsquare_usersettings.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }

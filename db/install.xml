@@ -4,7 +4,7 @@
        xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
     <TABLES>
-        <TABLE NAME="townsquare_usersettings" COMMENT="User Settings of the content filters in townsquare">
+        <TABLE NAME="block_townsquare_usersettings" COMMENT="User Settings of the content filters in townsquare">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" COMMENT="Main identification"/>
                 <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User that set personal filter settings"/>
