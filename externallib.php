@@ -79,12 +79,12 @@ class block_townsquare_external extends \core_external\external_api {
         $transaction = $DB->start_delegated_transaction();
 
         // Check if the user already has a record in the database.
-        if ($records = $DB->get_records('block_townsquare_usersettings', ['userid' => $userid])) {
+        if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
             // If there more than a record (it only should be only one), delete all of them and insert the new one.
             if (count($records) > 1) {
                 try {
                     foreach ($records as $record) {
-                        $DB->delete_records('block_townsquare_usersettings', ['id' => $record->id]);
+                        $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
                     }
                 } catch (Exception $e) {
                     $transaction->rollback($e);
@@ -98,7 +98,7 @@ class block_townsquare_external extends \core_external\external_api {
                 $record->basicletter = $basicletter;
                 $record->completionletter = $completionletter;
                 $record->postletter = $postletter;
-                $DB->update_record('block_townsquare_usersettings', $record);
+                $DB->update_record('block_townsquare_preferences', $record);
                 $transaction->allow_commit();
                 return true;
             }
@@ -110,7 +110,7 @@ class block_townsquare_external extends \core_external\external_api {
         $record->basicletter = $basicletter;
         $record->completionletter = $completionletter;
         $record->postletter = $postletter;
-        $DB->insert_record('block_townsquare_usersettings', $record);
+        $DB->insert_record('block_townsquare_preferences', $record);
         $transaction->allow_commit();
         return true;
     }

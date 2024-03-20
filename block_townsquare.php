@@ -55,7 +55,7 @@ class block_townsquare extends block_base {
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
 
         // Get the user settings if available.
-        $usersettings = $DB->get_record('block_townsquare_usersettings', ['userid' => $USER->id]);
+        $usersettings = $DB->get_record('block_townsquare_preferences', ['userid' => $USER->id]);
 
         // Load all javascripts.
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
