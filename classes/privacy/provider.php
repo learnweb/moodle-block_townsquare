@@ -29,7 +29,6 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\writer;
-use core_privacy\local\request\helper as request_helper;
 
 
 /**
@@ -42,7 +41,7 @@ use core_privacy\local\request\helper as request_helper;
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider  {
+    \core_privacy\local\request\core_userlist_provider {
 
 
     /**
@@ -136,7 +135,7 @@ class provider implements
         }
         if (!empty($townsquaredata)) {
             writer::with_context($contextlist->current())->export_data([
-                get_string('pluginname', 'block_townsquare')], (object) $townsquaredata);
+                get_string('pluginname', 'block_townsquare'), ], (object) $townsquaredata);
         }
     }
 
@@ -175,7 +174,7 @@ class provider implements
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
-        foreach($contextlist as $context) {
+        foreach ($contextlist as $context) {
             if ($context->contextlevel == CONTEXT_USER && $contextlist->get_user()->id == $context->instanceid) {
                 $DB->delete_records('block_townsquare_preferences', ['userid' => $contextlist->get_user()->id]);
             }
