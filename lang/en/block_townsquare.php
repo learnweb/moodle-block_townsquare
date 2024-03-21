@@ -31,6 +31,15 @@ $string['pluginname'] = 'Town Square';
 $string['pluginname:addinstance'] = 'Add the Town Square block';
 $string['pluginname:myaddinstance'] = 'Add the Town Square block to the dashboard';
 
+// Privacy strings.
+$string['privacy:metadata:block_townsquare_preferences'] = 'Town Square stores the filters that a user wants to have activated.';
+$string['privacy:metadata:block_townsquare_preferences:userid'] = 'The user id';
+$string['privacy:metadata:block_townsquare_preferences:timefilterpast'] = 'How far back the user wants to see notifications';
+$string['privacy:metadata:block_townsquare_preferences:timefilterfuture'] = 'How far into the future the user wants to see notifications';
+$string['privacy:metadata:block_townsquare_preferences:basicletter'] = 'If the user wants to see basic letters';
+$string['privacy:metadata:block_townsquare_preferences:completionletter'] = 'If the user wants to see completion letters';
+$string['privacy:metadata:block_townsquare_preferences:postletter'] = 'If the user wants to see post letters';
+
 // Error strings.
 $string['invalidlettertype'] = 'Invalid function parameter, please use a valid letter type';
 
