@@ -80,7 +80,6 @@ class contentcontroller {
                 $tempcontent = new orientation_marker($index, $time);
                 $this->content[$index] = $tempcontent->export_data();
                 $index++;
-                continue;
             }
             if (isset($event->eventtype) && $event->eventtype == 'post') {
                 $templetter = new letter\post_letter($index, $event);
