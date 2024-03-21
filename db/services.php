@@ -28,6 +28,7 @@ $functions = [
     'block_townsquare_record_usersettings' => [
         'classname' => 'block_townsquare_external',
         'classpath' => 'blocks/townsquare/externallib.php',
+        'methodname' => 'record_usersettings',
         'description' => 'Records the user settings for the townsquare block',
         'type' => 'write',
         'ajax' => true,
