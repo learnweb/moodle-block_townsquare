@@ -43,23 +43,13 @@ class provider implements
     \core_privacy\local\request\plugin\provider,
     \core_privacy\local\request\core_userlist_provider {
 
-
-    /**
-     * get_contexts_for_userid - to explain where data is held within Moodle for your plugin; and
-     * export_user_data - to export a user's personal data from your plugin.
-     * delete_data_for_all_users_in_context - to delete all data for all users in the specified context.
-     * delete_data_for_user - to delete all user data for the specified user, in the specified contexts.
-     * get_users_in_context - to locate the users who hold any personal data in a specific context; and
-     * delete_data_for_users - to delete data for multiple users in the specified context.
-     */
-
     /**
      * Function that describes the type of data that is stored.
      * @param collection $collection
      * @return collection
      */
     public static function get_metadata(collection $collection): collection {
-        $collection->add_database_table('block_townsquare_preferences', [
+        $collection->add_database_table('block_townsquare', [
             'userid' => 'privacy:metadata:block_townsquare_preferences:userid',
                 'timefilterpast' => 'privacy:metadata:block_townsquare_preferences:timefilterpast',
                 'timefilterfuture' => 'privacy:metadata:block_townsquare_preferences:timefilterfuture',
@@ -146,7 +136,7 @@ class provider implements
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
         $context = $userlist->get_context();
-        if ($context == CONTEXT_USER &&
+        if ($context instanceof \context_user &&
             in_array($context->instanceid, $userlist->get_userids())) {
             $DB->delete_records('block_townsquare_preferences', ['userid' => $context->instanceid]);
         }
@@ -160,7 +150,7 @@ class provider implements
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
-        if ($context == CONTEXT_USER) {
+        if ($context instanceof \context_user) {
             $DB->delete_records('block_townsquare_preferences', ['userid' => $context->instanceid]);
         }
     }
