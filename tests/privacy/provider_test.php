@@ -15,16 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Block recentlyaccesseditems privacy provider tests.
+ * Unit tests for the block_townsquare
  *
- * @package    block_recentlyaccesseditems
- * @copyright  2018 Michael Hawkins <michaelh@moodle.com>
+ * @package    block_townsquare
+ * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @since      Moodle 3.6
  */
 namespace block_townsquare\privacy;
-
-defined('MOODLE_INTERNAL') || die();
 
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
@@ -34,9 +31,24 @@ use block_townsquare\privacy\provider;
 use core_privacy\local\request\writer;
 use core_privacy\tests\provider_testcase;
 
+/**
+ * PHPUnit tests for testing the functionalities of the townsquare privacy provider
+ *
+ * @package    block_townsquare
+ * @copyright  2024 Tamaro Walter
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @covers \block_townsquare\privacy\provider
+ */
 class provider_test extends provider_testcase {
 
     // Attributes.
+
+    /** @var object The data that will be used for testing.
+     * This Class contains:
+     * - a course
+     * - a student and a teacher and context for both
+     */
     private $testdata;
 
     public function setUp(): void {
@@ -45,13 +57,14 @@ class provider_test extends provider_testcase {
         $this->testdata->course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $this->testdata->student = $this->getDataGenerator()->create_user();
         $this->testdata->studentcontext = \context_user::instance($this->testdata->student->id);
+        $this->testdata->teacher = $this->getDataGenerator()->create_user();
+        $this->testdata->teachercontext = \context_user::instance($this->testdata->teacher->id);
+        $this->getDataGenerator()->enrol_user($this->testdata->teacher->id, $this->testdata->course->id, 'teacher');
         $this->getDataGenerator()->enrol_user($this->testdata->student->id, $this->testdata->course->id, 'student');
         $this->resetAfterTest();
     }
 
-    // public function tearDown(): void {}
-
-    // Functions that needs to be implemented.
+    // Test functions.
 
     /**
      * Test if the provider gets the right context for a user.
@@ -119,7 +132,7 @@ class provider_test extends provider_testcase {
      * Test if user data get exported correctly.
      * @return void
      */
-    public function test_export_user_data() {
+    public function test_export_user_data(): void {
         global $DB;
         // Add a usersetting.
         $this->helper_add_preference($this->testdata->student->id);
@@ -129,7 +142,8 @@ class provider_test extends provider_testcase {
         $this->assertEquals(1, count($record));
 
         // Export the data.
-        $approvedlist = new approved_contextlist($this->testdata->student, 'block_townsquare', [$this->testdata->studentcontext->id]);
+        $approvedlist = new approved_contextlist($this->testdata->student, 'block_townsquare',
+                                                [$this->testdata->studentcontext->id]);
         provider::export_user_data($approvedlist);
         $writer = writer::with_context($this->testdata->studentcontext);
         $this->assertEquals(true, $writer->has_any_data());
@@ -139,13 +153,11 @@ class provider_test extends provider_testcase {
      * Test if data is delete for all users within an approved contextlist
      * @return void
      */
-    public function test_delete_data_for_all_users_in_context() {
+    public function test_delete_data_for_all_users_in_context(): void {
         global $DB;
         // Add another user with a different context and add usersettings.
-        $user2 = $this->getDataGenerator()->create_user();
-        $this->getDataGenerator()->enrol_user($user2->id, $this->testdata->course->id, 'teacher');
         $this->helper_add_preference($this->testdata->student->id);
-        $this->helper_add_preference($user2->id);
+        $this->helper_add_preference($this->testdata->teacher->id);
 
         // Try a system context deletion, which should have no effect.
         provider::delete_data_for_all_users_in_context(\context_system::instance());
@@ -163,25 +175,25 @@ class provider_test extends provider_testcase {
      * Test deleting data within an approved contextlist for a user.
      * @return void
      */
-    public function test_delete_data_for_user() {
+    public function test_delete_data_for_user(): void {
         global $DB;
-        // Add another user with a different context and add usersettings.
-        $teacher = $this->getDataGenerator()->create_user();
-        $this->getDataGenerator()->enrol_user($teacher->id, $this->testdata->course->id, 'teacher');
+        // Add usersettings for both user.
         $this->helper_add_preference($this->testdata->student->id);
-        $this->helper_add_preference($teacher->id);
+        $this->helper_add_preference($this->testdata->teacher->id);
 
         // Try a system context deletion, which should have no effect.
         provider::delete_data_for_all_users_in_context(\context_system::instance());
         $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences')));
 
         // Try to delete the teacher data in a students context, which should have no effect.
-        $approvedlist = new approved_contextlist($teacher, 'block_townsquare', [$this->testdata->studentcontext->id]);
+        $approvedlist = new approved_contextlist($this->testdata->teacher, 'block_townsquare',
+                                                 [$this->testdata->studentcontext->id]);
         provider::delete_data_for_user($approvedlist);
         $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences')));
 
         // Delete the teacher date in its own context.
-        $approvedlist = new approved_contextlist($teacher, 'block_townsquare', [\context_user::instance($teacher->id)->id]);
+        $approvedlist = new approved_contextlist($this->testdata->teacher, 'block_townsquare',
+                                                 [$this->testdata->teachercontext->id]);
         provider::delete_data_for_user($approvedlist);
         $record = $DB->get_record('block_townsquare_preferences', ['userid' => $this->testdata->student->id]);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences')));
@@ -192,20 +204,18 @@ class provider_test extends provider_testcase {
      * Test deleting data within a contest for an approved userlist.
      * @return void
      */
-    public function test_delete_data_for_users() {
+    public function test_delete_data_for_users(): void {
         global $DB;
-        // Add another user with a different context and add usersettings.
-        $teacher = $this->getDataGenerator()->create_user();
-        $this->getDataGenerator()->enrol_user($teacher->id, $this->testdata->course->id, 'teacher');
+        // Add usersettings for both user.
         $this->helper_add_preference($this->testdata->student->id);
-        $this->helper_add_preference($teacher->id);
+        $this->helper_add_preference($this->testdata->teacher->id);
 
         // Try a system context deletion, which should have no effect.
         provider::delete_data_for_all_users_in_context(\context_system::instance());
         $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences')));
 
         // Try to delete user data in another users context, which should have no effect..
-        $approvedlist = new approved_userlist($this->testdata->studentcontext, 'block_townsquare', [$teacher->id]);
+        $approvedlist = new approved_userlist($this->testdata->studentcontext, 'block_townsquare', [$this->testdata->teacher->id]);
         provider::delete_data_for_users($approvedlist);
         $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences')));
 
@@ -213,11 +223,10 @@ class provider_test extends provider_testcase {
         $approvedlist = new approved_userlist($this->testdata->studentcontext, 'block_townsquare', [$this->testdata->student->id]);
         provider::delete_data_for_users($approvedlist);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences')));
-        $record = $DB->get_record('block_townsquare_preferences', ['userid' => $teacher->id]);
-        $this->assertEquals($teacher->id, $record->userid);
+        $record = $DB->get_record('block_townsquare_preferences', ['userid' => $this->testdata->teacher->id]);
+        $this->assertEquals($this->testdata->teacher->id, $record->userid);
 
     }
-
 
     // Helper functions.
 
