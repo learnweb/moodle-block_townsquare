@@ -42,8 +42,6 @@ use core_privacy\tests\provider_testcase;
  */
 class provider_test extends provider_testcase {
 
-    // Attributes.
-
     /** @var object The data that will be used for testing.
      * This Class contains:
      * - a course

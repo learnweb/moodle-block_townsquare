@@ -69,10 +69,10 @@ class provider implements
     public static function get_contexts_for_userid(int $userid): contextlist {
         $sql = "SELECT context.id
                 FROM {block_townsquare_preferences} preferences
-                JOIN {user} user
-                    ON preferences.userid = user.id
+                JOIN {user} u
+                    ON preferences.userid = u.id
                 JOIN {context} context
-                    ON context.instanceid = user.id
+                    ON context.instanceid = u.id
                         AND context.contextlevel = :contextlevel
                 WHERE preferences.userid = :userid";
 
