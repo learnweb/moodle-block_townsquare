@@ -22,7 +22,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace block_townsquare\external;
+use Exception;
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
+
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
@@ -75,6 +80,32 @@ class block_townsquare_external extends \core_external\external_api {
     public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
                                                $basicletter, $completionletter, $postletter) {
         global $DB;
+        $transaction = $DB->start_delegated_transaction();
+        // Check if the user already has a record in the database.
+        if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
+            // If there more than a record (it only should be only one), delete all of them and insert the new one.
+            if (count($records) > 1) {
+                try {
+                    foreach ($records as $record) {
+                        $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
+                    }
+                } catch (Exception $e) {
+                    $transaction->rollback($e);
+                    return false;
+                }
+            } else {
+                // Upgrade the existing record.
+                $record = reset($records);
+                $record->timefilterpast = $timefilterpast;
+                $record->timefilterfuture = $timefilterfuture;
+                $record->basicletter = $basicletter;
+                $record->completionletter = $completionletter;
+                $record->postletter = $postletter;
+                $DB->update_record('block_townsquare_preferences', $record);
+                $transaction->allow_commit();
+                return true;
+            }
+        }
         $record = new stdClass();
         $record->userid = $userid;
         $record->timefilterpast = $timefilterpast;
@@ -82,13 +113,8 @@ class block_townsquare_external extends \core_external\external_api {
         $record->basicletter = $basicletter;
         $record->completionletter = $completionletter;
         $record->postletter = $postletter;
-        // Check if the user already has a record in the database.
-        if ($DB->get_record('block_townsquare_preferences', ['userid' => $userid])) {
-            // Upgrade the existing record.
-            $DB->update_record('block_townsquare_preferences', $record);
-            return true;
-        }
         $DB->insert_record('block_townsquare_preferences', $record);
+        $transaction->allow_commit();
         return true;
     }
 
