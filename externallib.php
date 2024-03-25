@@ -23,14 +23,14 @@
  */
 
 namespace block_townsquare\external;
-use core_external\external_api;
 use Exception;
+use external_api;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-// require_once($CFG->libdir . '/externallib.php');
+require_once($CFG->dirroot . '/lib/externallib.php');
 
 /**
  * Class implementing the external API, esp. for AJAX functions.
