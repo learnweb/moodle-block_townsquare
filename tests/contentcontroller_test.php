@@ -69,7 +69,7 @@ class contentcontroller_test extends \advanced_testcase {
      * Test, if the right letters are created.
      * @return void
      */
-    public function test_letters() {
+    public function test_letters(): void {
         // Set an logged in user.
         $this->setUser($this->testdata->teacher);
 

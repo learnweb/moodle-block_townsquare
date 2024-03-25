@@ -151,7 +151,7 @@ class postevents_test extends \advanced_testcase {
      * Test, if the post events are processed correctly if the course disappears.
      * @return void
      */
-    public function test_course_deleted() {
+    public function test_course_deleted(): void {
         global $DB;
         // Delete the course from the database.
         $DB->delete_records('course', ['id' => $this->testdata->course1->id]);

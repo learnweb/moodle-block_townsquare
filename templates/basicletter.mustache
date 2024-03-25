@@ -23,33 +23,37 @@
     * contentid - Unique identification for every shown plugin content
     * isbasic - Variable for the blockcontent template to assure this template is used.
     * coursename - Name of the course
+    * courseid - Id of the course
     * instancename - Name of the instance
     * content - Content of the letter
     * created - Date of the notification
     * linktocourse - Link to the course
     * linktoactivity - Link to the module instance
+    * basiclettercolor - Color of the letter
 
     Example (json):
     {
           "contentid": 0,
           "isbasic": true,
           "coursename": "Moodle Engineering",
+          "courseid": 3,
           "instancename": "Lesson 1: Quantum Theory",
           "content": "Lesson 1: Quantum Theory closes",
           "created": "20.12.2023",
           "linktocourse": "http://localhost/moodle/course/view.php?id=20",
           "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
+          "basiclettercolor": "#0f6cbf"
     }
 }}
-<div class="townsquare_letter basicletter card mb-3" id="content-nr-{{contentid}}">
-    <div class="townsquareletter_header basicletter_header card-header">
+<div class="townsquare_letter basicletter card mb-3" id="content-nr-{{contentid}}" style="border-color: {{basiclettercolor}}">
+    <div class="townsquareletter_header basicletter_header card-header" style="background-color: {{basiclettercolor}}">
         <div class = "townsquareletter_top basicletter_top">
-            <div class = "townsquareletter_course basicletter_course">
+            <div class = "townsquareletter_course basicletter_course" id="{{courseid}}">
                 {{#str}} coursetitle, moodle, {"course":
                     {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a> {{/quote}} }
                 {{/str}}
             </div>
-            <div class = "townsquareletter_date basicletter_date">
+            <div class = "townsquareletter_date basicletter_date" id="{{createdtimestamp}}">
                 {{created}}
             </div>
         </div>

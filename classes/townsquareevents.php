@@ -30,7 +30,7 @@ use dml_exception;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
-
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 /**
  * Class to get events and posts that will be shown in the townsquare block..
  *
@@ -206,6 +206,9 @@ class townsquareevents {
     private function get_posts_from_db($modulename, $courses, $timestart): array {
         global $DB;
         // Prepare params for sql statement.
+        if ($courses == []) {
+            return [];
+        }
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
         $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
         // Set begin of sql statement.
@@ -274,6 +277,11 @@ class townsquareevents {
      */
     private function get_events_from_db($timestart, $timeend, $courses): array {
         global $DB;
+
+        // As there are no events without courses, return an empty array.
+        if ($courses == []) {
+            return [];
+        }
 
         // Due to compatability reasons, only events from supported modules are shown.
         // Supported modules are: core modules and custom additional modules.

@@ -23,8 +23,6 @@
  */
 
 namespace block_townsquare\letter;
-
-use moodle_exception;
 use moodle_url;
 use stdClass;
 
@@ -87,6 +85,7 @@ class post_letter extends letter {
         $this->posturls = new stdClass();
 
         $this->lettertype = 'post';
+        $this->lettercolor = townsquare_get_colorsetting('postletter');
         $this->post->instanceid = $postevent->instanceid;
         $this->post->discussionid = $postevent->postdiscussion;
         $this->post->id = $postevent->postid;
@@ -123,10 +122,12 @@ class post_letter extends letter {
             'postid' => $this->post->id,
             'message' => format_text($this->post->message),
             'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
             'linktopost' => $this->posturls->linktopost->out(),
             'linktoauthor' => $this->posturls->linktoauthor->out(),
+            'postlettercolor' => $this->lettercolor,
         ];
     }
 
