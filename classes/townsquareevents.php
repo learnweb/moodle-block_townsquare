@@ -102,6 +102,9 @@ class townsquareevents {
 
             // Add the name of the instance to the event.
             $coreevent->instancename = $DB->get_field($coreevent->modulename, 'name', ['id' => $coreevent->instance]);
+
+            // Modify the content of the event if needed.
+            townsquare_check_coreevent($coreevent);
         }
 
         return $coreevents;
@@ -280,7 +283,7 @@ class townsquareevents {
 
         // Due to compatability reasons, only events from supported modules are shown.
         // Supported modules are: core modules and custom additional modules.
-        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
+        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary', 'h5pactivity',
                      'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', ];
         $additionalmodules = ['moodleoverflow', 'ratingallocate'];
         $modules = $coremodules + $additionalmodules;
@@ -293,7 +296,7 @@ class townsquareevents {
 
         // Set the sql statement.
         $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability, e.groupid, e.userid,
-                       e.modulename, e.instance, e.eventtype, e.timestart, e.visible
+                       e.modulename, e.instance, e.eventtype, e.timestart, e.timemodified, e.visible
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
                 JOIN {course_modules} cm ON (cm.course = e.courseid AND cm.module = m.id AND cm.instance = e.instance)
@@ -308,20 +311,6 @@ class townsquareevents {
 
         // Get all events.
         return $DB->get_records_sql($sql, $params);
-    }
-
-
-    /**
-     * help function to sort and merge 2 array of events.
-     * Note that each of the arrays are already sorted in descending order by time created (newest event first).
-     * @param array $leftarray  The first array of events.
-     * @param array $rightarray The second array of events.
-     *
-     * @return array
-     */
-    private function merge_events($leftarray, $rightarray, ): array {
-        // TODO: merge sort events.
-        return [];
     }
 
     /**
