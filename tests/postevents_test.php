@@ -80,8 +80,8 @@ class postevents_test extends \advanced_testcase {
         $timestamp = 9999999999;
         $result = true;
         foreach ($posts as $post) {
-            if ($timestamp >= $post->postcreated) {
-                $timestamp = $post->postcreated;
+            if ($timestamp >= $post->timestart) {
+                $timestamp = $post->timestart;
             } else {
                 $result = false;
             }

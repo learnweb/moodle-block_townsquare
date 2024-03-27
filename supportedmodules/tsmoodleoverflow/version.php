@@ -17,14 +17,15 @@
 /**
  * Plugin version and other meta-data are defined here.
  *
- * @package     block_townsquare
+ * @package     supportedmodules_tsmoodleoverflow
  * @copyright   2023 Tamaro Walter
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
-$plugin->component = 'block_townsquare';
+$plugin->component = 'supportedmodules_tsmoodleoverflow';
+$plugin->dependencies = ['block_townsquare' => ANY_VERSION];
 $plugin->release = '0.1.0';
-$plugin->version = 2023092005;
+$plugin->version = 2024011503;
 $plugin->requires = 2022041900;
 $plugin->maturity = MATURITY_ALPHA;

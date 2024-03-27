@@ -68,7 +68,7 @@ class contentcontroller {
             // Display a orientation marker on the current date between the other events.
             if (!$orientationmarkerset && isset($event->eventtype) && (
                ($event->eventtype != 'post' && $event->timestart <= $time) ||
-               ($event->eventtype == 'post' && $event->postcreated <= $time))) {
+               ($event->eventtype == 'post' && $event->timestart <= $time))) {
 
                 $orientationmarkerset = true;
                 $tempcontent = new orientation_marker($index, $time);

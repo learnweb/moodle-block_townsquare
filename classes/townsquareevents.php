@@ -30,6 +30,7 @@ use dml_exception;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
  * Class to get events and posts that will be shown in the townsquare block..
@@ -60,7 +61,7 @@ class townsquareevents {
         $this->timenow = time();
         $this->timestart = $this->timenow - 15768000;
         $this->timeend = $this->timenow + 15768000;
-        $this->courses = $this->get_courses();
+        $this->courses = townsquare_get_courses();
     }
 
     /**
@@ -68,60 +69,65 @@ class townsquareevents {
      * @return array
      */
     public function get_all_events_sorted(): array {
-        $calendarevents = $this->get_calendarevents();
+        $coreevents = $this->get_coreevents();
         $postevents = $this->get_postevents();
+        $subpluginevents = $this->get_subpluginevents();
 
         // Merge the events in a sorted order.
-        $events = [];
-        $numberofevents = count($calendarevents) + count($postevents);
-        for ($i = 0; $i < $numberofevents; $i++) {
-            if (current($calendarevents) && current($postevents)) {
-                if (current($calendarevents)->timestart > current($postevents)->postcreated) {
-                    $events[$i] = current($calendarevents);
-                    next($calendarevents);
-                } else {
-                    $events[$i] = current($postevents);
-                    next($postevents);
-                }
-            } else if (current($calendarevents)) {
-                $events[$i] = current($calendarevents);
-                next($calendarevents);
-            } else {
-                $events[$i] = current($postevents);
-                next($postevents);
-            }
-        }
-
-        return $events;
+        $events = $coreevents + $postevents + $subpluginevents;
+        return townsquare_mergesort($events);
     }
 
     /**
-     * Function to get events from that are in the calendar for the current user.
+     * Function to get events/notifications from core plugins for the current user.
      *
      * The events are sorted in descending order by time created (newest event first)
      * @return array
      */
-    public function get_calendarevents(): array {
+    public function get_coreevents(): array {
         global $DB;
 
         // Get all events from the last six months and the next six months.
-        $calendarevents = $this->get_events_from_db($this->timestart, $this->timeend, $this->courses);
+        $coreevents = $this->get_events_from_db($this->timestart, $this->timeend, $this->courses);
 
-        // Filter the events and add the coursemoduleid.
-        foreach ($calendarevents as $calendarevent) {
+        // Filter the events and add the instancename.
+        foreach ($coreevents as $coreevent) {
             // Filter out events that are not relevant for the user.
-            if ($this->filter_availability($calendarevent) ||
-                ($calendarevent->modulename == "assign" && $this->filter_assignment($calendarevent)) ||
-                ($calendarevent->eventtype == "expectcompletionon" && $this->filter_activitycompletions($calendarevent))) {
-                unset($calendarevents[$calendarevent->id]);
+            if (townsquare_filter_availability($coreevent) ||
+                ($coreevent->modulename == "assign" && $this->filter_assignment($coreevent)) ||
+                ($coreevent->eventtype == "expectcompletionon" && $this->filter_activitycompletions($coreevent))) {
+                unset($coreevents[$coreevent->id]);
                 continue;
             }
 
             // Add the name of the instance to the event.
-            $calendarevent->instancename = $DB->get_field($calendarevent->modulename, 'name', ['id' => $calendarevent->instance]);
+            $coreevent->instancename = $DB->get_field($coreevent->modulename, 'name', ['id' => $coreevent->instance]);
+
+            // Modify the content of the event if needed.
+            townsquare_check_coreevent($coreevent);
         }
 
-        return $calendarevents;
+        return $coreevents;
+    }
+
+    /**
+     * Function to get events/notifications from other plugins than core plugins for the current user.
+     * This function checks for subplugins and calls their get_events() function.
+     *
+     * The events are sorted in descending order by time created (newest event first)
+     * @return array
+     */
+    public function get_subpluginevents(): array {
+        // Get all available subplugins.
+        $events = [];
+        $subplugins = \core_plugin_manager::instance()->get_plugins_of_type('supportedmodules');
+        var_dump($subplugins);
+        foreach ($subplugins as $subplugin) {
+            $events += $subplugin->get_events();
+        }
+
+        // Sort the events and return them.
+        return townsquare_mergesort($events);
     }
 
     /**
@@ -140,9 +146,9 @@ class townsquareevents {
         if ($DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
             $forumposts = $this->get_posts_from_db('forum', $this->courses, $this->timestart);
         }
-
+        // TODO: implement support for moodleoverflow in a subplugin.
         if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
-            $moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
+            //$moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
         }
 
         if (empty($forumposts) && empty($moodleoverflowposts)) {
@@ -157,11 +163,11 @@ class townsquareevents {
         for ($i = 0; $i < $numberofposts; $i++) {
             // Filter unavailable posts.
             // Iterate until the first post that is available. Decrement the number of posts each time a post is filtered.
-            while (current($forumposts) && $this->filter_availability(current($forumposts))) {
+            while (current($forumposts) && townsquare_filter_availability(current($forumposts))) {
                 next($forumposts);
                 $numberofposts--;
             }
-            while (current($moodleoverflowposts) && $this->filter_availability(current($moodleoverflowposts))) {
+            while (current($moodleoverflowposts) && townsquare_filter_availability(current($moodleoverflowposts))) {
                 next($moodleoverflowposts);
                 $numberofposts--;
             }
@@ -172,7 +178,7 @@ class townsquareevents {
 
             // Merge.
             if (current($forumposts) && current($moodleoverflowposts)) {
-                if (current($forumposts)->postcreated > current($moodleoverflowposts)->postcreated) {
+                if (current($forumposts)->timestart > current($moodleoverflowposts)->timestart) {
                     $posts[$i] = current($forumposts);
                     next($forumposts);
                 } else {
@@ -225,7 +231,7 @@ class townsquareevents {
                    posts.discussion AS postdiscussion,
                    posts.parent AS postparentid,
                    posts.userid AS postuserid,
-                   posts.created AS postcreated,
+                   posts.created AS timestart,
                    posts.message AS postmessage ";
 
         // Extend the strings for the 2 module cases.
@@ -265,7 +271,7 @@ class townsquareevents {
 
     /**
      * Searches for events in the events table, that are relevant to the timeline.
-     * This is a helper function for get_calendarevents().
+     * This is a helper function for get_coreevents().
      * @param int $timestart The time from where the events should be searched. Not equal to timestart in the database events table.
      * @param int $timeend   The time until where the events should be searched.
      * @param array $courses The ids of the courses where the events should be searched.
@@ -277,7 +283,7 @@ class townsquareevents {
 
         // Due to compatability reasons, only events from supported modules are shown.
         // Supported modules are: core modules and custom additional modules.
-        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'folder', 'forum', 'glossary', 'h5pactivity',
+        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary', 'h5pactivity',
                      'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', ];
         $additionalmodules = ['moodleoverflow', 'ratingallocate'];
         $modules = $coremodules + $additionalmodules;
@@ -290,7 +296,7 @@ class townsquareevents {
 
         // Set the sql statement.
         $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability, e.groupid, e.userid,
-                       e.modulename, e.instance, e.eventtype, e.timestart, e.visible
+                       e.modulename, e.instance, e.eventtype, e.timestart, e.timemodified, e.visible
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
                 JOIN {course_modules} cm ON (cm.course = e.courseid AND cm.module = m.id AND cm.instance = e.instance)
@@ -308,59 +314,21 @@ class townsquareevents {
     }
 
     /**
-     * Gets the id of all courses where the current user is enrolled
-     * @return array
-     */
-    private function get_courses(): array {
-        global $USER;
-
-        $enrolledcourses = enrol_get_all_users_courses($USER->id, true);
-        $courses = [];
-        foreach ($enrolledcourses as $enrolledcourse) {
-            $courses[] = $enrolledcourse->id;
-        }
-
-        return $courses;
-    }
-
-    /**
-     * Filter that checks if the event needs to be filtered out for the current user because it is unavailable.
-     * Applies to restriction that are defined in the module setting (restrict access).
-     * @param object $event The event that is checked.
-     * @return bool true if the event needs to filtered out, false if not.
-     */
-    private function filter_availability($event): bool {
-        // If there is no restriction defined, the event is available.
-        if ($event->availability == null) {
-            return false;
-        }
-
-        // If there is a restriction, check if it applies to the user.
-        $modinfo = get_fast_modinfo($event->courseid);
-        $moduleinfo = $modinfo->get_cm($event->coursemoduleid);
-        if ($moduleinfo->uservisible) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Filter that checks if the event needs to be filtered out for the current user.
      * Applies to assignment events.
-     * @param object $calendarevent calendarevent that is checked
+     * @param object $coreevent coreevent that is checked
      * @return bool true if the event needs to filtered out, false if not.
      */
-    private function filter_assignment($calendarevent): bool {
+    private function filter_assignment($coreevent): bool {
         global $DB;
-        $assignment = $DB->get_record('assign', ['id' => $calendarevent->instance]);
-
+        $assignment = $DB->get_record('assign', ['id' => $coreevent->instance]);
+        $type = $coreevent->eventtype;
         // Check if the assign is longer than a week closed.
-        $overduecheck = $calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800);
+        $overduecheck = ($type == "due" || $type == "gradingdue") && ($this->timenow >= ($coreevent->timestart + 604800));
 
         // Check if the user is someone without grading capability.
-        $nogradecapabilitycheck = $calendarevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
-                                                                        context_module::instance($calendarevent->coursemoduleid));
+        $nogradecapabilitycheck = $coreevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
+                                                                        context_module::instance($coreevent->coursemoduleid));
         // Check if the assignment is not open yet.
         $stillclosedcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
 
@@ -371,15 +339,15 @@ class townsquareevents {
     }
 
     /**
-     * Filter that checks if the event needs to be filtered out for the current user.
+     * Filter that checks if the event needs to be filtered out for the current user because it is already completed..
      * Applies to activity completion events.
-     * @param object $calendarevent calendarevent that is checked
+     * @param object $coreevent coreevent that is checked
      * @return bool true if the event needs to filtered out, false if not.
      */
-    private function filter_activitycompletions($calendarevent): bool {
+    private function filter_activitycompletions($coreevent): bool {
         global $DB, $USER;
         if ($completionstatus = $DB->get_record('course_modules_completion',
-                                                ['coursemoduleid' => $calendarevent->coursemoduleid, 'userid' => $USER->id])) {
+                                                ['coursemoduleid' => $coreevent->coursemoduleid, 'userid' => $USER->id])) {
             if ($completionstatus->completionstate != 0) {
                 return true;
             }
