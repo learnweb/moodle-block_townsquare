@@ -26,6 +26,7 @@ namespace block_townsquare;
 defined('MOODLE_INTERNAL') || die();
 
 use context_module;
+use core_component;
 use dml_exception;
 
 global $CFG;
