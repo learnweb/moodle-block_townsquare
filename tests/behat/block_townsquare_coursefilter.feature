@@ -34,10 +34,10 @@ Feature: The townsquare block allows users to see notifications from different c
         And I should see "Test assign 3"
         And I click on "Course 1" "checkbox"
         Then "C1" "css_element" should not be visible
-        And "C2" "css_element" should be visible
-        And "C3" "css_element" should be visible
+        And "Test assign 2" "text" should be visible
+        And "Test assign 3" "text" should be visible
         And I click on "Course 2" "checkbox"
         Then "C2" "css_element" should not be visible
-        And  "C3" "css_element" should be visible
+        And  "Test assign 3" "text" should be visible
         And I click on "Course 3" "checkbox"
         Then "C3" "css_element" should not be visible
