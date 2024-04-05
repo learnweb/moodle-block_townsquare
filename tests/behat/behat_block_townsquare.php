@@ -22,13 +22,11 @@
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
 use Behat\Gherkin\Node\TableNode as TableNode;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
-
 
 /**
  * townsquare-related steps definitions.
@@ -40,4 +38,27 @@ use Behat\Mink\Exception\ExpectationException;
  */
 class behat_block_townsquare extends behat_base {
 
+    /**
+     * Adds an activity completion event.
+     * @Given /^I add a townsquare completion event to "(?P<course>(?:[^"]|\\")*)"$/
+     * @param string $coursename, the course short name.
+     */
+    public function i_add_an_townsquare_completion_event(string $coursename) {
+        global $DB;
+        $generator = new testing_data_generator();
+        $course = $DB->get_record('course', ['shortname' => $coursename]);
+        $featurecompletionmanual = [
+            'completion' => COMPLETION_TRACKING_MANUAL,
+            'completionexpected' => time() + 604800,
+        ];
+
+        $assignrecord = [
+            'course' => $course->id,
+            'courseid' => $course->id,
+            'duedate' => time() + 604800,
+            'allowsubmissionsfromdate' => time() - 604800,
+            'gradingduedate' => time() + 604860,
+        ];
+        $generator->create_module('assign', $assignrecord, $featurecompletionmanual);
+    }
 }

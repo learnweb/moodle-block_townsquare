@@ -63,15 +63,15 @@ $string['nexttwodaysnotifications'] = 'Next two days';
 $string['nextfivedaysnotifications'] = 'Next five days';
 $string['nextweeknotifications'] = 'Next week';
 $string['nextmonthnotifications'] = 'Next month';
-$string['lasttwodaysnotifications'] = 'last two days';
-$string['lastfivedaysnotifications'] = 'last five days';
+$string['lasttwodaysnotifications'] = 'Last two days';
+$string['lastfivedaysnotifications'] = 'Last five days';
 $string['lastweeknotifications'] = 'Last week';
 $string['lastmonthnotifications'] = 'Last month';
 
 // Letter filter options.
 $string['basicletters'] = 'Basic letters';
-$string['completionletters'] = 'Activity Completions';
-$string['postletters'] = 'Forum Posts';
+$string['completionletters'] = 'Activity completions';
+$string['postletters'] = 'Forum posts';
 
 // Save button strings.
 $string['savebutton'] = 'Save settings';
