@@ -64,7 +64,7 @@ function townsquare_check_coreevent($event): void {
     } else if ($event->modulename == 'data') {
         if ($event->eventtype == 'open') {
             $event->name = get_string('dataopenmessage', 'block_townsquare');
-        }else if ($event->eventtype == 'close') {
+        } else if ($event->eventtype == 'close') {
             $event->name = get_string('dataclosemessage', 'block_townsquare', ['time' => $time]);
         }
     } else if ($event->modulename == 'feedback') {
