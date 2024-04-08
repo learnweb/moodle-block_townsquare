@@ -23,23 +23,24 @@ Feature: The townsquare block allows users to see notifications from different c
       | assign   | C1     | 10        | Test assign 1 | Assign due in 2 months | ##now -2 days##   | ##now +1 days##  |
       | assign   | C2     | 11        | Test assign 2 | Assign due in 4 days   | ##now -2 days##   | ##now +4 days##  |
       | assign   | C3     | 12        | Test assign 3 | Assign due in 6 days   | ##now -2 days##   | ##now +6 days##  |
+    And the following "blocks" exist:
+      | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
+      | townsquare | System       | 1         | my-index        | content       |
 
   Scenario: Test the course filter
     Given I log in as "student1"
-    And I turn editing mode on
-    When I add the "Town Square" block
-    Then I should see "Test assign 1"
-    And I should see "Test assign 2"
-    And I should see "Test assign 3"
+    Then I should see "Test assign 1" in the "Town Square" "block"
+    And I should see "Test assign 2" in the "Town Square" "block"
+    And I should see "Test assign 3" in the "Town Square" "block"
     When I click on "Course 1" "checkbox"
-    Then "Test assign 1" "text" should not be visible
-    And "Test assign 2" "text" should be visible
-    And "Test assign 3" "text" should be visible
+    Then I should not see "Test assign 1" in the "Town Square" "block"
+    And I should see "Test assign 2" in the "Town Square" "block"
+    And I should see "Test assign 3" in the "Town Square" "block"
     When I click on "Course 2" "checkbox"
-    Then "Test assign 2" "text" should not be visible
-    And  "Test assign 3" "text" should be visible
+    Then I should not see "Test assign 2" in the "Town Square" "block"
+    And  I should see "Test assign 3" in the "Town Square" "block"
     When I click on "Course 3" "checkbox"
-    Then "Test assign 3" "text" should not be visible
+    Then I should not see "Test assign 3" in the "Town Square" "block"
 
 
   Scenario: Test the time filter
@@ -55,8 +56,6 @@ Feature: The townsquare block allows users to see notifications from different c
       | choice   | C2     | 18        | Test choice 1   | Choice description    | ##now -8 days##  | ##now -8 days##   |
       | choice   | C2     | 19        | Test choice 2   | Choice description    | ##now -2 months##| ##now -2 months## |
     And I log in as "student1"
-    And I turn editing mode on
-    And I add the "Town Square" block to the "content" region
     And I click on "Time filter" "text"
     # Test the time filter for the future
     When I click on "Next two days" "text"
@@ -141,8 +140,6 @@ Feature: The townsquare block allows users to see notifications from different c
       | forum | Discussion 1 | Discussion 1 | Discussion contents 1, first message |
     And I add a townsquare completion event to "C1"
     And I log in as "student1"
-    And I turn editing mode on
-    And I add the "Town Square" block to the "content" region
     And I click on "Letter filter" "text"
     Then I should see "Test forum name" in the "Town Square" "block"
     And I should see "Test assign 1" in the "Town Square" "block"
