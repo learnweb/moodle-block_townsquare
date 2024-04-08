@@ -72,6 +72,7 @@ $string['lastmonthnotifications'] = 'Last month';
 $string['basicletters'] = 'Basic letters';
 $string['completionletters'] = 'Activity completions';
 $string['postletters'] = 'Forum posts';
+$string['showmore'] = 'Show more';
 
 // Save button strings.
 $string['savebutton'] = 'Save settings';
