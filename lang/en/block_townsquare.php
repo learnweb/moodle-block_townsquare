@@ -94,3 +94,25 @@ $string['configbasiclettercolor'] = 'Configuration for the color of the basic no
 $string['configpostlettercolor'] = 'Configuration for the color of the post letters';
 $string['configcompletionlettercolor'] = 'Configuration for the color of the activity completion letters';
 $string['configorientationmarkercolor'] = 'Configuration for the color of the orientation marker';
+
+// Event strings.
+$string['assignduemessage'] = 'Assignment is due until {$a->time}';
+$string['assigngradingduemessage'] = 'Assignment is due to be graded until {$a->time}';
+$string['chattimemessage'] = 'The next chat time is today at {$a->time}';
+$string['choiceopenmessage'] = 'Voting is possible from {$a->time} onwards';
+$string['choiceclosemessage'] = 'Please vote until {$a->time}. Afterwards the choice is closed';
+$string['dataopenmessage'] = 'The database opens today';
+$string['dataclosemessage'] = 'Please submit your entries until {$a->time}. The database closes afterwards';
+$string['feedbackopenmessage'] = 'Writing feedback is possible from {$a->time} onwards';
+$string['feedbackclosemessage'] = 'Writing feedback is possible until {$a->time}';
+$string['forumduemessage'] = 'The forum is due until {$a->time}';
+$string['lessonopenmessage'] = 'The lesson opens today at {$a->time}';
+$string['lessonclosemessage'] = 'The lesson ends today at {$a->time}';
+$string['quizopenmessage'] = 'The Quiz is open from {$a->time} onwards';
+$string['quizclosemessage'] = 'The Quiz closes today at {$a->time}';
+$string['quizopenmessage'] = 'Scorm Activity opens today';
+$string['quizclosemessage'] = 'Scorm Activity closes today';
+$string['workshopopensubmission'] = 'Submissions for the workshop are possible from {$a->time} onwards';
+$string['workshopclosesubmission'] = 'Please submit your work until {$a->time}. The workshop closes afterwards';
+$string['workshopopenassessment'] = 'The assessment phase starts today at {$a->time}';
+$string['workshopcloseassessment'] = 'Assessments for the workshop are due until {$a->time}';

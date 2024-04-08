@@ -120,6 +120,9 @@ class townsquareevents {
 
             // Add the name of the instance to the event.
             $calendarevent->instancename = $DB->get_field($calendarevent->modulename, 'name', ['id' => $calendarevent->instance]);
+
+            // Modify the content of the event if necessary.
+            townsquare_check_coreevent($calendarevent);
         }
 
         return $calendarevents;
