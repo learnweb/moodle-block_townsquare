@@ -1,4 +1,4 @@
-@block @block_townsquare @javascript @core_completion
+@block @block_townsquare @javascript
 Feature: The townsquare block allows users to see notifications from different courses
   In order to enable the townsquare block
   As a student
