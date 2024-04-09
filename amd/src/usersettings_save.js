@@ -74,7 +74,7 @@ export function init(userid, settingsfromdb) {
  * @returns {Promise<*>}
  */
 async function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter) {
-    let result ;
+    let result;
     result = await Ajax.call([{
         methodname: 'block_townsquare_record_usersettings',
         args: {
@@ -83,10 +83,12 @@ async function saveusersettings(userid, timefilterpast, timefilterfuture, basicl
             timefilterfuture: timefilterfuture,
             basicletter: basicletter,
             completionletter: completionletter,
-            postletter: postletter
+            postletter: postletter,
+            success: function() {
+                console.log('Settings saved.');
+            },
         },
     }]);
-
     // Show a success message.
     let el = document.getElementById('ts_usersettings_successlabel');
     el.style.display = 'block';

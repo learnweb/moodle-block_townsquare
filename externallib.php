@@ -25,6 +25,7 @@
 namespace block_townsquare\external;
 use Exception;
 use external_api;
+use external_value;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -45,7 +46,7 @@ class block_townsquare_external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function record_usersettings_parameters(): external_function_parameters {
+    public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters(
             [
                 'userid' => new external_value(PARAM_INT, 'the user id'),
@@ -62,7 +63,7 @@ class block_townsquare_external extends external_api {
      * Return the result of the record_usersettings function
      * @return external_value
      */
-    public static function record_usersettings_returns() {
+    public static function eyecute_returns(): external_value {
         return new external_value(PARAM_BOOL, 'true if successful');
     }
 
@@ -77,10 +78,9 @@ class block_townsquare_external extends external_api {
      * @param int $postletter           If post letters should be shown
      * @return bool
      */
-    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
-                                               $basicletter, $completionletter, $postletter) {
+    public static function execute($userid, $timefilterpast, $timefilterfuture,
+                                               $basicletter, $completionletter, $postletter): bool {
         global $DB;
-        $transaction = $DB->start_delegated_transaction();
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
             // If there more than a record (it only should be only one), delete all of them and insert the new one.
@@ -90,7 +90,7 @@ class block_townsquare_external extends external_api {
                         $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
                     }
                 } catch (Exception $e) {
-                    $transaction->rollback($e);
+
                     return false;
                 }
             } else {
@@ -102,7 +102,6 @@ class block_townsquare_external extends external_api {
                 $record->completionletter = $completionletter;
                 $record->postletter = $postletter;
                 $DB->update_record('block_townsquare_preferences', $record);
-                $transaction->allow_commit();
                 return true;
             }
         }
@@ -114,7 +113,6 @@ class block_townsquare_external extends external_api {
         $record->completionletter = $completionletter;
         $record->postletter = $postletter;
         $DB->insert_record('block_townsquare_preferences', $record);
-        $transaction->allow_commit();
         return true;
     }
 
