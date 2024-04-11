@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
-use block_townsquare\external\block_townsquare_external;
-
 /**
  * PHPUnit tests for testing the process of the externallib.
  *
@@ -70,7 +68,7 @@ class externallib_test extends \advanced_testcase {
         $this->assertEquals(false, $record);
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = block_townsquare_external::record_usersettings($usersetting->userid, $usersetting->timefilterpast,
+        $result = \block_townsquare\block_townsquare_external::record_usersettings($usersetting->userid, $usersetting->timefilterpast,
                                                                  $usersetting->timefilterfuture, $usersetting->basicletter,
                                                                  $usersetting->completionletter, $usersetting->postletter);
 

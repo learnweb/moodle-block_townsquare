@@ -21,8 +21,8 @@
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace block_townsquare\external;
+namespace block_townsquare;
+use core_external\external_function_parameters;
 use Exception;
 use external_api;
 use external_value;
@@ -46,7 +46,7 @@ class block_townsquare_external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function execute_parameters(): external_function_parameters {
+    public static function record_usersettings_parameters(): external_function_parameters {
         return new external_function_parameters(
             [
                 'userid' => new external_value(PARAM_INT, 'the user id'),
@@ -63,7 +63,7 @@ class block_townsquare_external extends external_api {
      * Return the result of the record_usersettings function
      * @return external_value
      */
-    public static function eyecute_returns(): external_value {
+    public static function record_usersettings_returns(): external_value {
         return new external_value(PARAM_BOOL, 'true if successful');
     }
 
@@ -78,7 +78,7 @@ class block_townsquare_external extends external_api {
      * @param int $postletter           If post letters should be shown
      * @return bool
      */
-    public static function execute($userid, $timefilterpast, $timefilterfuture,
+    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
                                                $basicletter, $completionletter, $postletter): bool {
         global $DB;
         // Check if the user already has a record in the database.
