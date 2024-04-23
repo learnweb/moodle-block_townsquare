@@ -28,7 +28,7 @@
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace block_townsquare\townsquaresupport;
+namespace local_townsquaresupport\townsquaresupportinterface;
 
 interface townsquaresupportinterface {
 

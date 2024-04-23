@@ -58,10 +58,15 @@ class townsquareevents {
      * Events will be searched in the timespan of 6 months in the past and 6 months in the future.
      */
     public function __construct() {
+        global $USER;
         $this->timenow = time();
         $this->timestart = $this->timenow - 15768000;
         $this->timeend = $this->timenow + 15768000;
-        $this->courses = townsquare_get_courses();
+        $this->courses = [];
+        $enrolledcourses = enrol_get_all_users_courses($USER->id, true);
+        foreach ($enrolledcourses as $enrolledcourse) {
+            $this->courses[] = $enrolledcourse->id;
+        }
     }
 
     /**

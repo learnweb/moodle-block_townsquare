@@ -23,38 +23,6 @@
  */
 
 /**
- * Gets the id of all courses where the current user is enrolled
- * @return array
- */
-function townsquare_get_courses(): array {
-    global $USER;
-
-    $enrolledcourses = enrol_get_all_users_courses($USER->id, true);
-    $courses = [];
-    foreach ($enrolledcourses as $enrolledcourse) {
-        $courses[] = $enrolledcourse->id;
-    }
-
-    return $courses;
-}
-
-/**
- * Function for subplugins to get the start time of the search.
- * @return int
- */
-function townsquare_get_timestart(): int {
-    return time() - 15768000;
-}
-
-/**
- * Function for subplugins to get the end time of the search.
- * @return int
- */
-function townsquare_get_timeend(): int {
-    return time() + 15768000;
-}
-
-/**
  * Merge sort function for townsquare events.
  * @param $events
  * @return array
