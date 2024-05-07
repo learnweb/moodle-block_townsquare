@@ -40,10 +40,6 @@ $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare!
 // Letter strings.
 $string['invalidmodulename'] = 'Module name is unknown or not supported';
 
-// Subplugin strings.
-$string['subplugintype_townsquaresupport'] = 'Supported module';
-$string['subplugintype_townsquaresupport_plural'] = 'Supported modules';
-
 // Event strings.
 $string['assignduemessage'] = 'Assignment is due until {$a->time}';
 $string['assigngradingduemessage'] = 'Assignment is due to be graded until {$a->time}';

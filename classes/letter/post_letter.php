@@ -191,7 +191,6 @@ class post_letter extends letter {
         } else {
             $this->post->anonymous = false;
         }
-
     }
 
 }

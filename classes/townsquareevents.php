@@ -27,10 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 use context_module;
 use dml_exception;
+use function local_townsquaresupport\townsquaresupport_get_subplugin_events;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
+require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
 
 /**
  * Class to get events and posts that will be shown in the townsquare block..
@@ -58,15 +60,10 @@ class townsquareevents {
      * Events will be searched in the timespan of 6 months in the past and 6 months in the future.
      */
     public function __construct() {
-        global $USER;
         $this->timenow = time();
         $this->timestart = $this->timenow - 15768000;
         $this->timeend = $this->timenow + 15768000;
-        $this->courses = [];
-        $enrolledcourses = enrol_get_all_users_courses($USER->id, true);
-        foreach ($enrolledcourses as $enrolledcourse) {
-            $this->courses[] = $enrolledcourse->id;
-        }
+        $this->courses = townsquare_get_courses();
     }
 
     /**
@@ -76,7 +73,7 @@ class townsquareevents {
     public function get_all_events_sorted(): array {
         $coreevents = $this->get_coreevents();
         $postevents = $this->get_postevents();
-        $subpluginevents = $this->get_subpluginevents();
+        $subpluginevents = townsquaresupport_get_subplugin_events();
 
         // Merge the events in a sorted order.
         $events = $coreevents + $postevents + $subpluginevents;
@@ -116,26 +113,6 @@ class townsquareevents {
     }
 
     /**
-     * Function to get events/notifications from other plugins than core plugins for the current user.
-     * This function checks for subplugins and calls their get_events() function.
-     *
-     * The events are sorted in descending order by time created (newest event first)
-     * @return array
-     */
-    public function get_subpluginevents(): array {
-        // Get all available subplugins.
-        $events = [];
-        $subplugins = \core_plugin_manager::instance()->get_plugins_of_type('supportedmodules');
-        var_dump($subplugins);
-        foreach ($subplugins as $subplugin) {
-            $events += $subplugin->get_events();
-        }
-
-        // Sort the events and return them.
-        return townsquare_mergesort($events);
-    }
-
-    /**
      * Function to get the newest posts from modules like the forum or moodleoverflow.
      *
      * The events are sorted in descending order by time created (newest event first)
@@ -144,63 +121,20 @@ class townsquareevents {
     public function get_postevents(): array {
         global $DB;
 
-        $forumposts = [];
-        $moodleoverflowposts = [];
-
-        // Check which modules are installed and activated and get their data.
-        if ($DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
-            $forumposts = $this->get_posts_from_db('forum', $this->courses, $this->timestart);
-        }
-        // TODO: implement support for moodleoverflow in a subplugin.
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
-            //$moodleoverflowposts = $this->get_posts_from_db('moodleoverflow', $this->courses, $this->timestart);
-        }
-
-        if (empty($forumposts) && empty($moodleoverflowposts)) {
+        // If forum is not installed or not activated, return empty array.
+        if (!$DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
             return [];
         }
 
-        // Merge the posts in a sorted order. While merging, filter out irrelevant posts and add relevant attributes if necessary.
-        $posts = [];
-        $numberofposts = count($forumposts) + count($moodleoverflowposts);
-        reset($forumposts);
-        reset($moodleoverflowposts);
-        for ($i = 0; $i < $numberofposts; $i++) {
-            // Filter unavailable posts.
-            // Iterate until the first post that is available. Decrement the number of posts each time a post is filtered.
-            while (current($forumposts) && townsquare_filter_availability(current($forumposts))) {
-                next($forumposts);
-                $numberofposts--;
-            }
-            while (current($moodleoverflowposts) && townsquare_filter_availability(current($moodleoverflowposts))) {
-                next($moodleoverflowposts);
-                $numberofposts--;
-            }
-            // If there no posts left after filtering, break.
-            if ($i >= $numberofposts) {
-                break;
-            }
+        $forumposts = $this->get_forumposts_from_db($this->courses, $this->timestart);
 
-            // Merge.
-            if (current($forumposts) && current($moodleoverflowposts)) {
-                if (current($forumposts)->timestart > current($moodleoverflowposts)->timestart) {
-                    $posts[$i] = current($forumposts);
-                    next($forumposts);
-                } else {
-                    $posts[$i] = current($moodleoverflowposts);
-                    next($moodleoverflowposts);
-                }
-            } else if (current($forumposts)) {
-                $posts[$i] = current($forumposts);
-                next($forumposts);
-            } else {
-                $posts[$i] = current($moodleoverflowposts);
-                next($moodleoverflowposts);
+        foreach ($forumposts as $post) {
+            if (townsquare_filter_availability($post)) {
+                unset($forumposts[$post->row_num]);
             }
         }
 
-        // Add an event type to the posts and add the anonymous setting to the moodleoverflow posts. Then return it.
-        return $posts;
+        return $forumposts;
     }
 
     // Helper functions.
@@ -214,61 +148,42 @@ class townsquareevents {
      * @param int    $timestart   The timestamp from where the posts should be searched.
      * @return array
      */
-    private function get_posts_from_db($modulename, $courses, $timestart): array {
+    private function get_forumposts_from_db($courses, $timestart): array {
         global $DB;
         // Prepare params for sql statement.
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
         $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
-        // Set begin of sql statement.
-        $begin = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num, ";
 
-        // Set the select part of the sql that is always the same.
-        $middle = "'post' AS eventtype,
-                   cm.id AS coursemoduleid,
-                   cm.availability AS availability,
-                   module.name AS instancename,
-                   discuss.course AS courseid,
-                   discuss.userid AS discussionuserid,
-                   discuss.name AS discussionsubject,
-                   u.firstname AS postuserfirstname,
-                   u.lastname AS postuserlastname,
-                   posts.id AS postid,
-                   posts.discussion AS postdiscussion,
-                   posts.parent AS postparentid,
-                   posts.userid AS postuserid,
-                   posts.created AS timestart,
-                   posts.message AS postmessage ";
-
-        // Extend the strings for the 2 module cases.
-        if ($modulename == 'forum') {
-            $begin .= "'forum' AS modulename, module.id AS instanceid,";
-            $middle .= "FROM {forum_posts} posts
-                        JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
-                        JOIN {forum} module ON module.id = discuss.forum
-                        JOIN {modules} modules ON modules.name = 'forum' ";
-
-        } else if ($modulename == 'moodleoverflow') {
-            $begin .= "'moodleoverflow' AS modulename, module.id AS instanceid, module.anonymous AS anonymoussetting, ";
-            $middle .= "FROM {moodleoverflow_posts} posts
-                        JOIN {moodleoverflow_discussions} discuss ON discuss.id = posts.discussion
-                        JOIN {moodleoverflow} module ON module.id = discuss.moodleoverflow
-                        JOIN {modules} modules ON modules.name = 'moodleoverflow' ";
-        }
-
-        // Extension of the middle string.
-        $middle .= "JOIN {user} u ON u.id = posts.userid
-                    JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
-                                                                           AND cm.instance = module.id) ";
-
-        // Set the where clause of the string.
-        $end = "WHERE discuss.course $insqlcourses
-                AND posts.created > :timestart
-                AND cm.visible = 1
-                AND modules.visible = 1
+        $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
+                    'forum' AS modulename,
+                    module.id AS instanceid,
+                    'post' AS eventtype,
+                    cm.id AS coursemoduleid,
+                    cm.availability AS availability,
+                    module.name AS instancename,
+                    discuss.course AS courseid,
+                    discuss.userid AS discussionuserid,
+                    discuss.name AS discussionsubject,
+                    u.firstname AS postuserfirstname,
+                    u.lastname AS postuserlastname,
+                    posts.id AS postid,
+                    posts.discussion AS postdiscussion,
+                    posts.parent AS postparentid,
+                    posts.userid AS postuserid,
+                    posts.created AS timestart,
+                    posts.message AS postmessage
+                FROM {forum_posts} posts
+                JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
+                JOIN {forum} module ON module.id = discuss.forum
+                JOIN {modules} modules ON modules.name = 'forum'
+                JOIN {user} u ON u.id = posts.userid
+                JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
+                                                                       AND cm.instance = module.id)
+                WHERE discuss.course $insqlcourses
+                    AND posts.created > :timestart
+                    AND cm.visible = 1
+                    AND modules.visible = 1
                 ORDER BY posts.created DESC;";
-
-        // Concatenate all strings.
-        $sql = $begin . $middle . $end;
 
         // Get all posts.
         return $DB->get_records_sql($sql, $params);
@@ -288,8 +203,9 @@ class townsquareevents {
 
         // Due to compatability reasons, only events from supported modules are shown.
         // Supported modules are: core modules and custom additional modules.
-        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary', 'h5pactivity',
-                     'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', ];
+        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
+                        'h5pactivity', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url',
+                        'wiki', 'workshop', ];
         $additionalmodules = ['moodleoverflow', 'ratingallocate'];
         $modules = $coremodules + $additionalmodules;
 
