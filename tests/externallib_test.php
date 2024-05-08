@@ -68,7 +68,8 @@ class externallib_test extends \advanced_testcase {
         $this->assertEquals(false, $record);
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = \block_townsquare\block_townsquare_external::record_usersettings($usersetting->userid, $usersetting->timefilterpast,
+        $result = \block_townsquare\block_townsquare_external::record_usersettings($usersetting->userid,
+                                                                 $usersetting->timefilterpast,
                                                                  $usersetting->timefilterfuture, $usersetting->basicletter,
                                                                  $usersetting->completionletter, $usersetting->postletter);
 
