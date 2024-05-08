@@ -206,6 +206,8 @@ class townsquareevents {
         $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
                         'h5pactivity', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url',
                         'wiki', 'workshop', ];
+
+        // TODO: Additional modules should be implemented with subplugins.
         $additionalmodules = ['moodleoverflow', 'ratingallocate'];
         $modules = $coremodules + $additionalmodules;
 
