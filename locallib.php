@@ -47,6 +47,14 @@ function townsquare_get_timestart(): int {
 }
 
 /**
+ * Function for subplugins to get the end time of the search.
+ * @return int
+ */
+function townsquare_get_timeend(): int {
+    return time() + 15768000;
+}
+
+/**
  * Merge sort function for townsquare events.
  * @param $events
  * @return array
@@ -93,6 +101,8 @@ function townsquare_merge(array $left, array $right): array {
     return $result;
 }
 
+// Filter functions.
+
 function townsquare_filter_availability($event): bool {
     // If there is no restriction defined, the event is available.
     if ($event->availability == null) {
@@ -108,6 +118,27 @@ function townsquare_filter_availability($event): bool {
 
     return true;
 }
+
+/**
+ * Filter that checks if the event needs to be filtered out for the current user because it is already completed..
+ * Applies to activity completion events.
+ * @param object $coreevent coreevent that is checked
+ * @return bool true if the event needs to filtered out, false if not.
+ */
+function townsquare_filter_activitycompletions($coreevent): bool {
+    global $DB, $USER;
+    if ($completionstatus = $DB->get_record('course_modules_completion',
+        ['coursemoduleid' => $coreevent->coursemoduleid, 'userid' => $USER->id])) {
+        if ($completionstatus->completionstate != 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+// Strings adaptation functions.
 
 /**
  * General Support function for core events.
