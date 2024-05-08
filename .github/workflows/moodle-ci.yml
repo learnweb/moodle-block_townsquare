@@ -59,6 +59,9 @@ jobs:
       - name: Install mod plugin
         run: moodle-plugin-ci add-plugin learnweb/moodle-mod_moodleoverflow
 
+      - name: Install local plugin
+        run: moodle-plugin-ci add-plugin learnweb/moodle-local_townsquaresupport
+
       - name: Install moodle-plugin-ci
         run: |
           moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1 --no-init
