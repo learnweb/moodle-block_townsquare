@@ -202,14 +202,9 @@ class townsquareevents {
         global $DB;
 
         // Due to compatability reasons, only events from supported modules are shown.
-        // Supported modules are: core modules and custom additional modules.
-        $coremodules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
-                        'h5pactivity', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url',
-                        'wiki', 'workshop', ];
-
-        // TODO: Additional modules should be implemented with subplugins.
-        $additionalmodules = ['ratingallocate'];
-        $modules = $coremodules + $additionalmodules;
+        $modules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
+                    'h5pactivity', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url',
+                    'wiki', 'workshop', ];
 
         // Prepare params for sql statement.
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
