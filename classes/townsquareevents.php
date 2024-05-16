@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use context_module;
 use dml_exception;
+use moodle_url;
 use function local_townsquaresupport\townsquaresupport_get_subplugin_events;
 
 global $CFG;
@@ -132,6 +133,11 @@ class townsquareevents {
             if (townsquare_filter_availability($post)) {
                 unset($forumposts[$post->row_num]);
             }
+
+            // Add a links and the authors picture.
+            $post->linktopost = new moodle_url('/mod/forum/discuss.php',
+                                ['d' => $post->postdiscussion], 'p' . $post->postid);
+            $post->linktoauthor = new moodle_url('/user/view.php', ['id' => $post->postuserid]);
         }
 
         return $forumposts;

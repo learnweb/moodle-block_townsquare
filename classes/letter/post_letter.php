@@ -96,9 +96,10 @@ class post_letter extends letter {
         $this->post->anonymous = $postevent->anonymous ?? false;
         $this->author->id = $postevent->postuserid;
         $this->author->name = $postevent->postuserfirstname . ' ' . $postevent->postuserlastname;
+        $this->posturls->linktopost = $postevent->linktopost;
+        $this->posturls->linktoauthor = $postevent->linktoauthor;
 
         $this->retrieve_profilepicture();
-        $this->build_links();
     }
 
     // Functions.
@@ -131,28 +132,6 @@ class post_letter extends letter {
     }
 
     // Helper functions.
-
-    /**
-     * Function to build the links to the post, author.
-     * @return void
-     */
-    private function build_links() {
-        $this->posturls->linktoauthor = new moodle_url('/user/view.php', ['id' => $this->author->id]);
-        if ($this->modulename == 'forum') {
-            $this->posturls->linktopost = new moodle_url('/mod/forum/discuss.php',
-                                                        ['d' => $this->post->discussionid], 'p' . $this->post->id);
-        } else {
-            $this->posturls->linktopost = new moodle_url('/mod/moodleoverflow/discussion.php',
-                                                        ['d' => $this->post->discussionid], 'p' . $this->post->id);
-
-            // If the post in the moodleoverflow is anonymous, the user should not be visible.
-            if ($this->post->anonymous) {
-                $this->posturls->linktoauthor = new moodle_url('');
-                $this->author->id = -1;
-                $this->author->name = 'anonymous';
-            }
-        }
-    }
 
     /**
      * Method to retrieve the profile picture of the author.
