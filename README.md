@@ -9,14 +9,14 @@ from different courses are shown. Additionally, the user is able to filter the n
 
 ## Subplugin functionality ##
 
-Townsquare does not show notfications from every installed plugin. As every plugin can have different type of notifications that
+Townsquare does not show notifications from every installed plugin, as every plugin can have different types of notifications that
 not always should be shown to the current user (e.g. a teacher should not see the same notifications as a student).
-Therefore, only the moodle core plugins are supported by the plugin.
-To show notifications from other plugins, a subplugin can be implemented or installed. To do that, install local plugin
+Therefore, only the Moodle core plugins are supported by the plugin.
+To show notifications from other plugins, a subplugin can be implemented or installed. To do that, install the local plugin
 local_townsquaresupport (see: https://github.com/learnweb/moodle-local_townsquaresupport). Townsquaresupport manages
-subplugins and makes them available to townsquare.
+subplugins and makes them available to Townsquare.
 
-More information on how to install subplugins: https://github.com/learnweb/moodle-local_townsquaresupport
+More information on townsquare subplugins: https://github.com/learnweb/moodle-local_townsquaresupport/wiki
 
 ## Installing via uploaded ZIP file ##
 
