@@ -93,10 +93,10 @@ class post_letter extends letter {
         $this->post->message = $postevent->postmessage;
         $this->post->discussionsubject = $postevent->discussionsubject;
         $this->post->parentid = $postevent->postparentid;
+        $this->post->anonymous = $postevent->anonymous ?? false;
         $this->author->id = $postevent->postuserid;
         $this->author->name = $postevent->postuserfirstname . ' ' . $postevent->postuserlastname;
 
-        $this->add_anonymousattribute($postevent);
         $this->retrieve_profilepicture();
         $this->build_links();
     }
@@ -171,25 +171,6 @@ class post_letter extends letter {
             $this->author->picture = $OUTPUT->user_picture($user, ['courseid' => $this->courseid, 'link' => false]);
         } else {
             $this->author->picture = '';
-        }
-    }
-
-    /**
-     * Method to add the anonymous attribute to the post.
-     * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
-     * @return void
-     */
-    private function add_anonymousattribute($postevent): void {
-        if ($this->modulename == 'moodleoverflow') {
-            if ($postevent->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
-                $this->post->anonymous = true;
-            } else if ($postevent->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS) {
-                $this->post->anonymous = $this->author->id == $postevent->discussionuserid;
-            } else {
-                $this->post->anonymous = false;
-            }
-        } else {
-            $this->post->anonymous = false;
         }
     }
 
