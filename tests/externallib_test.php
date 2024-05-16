@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @copyright 2024 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\block_townsquare_external::record_usersettings
+ * @covers block_townsquare_external::record_usersettings
  */
 class externallib_test extends \advanced_testcase {
 
@@ -68,7 +68,7 @@ class externallib_test extends \advanced_testcase {
         $this->assertEquals(false, $record);
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = \block_townsquare\block_townsquare_external::record_usersettings($usersetting->userid,
+        $result = block_townsquare_external::record_usersettings($usersetting->userid,
                                                                  $usersetting->timefilterpast,
                                                                  $usersetting->timefilterfuture, $usersetting->basicletter,
                                                                  $usersetting->completionletter, $usersetting->postletter);

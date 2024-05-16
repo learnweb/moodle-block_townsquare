@@ -58,8 +58,8 @@ export function init(userid, settingsfromdb) {
         let letterfilter = collectletterfiltersettings();
 
         // Second step: store the usersettings in the database.
-        await saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter['basicletter'],
-                               letterfilter['completionletter'], letterfilter['postletter']);
+        saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter['basicletter'],
+            letterfilter['completionletter'], letterfilter['postletter']);
     });
 }
 
@@ -73,22 +73,25 @@ export function init(userid, settingsfromdb) {
  * @param {number} postletter
  * @returns {Promise<*>}
  */
-async function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter) {
+function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter) {
     let result;
-    result = await Ajax.call([{
+
+    const data = {
         methodname: 'block_townsquare_record_usersettings',
         args: {
-            userid: parseInt(userid),
+            userid: userid,
             timefilterpast: timefilterpast,
             timefilterfuture: timefilterfuture,
             basicletter: basicletter,
             completionletter: completionletter,
             postletter: postletter,
-            success: function() {
-                console.log('Settings saved.');
-            },
         },
-    }]);
+    };
+    //console.log(data);
+    result = Ajax.call([data]);
+
+    //console.log("The result [0] object ",result[0]);
+
     // Show a success message.
     let el = document.getElementById('ts_usersettings_successlabel');
     el.style.display = 'block';
@@ -112,6 +115,7 @@ async function saveusersettings(userid, timefilterpast, timefilterfuture, basicl
         }, 100);
     }, 3000);
     return result;
+
 }
 
 /**
