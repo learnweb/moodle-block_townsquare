@@ -32,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/lib/externallib.php');
+require_once("$CFG->libdir/externallib.php");
 
 /**
  * Class implementing the external API, esp. for AJAX functions.
@@ -46,11 +47,7 @@ class external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function record_usersettings_parameters(): external_function_parameters {
-        global $CFG;
-        if ($CFG->branch < 402) {
-            require_once("$CFG->libdir/externallib.php");
-        }
+    public static function record_usersettings_parameters() {
         return new external_function_parameters(
             [
                 'userid' => new external_value(PARAM_INT, 'the user id'),
@@ -84,13 +81,19 @@ class external extends external_api {
      */
     public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
                                                $basicletter, $completionletter, $postletter): bool {
-        global $DB;
+        global $DB, $CFG;
 
         // Parameter validation.
-        $params = self::validate_parameters(self::record_usersettings_parameters(), [
-            'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
-            'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
-        ]);
+        if ($CFG->branch >= 402) {
+            $params = self::validate_parameters(self::record_usersettings_parameters(), [
+                'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
+                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
+            ]);
+        } else {
+            $params = [
+                'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
+                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter, ];
+        }
 
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
