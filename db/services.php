@@ -26,11 +26,11 @@ defined('MOODLE_INTERNAL') || die;
 
 $functions = [
     'block_townsquare_record_usersettings' => [
-        'classname' => 'block_townsquare_external',
+        'classname' => 'block_townsquare\external',
         'methodname' => 'record_usersettings',
-        'classpath' => 'blocks/townsquare/externallib.php',
+        'classpath' => 'blocks/townsquare/classes/external.php',
         'description' => 'Records the user settings for the townsquare block',
-        'type' => 'write',
+        'type' => 'read',
         'ajax' => true,
     ],
 ];

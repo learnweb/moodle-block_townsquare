@@ -19,7 +19,7 @@
  * This file implements 1 functionality:
  * - If the "save settings" button is pressed, store the settings in the database.
  *
- * @module     block_townsquare/timefilter
+ * @module     block_townsquare/usersettings_save
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -58,7 +58,7 @@ export function init(userid, settingsfromdb) {
         let letterfilter = collectletterfiltersettings();
 
         // Second step: store the usersettings in the database.
-        saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter['basicletter'],
+        await saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter['basicletter'],
             letterfilter['completionletter'], letterfilter['postletter']);
     });
 }
@@ -87,10 +87,7 @@ function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter,
             postletter: postletter,
         },
     };
-    //console.log(data);
     result = Ajax.call([data]);
-
-    //console.log("The result [0] object ",result[0]);
 
     // Show a success message.
     let el = document.getElementById('ts_usersettings_successlabel');
