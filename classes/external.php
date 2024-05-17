@@ -80,17 +80,18 @@ class external extends external_api {
      */
     public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
                                                $basicletter, $completionletter, $postletter): bool {
-        global $DB;
+        global $DB, $CFG;
 
         // Parameter validation.
-        $params = self::validate_parameters(self::record_usersettings_parameters(), [
-            'userid' => $userid,
-            'timefilterpast' => $timefilterpast,
-            'timefilterfuture' => $timefilterfuture,
-            'basicletter' => $basicletter,
-            'completionletter' => $completionletter,
-            'postletter' => $postletter,
-        ]);
+        if ($CFG->branch >= 402) {
+            $params = self::validate_parameters(self::record_usersettings_parameters(), [
+                'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
+                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
+            ]);
+        } else {
+            $params = ['userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
+                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter, ];
+        }
 
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
