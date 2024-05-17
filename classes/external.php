@@ -47,6 +47,10 @@ class external extends external_api {
      * @return external_function_parameters
      */
     public static function record_usersettings_parameters(): external_function_parameters {
+        global $CFG;
+        if ($CFG->branch < 402) {
+            require_once("$CFG->libdir/externallib.php");
+        }
         return new external_function_parameters(
             [
                 'userid' => new external_value(PARAM_INT, 'the user id'),
@@ -58,6 +62,8 @@ class external extends external_api {
             ]
         );
     }
+
+    public static function record_usersettings_params(): {}
 
     /**
      * Return the result of the record_usersettings function
@@ -80,18 +86,13 @@ class external extends external_api {
      */
     public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
                                                $basicletter, $completionletter, $postletter): bool {
-        global $DB, $CFG;
+        global $DB;
 
         // Parameter validation.
-        if ($CFG->branch >= 402) {
-            $params = self::validate_parameters(self::record_usersettings_parameters(), [
-                'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
-                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
-            ]);
-        } else {
-            $params = ['userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
-                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter, ];
-        }
+        $params = self::validate_parameters(self::record_usersettings_parameters(), [
+            'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
+            'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
+        ]);
 
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
