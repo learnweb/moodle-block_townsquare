@@ -37,6 +37,7 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @covers \block_townsquare\external::record_usersettings
+ * @runTestsInSeparateProcesses
  */
 class external_test extends \advanced_testcase {
 
