@@ -24,10 +24,6 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-// TODO: Delete the include when Moodle 4.1 is no longer supported.
-global $CFG;
-require_once("$CFG->libdir/externallib.php");
-
 $functions = [
     'block_townsquare_record_usersettings' => [
         'classname' => 'block_townsquare\external',
