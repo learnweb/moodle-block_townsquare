@@ -63,8 +63,6 @@ class external extends external_api {
         );
     }
 
-    public static function record_usersettings_params(): {}
-
     /**
      * Return the result of the record_usersettings function
      * @return external_value
