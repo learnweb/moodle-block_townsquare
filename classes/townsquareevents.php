@@ -33,7 +33,6 @@ use function local_townsquaresupport\townsquaresupport_get_subplugin_events;
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
-require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
 
 /**
  * Class to get events and posts that will be shown in the townsquare block..
@@ -72,10 +71,17 @@ class townsquareevents {
      * @return array
      */
     public function get_all_events_sorted(): array {
+        global $CFG;
         $coreevents = $this->get_coreevents();
         $postevents = $this->get_postevents();
-        $subpluginevents = townsquaresupport_get_subplugin_events();
 
+        // Check if the townsquaresupport plugin is installed.
+        $localplugins = \core_plugin_manager::instance()->get_plugins_of_type('local');
+        $subpluginevents = [];
+        if (array_key_exists('townsquaresupport', $localplugins)) {
+            require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
+            $subpluginevents = townsquaresupport_get_subplugin_events();
+        }
         // Merge the events in a sorted order.
         $events = $coreevents + $postevents + $subpluginevents;
         return townsquare_mergesort($events);
