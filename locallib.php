@@ -26,10 +26,10 @@
  * Function to get the color of a letter.
  *
  * @param string $lettertype        The type of the letter that wants to retrieve its color setting.
- * @return false|mixed              The color of the letter.
+ * @return false|string              The color of the letter.
  * @throws moodle_exception
  */
-function townsquare_get_colorsetting($lettertype) {
+function townsquare_get_colorsetting($lettertype): string {
     switch ($lettertype) {
         case 'basicletter':
             return get_config('block_townsquare', 'basiclettercolor');
