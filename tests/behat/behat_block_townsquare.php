@@ -68,7 +68,7 @@ class behat_block_townsquare extends behat_base {
      */
     public function i_townsquare_debug() {
         global $DB;
-        //\block_townsquare\external::record_usersettings(1, 1, 1, 1, 1, 1);
+        // \block_townsquare\external::record_usersettings(1, 1, 1, 1, 1, 1);
         $record = $DB->get_records('block_townsquare_preferences');
         var_dump($record);
         ob_flush();
