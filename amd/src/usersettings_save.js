@@ -89,28 +89,14 @@ function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter,
     };
     result = Ajax.call([data]);
 
-    // Show a success message.
-    let el = document.getElementById('ts_usersettings_successlabel');
-    el.style.display = 'block';
-    el.style.opacity = 1.0;
+    // Make the clicked button green by adding a class.
+    savebutton.classList.add('bg-success', 'text-white', 'ts_button_transition');
 
-    // Start a new setInterval timer to gradually fade out the label.
-    if (el.fadeOutTimer) {
-        clearInterval(el.fadeOutTimer);
-    }
-    setTimeout(function () {
-        el.fadeOutTimer = setInterval(function () {
-            if (el.style.opacity > 0.4) {
-                el.style.opacity -= 0.1;
-            } else if (el.style.opacity > 0) {
-                el.style.opacity -= 0.2;
-            } else {
-                // Once opacity reaches 0, clear the timer and hide the label.
-                clearInterval(el.fadeOutTimer);
-                el.style.display = 'none';
-            }
-        }, 100);
-    }, 3000);
+    // Remove the classes after one second.
+    setTimeout(function() {
+        savebutton.classList.remove('bg-success');
+        savebutton.classList.remove('text-white');
+    }, 1500);
     return result;
 
 }

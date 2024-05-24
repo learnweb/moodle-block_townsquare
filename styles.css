@@ -28,6 +28,10 @@
     display: none;
 }
 
+.ts_button_transition {
+    transition: background-color 1.0s ease, color 1.0s ease;
+}
+
 /* Style for all letter or content templates */
 
 .townsquareletter_header.card-header {
