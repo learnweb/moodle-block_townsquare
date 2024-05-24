@@ -84,6 +84,7 @@ class external extends external_api {
         global $DB, $CFG;
 
         // Parameter validation.
+        /*
         if ($CFG->branch >= 402) {
             $params = self::validate_parameters(self::record_usersettings_parameters(), [
                 'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
@@ -94,7 +95,7 @@ class external extends external_api {
             $params = [
                 'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
                 'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter, ];
-        }
+        }*/
 
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
@@ -110,23 +111,36 @@ class external extends external_api {
                 }
             } else {
                 // Upgrade the existing record.
-                $record = reset($records);
+                $record = reset($records);/*
                 $record->timefilterpast = $params['timefilterpast'];
                 $record->timefilterfuture = $params['timefilterfuture'];
                 $record->basicletter = $params['basicletter'];
                 $record->completionletter = $params['completionletter'];
-                $record->postletter = $params['postletter'];
+                $record->postletter = $params['postletter'];*/
+                $record->timefilterpast = $timefilterpast;
+                $record->timefilterfuture = $timefilterfuture;
+                $record->basicletter = $basicletter;
+                $record->completionletter = $completionletter;
+                $record->postletter = $postletter;
+
                 $DB->update_record('block_townsquare_preferences', $record);
                 return true;
             }
         }
         $record = new stdClass();
+        /*
         $record->userid = $params['userid'];
         $record->timefilterpast = $params['timefilterpast'];
         $record->timefilterfuture = $params['timefilterfuture'];
         $record->basicletter = $params['basicletter'];
         $record->completionletter = $params['completionletter'];
-        $record->postletter = $params['postletter'];
+        $record->postletter = $params['postletter'];*/
+        $record->userid = $userid;
+        $record->timefilterpast = $timefilterpast;
+        $record->timefilterfuture = $timefilterfuture;
+        $record->basicletter = $basicletter;
+        $record->completionletter = $completionletter;
+        $record->postletter = $postletter;
         $DB->insert_record('block_townsquare_preferences', $record);
         return true;
     }
