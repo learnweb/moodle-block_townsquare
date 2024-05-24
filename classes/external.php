@@ -90,6 +90,7 @@ class external extends external_api {
                 'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
             ]);
         } else {
+            // TODO: delete this branch when Moodle 4.1 is no longer supported.
             $params = [
                 'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
                 'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter, ];
