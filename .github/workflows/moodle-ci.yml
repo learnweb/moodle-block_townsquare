@@ -116,7 +116,6 @@ jobs:
         php: [ '8.0', '8.1']
         moodle-branch: [ 'MOODLE_401_STABLE']
         database: [ 'mariadb', 'pgsql' ]
-        exclude:
         include:
           - php: '7.4'
             moodle-branch: 'MOODLE_401_STABLE'
