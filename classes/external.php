@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_townsquare;
-use core_external\external_function_parameters;
+use external_function_parameters;
 use Exception;
 use external_api;
 use external_value;
@@ -81,20 +81,12 @@ class external extends external_api {
      */
     public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
                                                $basicletter, $completionletter, $postletter): bool {
-        global $DB, $CFG;
-
+        global $DB;
         // Parameter validation.
-        if ($CFG->branch >= 402) {
-            $params = self::validate_parameters(self::record_usersettings_parameters(), [
-                'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
-                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
-            ]);
-        } else {
-            // TODO: delete this branch when Moodle 4.1 is no longer supported.
-            $params = [
-                'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
-                'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter, ];
-        }
+        $params = self::validate_parameters(self::record_usersettings_parameters(), [
+            'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
+            'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
+        ]);
 
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
@@ -116,6 +108,7 @@ class external extends external_api {
                 $record->basicletter = $params['basicletter'];
                 $record->completionletter = $params['completionletter'];
                 $record->postletter = $params['postletter'];
+
                 $DB->update_record('block_townsquare_preferences', $record);
                 return true;
             }

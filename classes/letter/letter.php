@@ -78,8 +78,8 @@ class letter {
     /** @var bool variable for the mustache template */
     public bool $isbasic = true;
 
-    /** @var mixed color of the letter. Only used by mustache */
-    public mixed $lettercolor;
+    /** @var string color of the letter. Only used by mustache */
+    public string $lettercolor;
 
     // Constructor.
 
