@@ -31,5 +31,6 @@ Feature: In the townsquare block user can save their settings in a database.
     And I click on "Next two days" "text"
     When I click on "Save settings" "text" in the "Town Square" "block"
     Then I should not see "Test assign 2" in the "Town Square" "block"
+    And I townsquare debug
     And I reload the page
     Then I should not see "Test assign 2" in the "Town Square" "block"
