@@ -29,9 +29,7 @@ Feature: In the townsquare block user can save their settings in a database.
     Then I should see "Test assign 2" in the "Town Square" "block"
     And I click on "Time filter" "text"
     And I click on "Next two days" "text"
-    And I townsquare debug
     When I click on "Save settings" "text" in the "Town Square" "block"
     Then I should not see "Test assign 2" in the "Town Square" "block"
-    And I townsquare debug
     And I reload the page
     Then I should not see "Test assign 2" in the "Town Square" "block"

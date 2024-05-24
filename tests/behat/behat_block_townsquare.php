@@ -61,16 +61,4 @@ class behat_block_townsquare extends behat_base {
         ];
         $generator->create_module('assign', $assignrecord, $featurecompletionmanual);
     }
-
-    /**
-     * Test for debugging
-     * @Given /^I townsquare debug$/
-     */
-    public function i_townsquare_debug() {
-        global $DB;
-        // \block_townsquare\external::record_usersettings(1, 1, 1, 1, 1, 1);
-        $record = $DB->get_records('block_townsquare_preferences');
-        var_dump($record);
-        ob_flush();
-    }
 }

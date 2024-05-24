@@ -81,7 +81,7 @@ class external extends external_api {
      */
     public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
                                                $basicletter, $completionletter, $postletter): bool {
-        global $DB, $CFG;
+        global $DB;
         // Parameter validation.
         $params = self::validate_parameters(self::record_usersettings_parameters(), [
             'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
