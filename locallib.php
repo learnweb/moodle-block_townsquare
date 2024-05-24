@@ -30,13 +30,31 @@
  * @throws moodle_exception
  */
 function townsquare_get_colorsetting($lettertype) {
-    return match ($lettertype) {
-        'basicletter' => get_config('block_townsquare', 'basiclettercolor'),
-        'postletter' => get_config('block_townsquare', 'postlettercolor'),
-        'completionletter' => get_config('block_townsquare', 'completionlettercolor'),
-        'orientationmarker' => get_config('block_townsquare', 'orientationmarkercolor'),
-        default => throw new \moodle_exception('invalidlettertype', 'block_townsquare'),
-    };
+    global $CFG;
+    if ($CFG->branch >= 402) {
+        return match ($lettertype) {
+            'basicletter' => get_config('block_townsquare', 'basiclettercolor'),
+            'postletter' => get_config('block_townsquare', 'postlettercolor'),
+            'completionletter' => get_config('block_townsquare', 'completionlettercolor'),
+            'orientationmarker' => get_config('block_townsquare', 'orientationmarkercolor'),
+            default => throw new \moodle_exception('invalidlettertype', 'block_townsquare'),
+        };
+    } else {
+        // The same but without the match expression as php 7.4 does not support it.
+        switch ($lettertype) {
+            case 'basicletter':
+                return get_config('block_townsquare', 'basiclettercolor');
+            case 'postletter':
+                return get_config('block_townsquare', 'postlettercolor');
+            case 'completionletter':
+                return get_config('block_townsquare', 'completionlettercolor');
+            case 'orientationmarker':
+                return get_config('block_townsquare', 'orientationmarkercolor');
+            default:
+                throw new \moodle_exception('invalidlettertype', 'block_townsquare');
+        }
+    }
+
 }
 
 /**
