@@ -26,8 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Core strings for the installation.
-$string['pluginname'] = 'Townsquare block';
-$string['pluginname'] = 'Town Square';
+$string['pluginname'] = 'Townsquare';
+$string['plugintitle'] = 'Town Square Block';
 $string['pluginname:addinstance'] = 'Add the Town Square block';
 $string['pluginname:myaddinstance'] = 'Add the Town Square block to the dashboard';
 
