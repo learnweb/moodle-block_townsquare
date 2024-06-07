@@ -233,7 +233,8 @@ class townsquareevents {
                    posts.parent AS postparentid,
                    posts.userid AS postuserid,
                    posts.created AS postcreated,
-                   posts.message AS postmessage ";
+                   posts.message AS postmessage,
+                   posts.messageformat AS postmessageformat ";
 
         // Extend the strings for the 2 module cases.
         if ($modulename == 'forum') {

@@ -26,6 +26,9 @@ namespace block_townsquare\letter;
 use moodle_url;
 use stdClass;
 
+global $CFG;
+require_once($CFG->libdir . '/portfoliolib.php');
+
 /**
  * Class that represents a post from the forum or moodleoverflow module.
  *
@@ -89,7 +92,8 @@ class post_letter extends letter {
         $this->post->instanceid = $postevent->instanceid;
         $this->post->discussionid = $postevent->postdiscussion;
         $this->post->id = $postevent->postid;
-        $this->post->message = $postevent->postmessage;
+        $this->post->message = $this->format_post($postevent->postmessage, $postevent->postmessageformat,
+                                                   $postevent->coursemoduleid);
         $this->post->discussionsubject = $postevent->discussionsubject;
         $this->post->parentid = $postevent->postparentid;
         $this->author->id = $postevent->postuserid;
@@ -120,7 +124,7 @@ class post_letter extends letter {
             'authorname' => $this->author->name,
             'authorpicture' => $this->author->picture,
             'postid' => $this->post->id,
-            'message' => format_text($this->post->message),
+            'message' => $this->post->message,
             'created' => date('d.m.Y', $this->created),
             'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
@@ -192,7 +196,11 @@ class post_letter extends letter {
         } else {
             $this->post->anonymous = false;
         }
+    }
 
+    private function format_post($message, $messageformat, $cmid) {
+        $options = (array) portfolio_format_text_options() + ['context' => \context_module::instance($cmid)];
+        return format_text($message, $messageformat, $options);
     }
 
 }
