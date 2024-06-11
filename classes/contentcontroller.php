@@ -108,7 +108,7 @@ class contentcontroller {
      * Getter for the content
      * @return array
      */
-    public function get_content():array {
+    public function get_content(): array {
         return $this->content;
     }
 
@@ -116,7 +116,7 @@ class contentcontroller {
      * Getter for the events
      * @return array
      */
-    public function get_events():array {
+    public function get_events(): array {
         return $this->events;
     }
 }

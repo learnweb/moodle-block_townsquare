@@ -59,7 +59,7 @@ class activitycompletion_letter extends letter {
      * Export function for the mustache template.
      * return array
      */
-    public function export_letter():array {
+    public function export_letter(): array {
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,

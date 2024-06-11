@@ -17,7 +17,7 @@
 /**
  * File for the settings of moodleoverflow.
  *
- * @package   blocks_townsquare
+ * @package   block_townsquare
  * @copyright 2024 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

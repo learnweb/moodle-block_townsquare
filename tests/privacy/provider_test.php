@@ -40,7 +40,7 @@ use core_privacy\tests\provider_testcase;
  *
  * @covers \block_townsquare\privacy\provider
  */
-class provider_test extends provider_testcase {
+final class provider_test extends provider_testcase {
 
     /** @var object The data that will be used for testing.
      * This Class contains:
@@ -86,7 +86,7 @@ class provider_test extends provider_testcase {
      * Test getting the users in the context related to this plugin.
      * @return void
      */
-    public function test_get_users_in_context():void {
+    public function test_get_users_in_context(): void {
         // Check that no users are found in the context before the setting is set.
         $userlist = new userlist($this->testdata->studentcontext, 'block_townsquare');
         provider::get_users_in_context($userlist);
@@ -106,7 +106,7 @@ class provider_test extends provider_testcase {
      * Test if the metadata is correct.
      * @return void
      */
-    public function test_get_metadata():void {
+    public function test_get_metadata(): void {
         // Get the metadata and check if a collection exists.
         $metadata = provider::get_metadata(new collection('block_townsquare'));
         $collection = $metadata->get_collection();

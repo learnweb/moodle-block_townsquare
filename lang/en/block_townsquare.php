@@ -27,9 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 
 // Core strings for the installation.
 $string['pluginname'] = 'Townsquare';
-$string['plugintitle'] = 'Town Square Block';
 $string['pluginname:addinstance'] = 'Add the Town Square block';
 $string['pluginname:myaddinstance'] = 'Add the Town Square block to the dashboard';
+$string['plugintitle'] = 'Town Square Block';
 
 // Privacy strings.
 $string['privacy:metadata:block_townsquare_preferences'] = 'Town Square stores the filters that a user wants to have activated.';
@@ -108,10 +108,10 @@ $string['feedbackclosemessage'] = 'Writing feedback is possible until {$a->time}
 $string['forumduemessage'] = 'The forum is due until {$a->time}';
 $string['lessonopenmessage'] = 'The lesson opens today at {$a->time}';
 $string['lessonclosemessage'] = 'The lesson ends today at {$a->time}';
-$string['quizopenmessage'] = 'The Quiz is open from {$a->time} onwards';
 $string['quizclosemessage'] = 'The Quiz closes today at {$a->time}';
-$string['quizopenmessage'] = 'Scorm Activity opens today';
-$string['quizclosemessage'] = 'Scorm Activity closes today';
+$string['quizopenmessage'] = 'The Quiz is open from {$a->time} onwards';
+$string['scormopenmessage'] = 'Scorm Activity opens today';
+$string['scormclosemessage'] = 'Scorm Activity closes today';
 $string['workshopopensubmission'] = 'Submissions for the workshop are possible from {$a->time} onwards';
 $string['workshopclosesubmission'] = 'Please submit your work until {$a->time}. The workshop closes afterwards';
 $string['workshopopenassessment'] = 'The assessment phase starts today at {$a->time}';

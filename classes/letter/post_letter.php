@@ -112,7 +112,7 @@ class post_letter extends letter {
      * Export Function for the mustache template.
      * @return array
      */
-    public function export_letter():array {
+    public function export_letter(): array {
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -200,6 +200,13 @@ class post_letter extends letter {
         }
     }
 
+    /**
+     * Function to format the post message before exporting it to the mustache template.
+     * @param $message
+     * @param $messageformat
+     * @param $cmid
+     * @return string
+     */
     private function format_post($message, $messageformat, $cmid) {
         $options = (array) portfolio_format_text_options() + ['context' => \context_module::instance($cmid)];
         return format_text($message, $messageformat, $options);

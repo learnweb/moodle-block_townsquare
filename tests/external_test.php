@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @covers \block_townsquare\external::record_usersettings
  * @runTestsInSeparateProcesses
  */
-class external_test extends \advanced_testcase {
+final class external_test extends \advanced_testcase {
 
     public function setUp(): void {
         $this->resetAfterTest();
