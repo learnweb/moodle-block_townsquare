@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Internal library of functions for the townsquare block
+ * Library of functions of the townsquare block, that can be used moodle wide.
  *
  * @package block_townsquare
  * @copyright 2024 Tamaro Walter

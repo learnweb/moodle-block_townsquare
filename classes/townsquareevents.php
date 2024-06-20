@@ -32,7 +32,7 @@ use function local_townsquaresupport\townsquaresupport_get_subplugin_events;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
-require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
+require_once($CFG->dirroot . '/blocks/townsquare/lib.php');
 
 /**
  * Class to get events and posts that will be shown in the townsquare block..
