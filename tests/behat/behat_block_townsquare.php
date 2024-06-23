@@ -47,7 +47,7 @@ class behat_block_townsquare extends behat_base {
         global $DB;
         $generator = new testing_data_generator();
         $course = $DB->get_record('course', ['shortname' => $coursename]);
-        $featurecompletionmanual = [
+        $options = [
             'completion' => COMPLETION_TRACKING_MANUAL,
             'completionexpected' => time() + 604800,
         ];
@@ -59,6 +59,6 @@ class behat_block_townsquare extends behat_base {
             'allowsubmissionsfromdate' => time() - 604800,
             'gradingduedate' => time() + 604860,
         ];
-        $generator->create_module('assign', $assignrecord, $featurecompletionmanual);
+        $generator->create_module('assign', $assignrecord, $options);
     }
 }

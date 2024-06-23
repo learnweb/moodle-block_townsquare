@@ -77,7 +77,7 @@ class townsquareevents {
         $numberofevents = count($calendarevents) + count($postevents);
         for ($i = 0; $i < $numberofevents; $i++) {
             if (current($calendarevents) && current($postevents)) {
-                if (current($calendarevents)->timestart > current($postevents)->postcreated) {
+                if (current($calendarevents)->timestart > current($postevents)->timestart) {
                     $events[$i] = current($calendarevents);
                     next($calendarevents);
                 } else {
@@ -176,7 +176,7 @@ class townsquareevents {
 
             // Merge.
             if (current($forumposts) && current($moodleoverflowposts)) {
-                if (current($forumposts)->postcreated > current($moodleoverflowposts)->postcreated) {
+                if (current($forumposts)->timestart > current($moodleoverflowposts)->timestart) {
                     $posts[$i] = current($forumposts);
                     next($forumposts);
                 } else {
@@ -232,7 +232,7 @@ class townsquareevents {
                    posts.discussion AS postdiscussion,
                    posts.parent AS postparentid,
                    posts.userid AS postuserid,
-                   posts.created AS postcreated,
+                   posts.created AS timestart,
                    posts.message AS postmessage,
                    posts.messageformat AS postmessageformat ";
 
@@ -373,12 +373,12 @@ class townsquareevents {
         $overduecheck = $calendarevent->eventtype == "due" && $this->timenow >= ($calendarevent->timestart + 604800);
 
         // Check if the user is someone without grading capability.
-        $nogradecapabilitycheck = $calendarevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
+        $cannotgradecheck = $calendarevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
                                                                         context_module::instance($calendarevent->coursemoduleid));
         // Check if the assignment is not open yet.
         $stillclosedcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
 
-        if ($overduecheck || $nogradecapabilitycheck || $stillclosedcheck) {
+        if ($overduecheck || $cannotgradecheck || $stillclosedcheck) {
             return true;
         }
         return false;

@@ -273,9 +273,9 @@ final class calendarevents_test extends \advanced_testcase {
      */
     private function create_assignment($courseid, $allowsubmissionsdate, $duedate, $gradingduedate, $activitycompletion): object {
         // Create an activity completion for the assignment if wanted.
-        $featurecompletionmanual = [];
+        $options = [];
         if ($activitycompletion) {
-            $featurecompletionmanual = [
+            $options = [
                 'completion' => COMPLETION_TRACKING_MANUAL,
                 'completionexpected' => $duedate,
             ];
@@ -287,7 +287,7 @@ final class calendarevents_test extends \advanced_testcase {
             'allowsubmissionsfromdate' => $allowsubmissionsdate,
             'gradingduedate' => $gradingduedate,
         ];
-        return $this->getDataGenerator()->create_module('assign', $assignrecord, $featurecompletionmanual);
+        return $this->getDataGenerator()->create_module('assign', $assignrecord, $options);
     }
 
     /**
