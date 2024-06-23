@@ -50,65 +50,50 @@ function townsquare_get_colorsetting($lettertype): string {
  * @param object $event  The event, that is being checked.
  * @return void
  */
-function townsquare_check_coreevent($event): void {
+function townsquare_check_coreevent(&$event): void {
+    // Activity completion event have a own message handling (as it always has the same structure).
+    if ($event->eventtype == 'expectcompletionon') {
+        return;
+    }
+
     $time = date('H:i', $event->timestart);
+
+    // Most modules only have open and closing events.
+    $opencloseevents = ['choice' , 'data', 'feedback', 'lesson', 'quiz', 'scorm'];
+    if (in_array($event->modulename, $opencloseevents)) {
+        $event->name = townsquare_get_open_close_message($event, $time);
+    }
+
+    // Other core plugins have extra/other event types.
     if ($event->modulename == 'assign') {
-        if ($event->eventtype == 'due') {
-            $event->name = get_string('assignduemessage', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'gradingdue') {
-            $event->name = get_string('assigngradingduemessage', 'block_townsquare', ['time' => $time]);
-        }
+        // Event type is either 'due' or 'gradingdue'.
+        $identifier = 'assign' . $event->eventtype . 'message';
+        $event->name = get_string($identifier, 'block_townsquare', ['time' => $time]);
     } else if ($event->modulename == 'chat' && $event->eventtype == 'chattime') {
         $event->name = get_string('chattimemessage', 'block_townsquare', ['time' => $time]);
-    } else if ($event->modulename == 'choice') {
-        if ($event->eventtype == 'open') {
-            $event->name = get_string('choiceopenmessage', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'close') {
-            $event->name = get_string('choiceclosemessage', 'block_townsquare', ['time' => $time]);
-        }
-    } else if ($event->modulename == 'data') {
-        if ($event->eventtype == 'open') {
-            $event->name = get_string('dataopenmessage', 'block_townsquare');
-        } else if ($event->eventtype == 'close') {
-            $event->name = get_string('dataclosemessage', 'block_townsquare', ['time' => $time]);
-        }
-    } else if ($event->modulename == 'feedback') {
-        if ($event->eventtype == 'open') {
-            $event->name = get_string('feedbackopenmessage', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'close') {
-            $event->name = get_string('feedbackclosemessage', 'block_townsquare', ['time' => $time]);
-        }
     } else if ($event->modulename == 'forum') {
         if ($event->eventtype == 'due') {
             $event->name = get_string('forumduemessage', 'block_townsquare', ['time' => $time]);
         }
-    } else if ($event->modulename == 'lesson') {
-        if ($event->eventtype == 'open') {
-            $event->name = get_string('lessonopenmessage', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'close') {
-            $event->name = get_string('lessonclosemessage', 'block_townsquare', ['time' => $time]);
-        }
-    } else if ($event->modulename == 'quiz') {
-        if ($event->eventtype == 'open') {
-            $event->name = get_string('quizopenmessage', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'close') {
-            $event->name = get_string('quizclosemessage', 'block_townsquare', ['time' => $time]);
-        }
-    } else if ($event->modulename == 'scorm') {
-        if ($event->eventtype == 'open') {
-            $event->name = get_string('scormopenmessage', 'block_townsquare');
-        } else if ($event->eventtype == 'close') {
-            $event->name = get_string('scormclosemessage', 'block_townsquare');
-        }
     } else if ($event->modulename == 'workshop') {
-        if ($event->eventtype == 'opensubmission') {
-            $event->name = get_string('workshopopensubmission', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'closesubmission') {
-            $event->name = get_string('workshopclosesubmission', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'openassessment') {
-            $event->name = get_string('workshopopenassessment', 'block_townsquare', ['time' => $time]);
-        } else if ($event->eventtype == 'closeassessment') {
-            $event->name = get_string('workshopcloseassessment', 'block_townsquare', ['time' => $time]);
-        }
+        // Event type is either 'opensubmission', 'closesubmission', 'openassessment' or 'closeassessment'.
+        $identifier = 'workshop' . $event->eventtype;
+        $event->name = get_string($identifier, 'block_townsquare', ['time' => $time]);
     }
+}
+
+/**
+ * Helper function for the check function. Helps to reduce repetitive checks
+ * @param $event
+ * @param $pluginname
+ * @param $time
+ * @return string
+ */
+function townsquare_get_open_close_message($event, $time) {
+    if ($event->eventtype == 'open') {
+        return get_string($event->modulename . 'openmessage', 'blok_townsquare', ['time' => $time]);
+    } else if ($event->eventtype == 'close') {
+        return get_string($event->modulename . 'closemessage', 'block_townsquare', ['time' => $time]);
+    }
+    return '';
 }

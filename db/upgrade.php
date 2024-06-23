@@ -30,7 +30,7 @@
  * @return bool
  */
 function xmldb_block_townsquare_upgrade($oldversion) {
-    global $DB, $CFG;
+    global $DB;
 
     $dbman = $DB->get_manager();
 
