@@ -252,13 +252,13 @@ final class postevents_test extends \advanced_testcase {
             if ($post->instanceid == $this->testdata->moodleoverflow1->id) {
                 if ($post->postuserid == $this->testdata->teacher->id) {
                     $firstteacherpost = $post;
-                } else if ($post->postuserid == $this->testdata->student1->id) {
+                } else {
                     $firststudentpost = $post;
                 }
             } else if ($post->instanceid == $this->testdata->moodleoverflow2->id) {
                 if ($post->postuserid == $this->testdata->teacher->id) {
                     $secondteacherpost = $post;
-                } else if ($post->postuserid == $this->testdata->student2->id) {
+                } else {
                     $secondstudentpost = $post;
                 }
             }
