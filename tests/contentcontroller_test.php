@@ -33,7 +33,7 @@ namespace block_townsquare;
  *
  * @covers \block_townsquare\contentcontroller
  */
-class contentcontroller_test extends \advanced_testcase {
+final class contentcontroller_test extends \advanced_testcase {
 
     // Attributes.
 
@@ -121,7 +121,7 @@ class contentcontroller_test extends \advanced_testcase {
      * Helper function that sets up the testdata.
      * @return void
      */
-    private function helper_course_set_up():void {
+    private function helper_course_set_up(): void {
         global $DB;
         // Declare generators.
         $datagenerator = $this->getDataGenerator();
@@ -160,7 +160,7 @@ class contentcontroller_test extends \advanced_testcase {
      * @param int $gradingduedate            timestamp
      * @return object
      */
-    private function create_assignment($allowsubmissionsdate, $duedate, $gradingduedate):object {
+    private function create_assignment($allowsubmissionsdate, $duedate, $gradingduedate): object {
         // Create an activity completion for the assignment if wanted.
         $featurecompletionmanual = [
             'completion' => COMPLETION_TRACKING_MANUAL,

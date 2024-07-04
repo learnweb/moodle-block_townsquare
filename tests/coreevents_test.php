@@ -41,7 +41,7 @@ use stdClass;
  *
  * @covers \block_townsquare\townsquareevents::get_coreevents()
  */
-class coreevents_test extends \advanced_testcase {
+final class coreevents_test extends \advanced_testcase {
 
     // Attributes.
 
@@ -271,7 +271,7 @@ class coreevents_test extends \advanced_testcase {
      * @param bool $activitycompletion
      * @return object
      */
-    private function create_assignment($courseid, $allowsubmissionsdate, $duedate, $gradingduedate, $activitycompletion):object {
+    private function create_assignment($courseid, $allowsubmissionsdate, $duedate, $gradingduedate, $activitycompletion): object {
         // Create an activity completion for the assignment if wanted.
         $featurecompletionmanual = [];
         if ($activitycompletion) {
@@ -295,7 +295,7 @@ class coreevents_test extends \advanced_testcase {
      * @param object $user  The user for whom the events should be collected (townsquareevents.php uses $USER).
      * @return array
      */
-    private function get_calendarevents_from_user($user):array {
+    private function get_calendarevents_from_user($user): array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
         return $townsquareevents->get_coreevents();
@@ -308,7 +308,7 @@ class coreevents_test extends \advanced_testcase {
      * @param array $enrolledcourses
      * @return bool
      */
-    private function check_eventcourses($events, $enrolledcourses):bool {
+    private function check_eventcourses($events, $enrolledcourses): bool {
         foreach ($events as $event) {
             $eventcourseid = $event->courseid;
 

@@ -35,7 +35,7 @@ use stdClass;
  *
  * @covers \block_townsquare\townsquareevents::get_postevents()
  */
-class postevents_test extends \advanced_testcase {
+final class postevents_test extends \advanced_testcase {
 
     // Attributes.
 
@@ -378,7 +378,7 @@ class postevents_test extends \advanced_testcase {
      * @param object $moodleoverflow The moodleoverflow that should be made anonymous.
      * @param int $anonymoussetting The type of anonymous moodleoverflow.
      */
-    private function make_anonymous($moodleoverflow, $anonymoussetting):void {
+    private function make_anonymous($moodleoverflow, $anonymoussetting): void {
         global $DB;
         if ($anonymoussetting == 1 || $anonymoussetting == 2) {
             $moodleoverflow->anonymous = $anonymoussetting;
@@ -393,7 +393,7 @@ class postevents_test extends \advanced_testcase {
      * @param object $user The user for whom the events should be collected (townsquareevents.php uses $USER).
      * @return array
      */
-    private function get_postevents_from_user($user):array {
+    private function get_postevents_from_user($user): array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
         return $townsquareevents->get_postevents();
@@ -405,7 +405,7 @@ class postevents_test extends \advanced_testcase {
      * @param array $enrolledcourses
      * @return bool
      */
-    private function check_postcourses($posts, $enrolledcourses):bool {
+    private function check_postcourses($posts, $enrolledcourses): bool {
         foreach ($posts as $post) {
             $postcourseid = $post->courseid;
 

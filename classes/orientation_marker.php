@@ -64,7 +64,7 @@ class orientation_marker {
      * Export function for the mustache template.
      * @return array
      */
-    public function export_data():array {
+    public function export_data(): array {
         // Change the timestamp to a date.
         $date = date('d.m.Y', $this->today);
 

@@ -61,7 +61,7 @@ class activitycompletion_letter extends letter {
      * Export function for the mustache template.
      * return array
      */
-    public function export_letter():array {
+    public function export_letter(): array {
         // Change the timestamp to a date.
         $date = date('d.m.Y', $this->created);
 

@@ -57,7 +57,7 @@ class contentcontroller {
      * Builds the content from events.
      * @return array
      */
-    public function build_content():array {
+    public function build_content(): array {
         $this->events = $this->townsquareevents->get_all_events_sorted();
 
         $orientationmarkerset = false;
@@ -95,7 +95,7 @@ class contentcontroller {
      * Getter for the content
      * @return array
      */
-    public function get_content():array {
+    public function get_content(): array {
         return $this->content;
     }
 
@@ -103,7 +103,7 @@ class contentcontroller {
      * Getter for the events
      * @return array
      */
-    public function get_events():array {
+    public function get_events(): array {
         return $this->events;
     }
 }
