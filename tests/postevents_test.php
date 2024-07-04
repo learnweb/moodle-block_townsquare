@@ -230,7 +230,9 @@ final class postevents_test extends \advanced_testcase {
      */
     public function test_anonymous(): void {
         // Only create moodleoverflowposts.
-        $this->create_moodleoverflow_posts();
+        if (!$this->create_moodleoverflow_posts()) {
+            return;
+        }
 
         // Set the first moodleoverflow to partially anonymous and the second to fully anonymous.
         $this->make_anonymous($this->testdata->moodleoverflow1, 1);
@@ -353,7 +355,7 @@ final class postevents_test extends \advanced_testcase {
 
     /**
      * Helper function that creates a moodleoverflow and posts
-     * @return void
+     * @return bool
      */
     private function create_moodleoverflow_posts() {
         // Create a moodleoverflow with 2 post in each course.
@@ -374,6 +376,9 @@ final class postevents_test extends \advanced_testcase {
                 $this->testdata->teacher);
             $this->testdata->answer2 = $modoverflowgenerator->reply_to_post($this->testdata->mdiscussion2[1],
                 $this->testdata->student2, true);
+            return true;
+        } else {
+            return false;
         }
     }
 

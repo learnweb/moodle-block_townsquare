@@ -91,7 +91,7 @@ function townsquare_check_coreevent(&$event): void {
  */
 function townsquare_get_open_close_message($event, $time) {
     if ($event->eventtype == 'open') {
-        return get_string($event->modulename . 'openmessage', 'blok_townsquare', ['time' => $time]);
+        return get_string($event->modulename . 'openmessage', 'block_townsquare', ['time' => $time]);
     } else if ($event->eventtype == 'close') {
         return get_string($event->modulename . 'closemessage', 'block_townsquare', ['time' => $time]);
     }

@@ -62,10 +62,10 @@ $string['nexttwodaysnotifications'] = 'Next two days';
 $string['nextweeknotifications'] = 'Next week';
 $string['orientationmarkercolor'] = 'Color for the orientation marker';
 $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare! Today is the {$a->date}';
-$string['pluginname'] = 'Townsquare';
+$string['pluginname'] = 'Town Square';
 $string['pluginname:addinstance'] = 'Add the Town Square block';
 $string['pluginname:myaddinstance'] = 'Add the Town Square block to the dashboard';
-$string['plugintitle'] = 'Town Square Block';
+$string['plugintitle'] = 'Town Square block';
 
 $string['postlettercolor'] = 'Color for post letters';
 $string['postletternotification'] = 'New {$a->modulename} post!';
