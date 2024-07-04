@@ -21,10 +21,13 @@
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace block_townsquare\letter;
-
 use moodle_url;
+
+defined('MOODLE_INTERNAL') || die;
+
+global $CFG;
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
  * Class that represents an unspecific type of content.
@@ -66,14 +69,17 @@ class letter {
     /** @var int Timestamp When the activity was created */
     protected int $created;
 
-    /** @var bool variable for the mustache template */
-    public bool $isbasic = true;
-
     /** @var moodle_url Link to the course */
     protected moodle_url $linktocourse;
 
     /** @var moodle_url The url to the activity */
     protected moodle_url $linktoactivity;
+
+    /** @var bool variable for the mustache template */
+    public bool $isbasic = true;
+
+    /** @var string color of the letter. Only used by mustache */
+    public string $lettercolor;
 
     // Constructor.
 
@@ -100,6 +106,7 @@ class letter {
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
         $this->linktoactivity = new moodle_url('/mod/' . $modulename . '/view.php', ['id' => $cmid]);
+        $this->lettercolor = townsquare_get_colorsetting('basicletter');
     }
 
     // Functions.
@@ -109,6 +116,7 @@ class letter {
      * @return array
      */
     public function export_letter() {
+        // Change the timestamp to a date.
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -118,8 +126,10 @@ class letter {
             'instancename' => $this->instancename,
             'content' => $this->content,
             'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
+            'basiclettercolor' => $this->lettercolor,
         ];
     }
 }

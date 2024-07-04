@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_townsquare/main
+    @template block_townsquare/blockcontent
 
     This template renders the main content area for the townsquare block.
 
@@ -74,7 +74,12 @@
 }}
 <div id="townsquare_root" class="townsquare_root container-fluid">
     <div class="row townsquare_main">
-        <div class="townsquare_content">
+
+        <div class="col-md-3 townsquare_sidepanel">
+            {{> block_townsquare/sidepanel}}
+        </div>
+
+        <div class=" col-md-9 townsquare_content">
             <div class="townsquare_letters">
                 {{#content}}
                         {{#isorientationmarker}}

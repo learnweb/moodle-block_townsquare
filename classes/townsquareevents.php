@@ -26,6 +26,7 @@ namespace block_townsquare;
 defined('MOODLE_INTERNAL') || die();
 
 use context_module;
+use core_component;
 use dml_exception;
 use moodle_url;
 use function local_townsquaresupport\townsquaresupport_get_subplugin_events;
@@ -33,6 +34,7 @@ use function local_townsquaresupport\townsquaresupport_get_subplugin_events;
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->dirroot . '/blocks/townsquare/lib.php');
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
  * Class to get events and posts that will be shown in the townsquare block..
@@ -82,8 +84,9 @@ class townsquareevents {
             require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
             $subpluginevents = townsquaresupport_get_subplugin_events();
         }
-        // Merge the events in a sorted order.
-        $events = $coreevents + $postevents + $subpluginevents;
+
+        // Return the events in a sorted order.
+        $events = array_merge($coreevents, $postevents, $subpluginevents);
         return townsquare_mergesort($events);
     }
 
@@ -163,6 +166,9 @@ class townsquareevents {
     private function get_forumposts_from_db($courses, $timestart): array {
         global $DB;
         // Prepare params for sql statement.
+        if ($courses == []) {
+            return [];
+        }
         list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
         $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
 
@@ -183,7 +189,8 @@ class townsquareevents {
                     posts.parent AS postparentid,
                     posts.userid AS postuserid,
                     posts.created AS timestart,
-                    posts.message AS postmessage
+                    posts.message AS postmessage,
+                    posts.messageformat AS postmessageformat
                 FROM {forum_posts} posts
                 JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
                 JOIN {forum} module ON module.id = discuss.forum
@@ -212,6 +219,11 @@ class townsquareevents {
      */
     private function get_events_from_db($timestart, $timeend, $courses): array {
         global $DB;
+
+        // As there are no events without courses, return an empty array.
+        if ($courses == []) {
+            return [];
+        }
 
         // Due to compatability reasons, only events from supported modules are shown.
         $modules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
@@ -257,12 +269,12 @@ class townsquareevents {
         $overduecheck = ($type == "due" || $type == "gradingdue") && ($this->timenow >= ($coreevent->timestart + 604800));
 
         // Check if the user is someone without grading capability.
-        $nogradecapabilitycheck = $coreevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
+        $cannotgradecheck = $coreevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
                                                                         context_module::instance($coreevent->coursemoduleid));
         // Check if the assignment is not open yet.
         $stillclosedcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
 
-        if ($overduecheck || $nogradecapabilitycheck || $stillclosedcheck) {
+        if ($overduecheck || $cannotgradecheck || $stillclosedcheck) {
             return true;
         }
         return false;

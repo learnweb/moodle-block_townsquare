@@ -23,10 +23,13 @@
  */
 
 namespace block_townsquare\letter;
-
-use moodle_exception;
 use moodle_url;
 use stdClass;
+
+defined('MOODLE_INTERNAL') || die;
+
+global $CFG;
+require_once($CFG->libdir . '/portfoliolib.php');
 
 /**
  * Class that represents a post from the forum or moodleoverflow module.
@@ -87,10 +90,12 @@ class post_letter extends letter {
         $this->posturls = new stdClass();
 
         $this->lettertype = 'post';
+        $this->lettercolor = townsquare_get_colorsetting('postletter');
         $this->post->instanceid = $postevent->instanceid;
         $this->post->discussionid = $postevent->postdiscussion;
         $this->post->id = $postevent->postid;
-        $this->post->message = $postevent->postmessage;
+        $this->post->message = $this->format_post($postevent->postmessage, $postevent->postmessageformat,
+                                                   $postevent->coursemoduleid);
         $this->post->discussionsubject = $postevent->discussionsubject;
         $this->post->parentid = $postevent->postparentid;
         $this->post->anonymous = $postevent->anonymous ?? false;
@@ -99,6 +104,7 @@ class post_letter extends letter {
         $this->posturls->linktopost = $postevent->linktopost;
         $this->posturls->linktoauthor = $postevent->linktoauthor;
 
+        $this->add_anonymousattribute($postevent);
         $this->retrieve_profilepicture();
     }
 
@@ -122,12 +128,14 @@ class post_letter extends letter {
             'authorname' => $this->author->name,
             'authorpicture' => $this->author->picture,
             'postid' => $this->post->id,
-            'message' => format_text($this->post->message),
+            'message' => $this->post->message,
             'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
             'linktopost' => $this->posturls->linktopost->out(),
             'linktoauthor' => $this->posturls->linktoauthor->out(),
+            'postlettercolor' => $this->lettercolor,
         ];
     }
 
@@ -151,6 +159,31 @@ class post_letter extends letter {
         } else {
             $this->author->picture = '';
         }
+    }
+
+    /**
+     * Method to add the anonymous attribute to the post.
+     * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
+     * @return void
+     */
+    private function add_anonymousattribute($postevent): void {
+        if ($postevent->modulename == 'moodleoverflow') {
+            $this->post->anonymous = $postevent->anonymous;
+        } else {
+            $this->post->anonymous = false;
+        }
+    }
+
+    /**
+     * Function to format the post message before exporting it to the mustache template.
+     * @param $message
+     * @param $messageformat
+     * @param $cmid
+     * @return string
+     */
+    private function format_post($message, $messageformat, $cmid) {
+        $options = (array) portfolio_format_text_options() + ['context' => \context_module::instance($cmid)];
+        return format_text($message, $messageformat, $options);
     }
 
 }

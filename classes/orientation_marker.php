@@ -24,6 +24,11 @@
 
 namespace block_townsquare;
 
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
+
 /**
  * Class that represent a orientation marker.
  *
@@ -55,7 +60,6 @@ class orientation_marker {
     public function __construct($contentid, $time) {
         $this->contentid = $contentid;
         $this->today = $time;
-
     }
 
     // Functions.
@@ -72,6 +76,7 @@ class orientation_marker {
             'contentid' => $this->contentid,
             'date' => $date,
             'isorientationmarker' => $this->isorientationmarker,
+            'orientationmarkercolor' => townsquare_get_colorsetting('orientationmarker'),
         ];
     }
 

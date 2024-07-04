@@ -1,15 +1,35 @@
 /* Style for the blockcontent template*/
-.townsquare_sidepanel {
+.townsquare_sidepanel.col-md-3 {
     background-color: #eee;
     border-radius: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .townsquare_content {
     max-height: 750px;
     border-radius: 0.5rem;
-    overflow:scroll;
+    overflow: scroll;
     max-width: 100%;
     overflow-x: hidden;
+}
+
+/* Style for the side panel filter */
+.ts_usersettings_save {
+    display: flex;
+}
+
+.ts_usersettings_button {
+    flex: 1;
+}
+
+.ts_usersettings_message {
+    background-color: #eee;
+    display: none;
+}
+
+.ts_button_transition {
+    transition: background-color 1.0s ease, color 1.0s ease;
 }
 
 /* Style for all letter or content templates */
@@ -36,7 +56,7 @@
     color: #fff;
     text-decoration: underline;
 }
-.townsquareletter_courselink{
+.townsquareletter_courselink {
     color: #fff;
     text-decoration: none;
 }
@@ -55,23 +75,7 @@
 
 /* basicletter Style*/
 
-.basicletter.card {
-    border-color: var(--primary);
-}
-
-.basicletter_header.card-header {
-    background-color: var(--primary);
-}
-
 /* postletter Style */
-
-.postletter.card {
-    border-color: var(--activitycollaboration);
-}
-
-.postletter_header.card-header {
-    background-color: var(--activitycollaboration);
-}
 
 .postletter_origin {
     margin-bottom: 0.4rem;
@@ -79,19 +83,7 @@
 
 /* actvitiycompletionletter Style*/
 
-.completionletter.card {
-    border-color: var(--danger);
-}
-
-.completionletter_header.card-header {
-    background-color: var(--danger);
-}
-
 /* Style for the orientation marker */
-.orientationmarker.card {
-    border-color: var(--secondary);
-    background-color: var(--secondary);
-}
 
 .orientationmarker_body.card-body {
     padding-top: 0.6rem;
