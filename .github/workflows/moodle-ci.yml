@@ -125,13 +125,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-<<<<<<< HEAD
-        php: ['8.0', '8.1', '8.2', '8.3']
-        moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'MOODLE_403_STABLE', 'MOODLE_404_STABLE']
-=======
         php: [ '8.0', '8.1', '8.2', '8.3' ]
         moodle-branch: [ 'MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'MOODLE_403_STABLE', 'MOODLE_404_STABLE' ]
->>>>>>> bf4f8e46d38657c979f74641afab4f65d030152c
         database: [ 'mariadb', 'pgsql' ]
         exclude:
           - php: '8.0'
