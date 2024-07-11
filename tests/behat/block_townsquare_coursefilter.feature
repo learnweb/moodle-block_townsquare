@@ -42,7 +42,6 @@ Feature: The townsquare block allows users to see notifications from different c
     When I click on "Course 3" "checkbox"
     Then I should not see "Test assign 3" in the "Town Square" "block"
 
-
   Scenario: Test the time filter
     Given the following "activities" exist:
       | activity | course | idnumber  | name          | intro                  | timeopen          | duedate           |

@@ -105,6 +105,7 @@ class post_letter extends letter {
         $this->posturls->linktoauthor = $postevent->linktoauthor;
 
         $this->add_anonymousattribute($postevent);
+        $this->add_privatereplyattribute($postevent);
         $this->retrieve_profilepicture();
     }
 
@@ -125,6 +126,8 @@ class post_letter extends letter {
             'instancename' => $this->instancename,
             'discussionsubject' => $this->post->discussionsubject,
             'anonymous' => $this->post->anonymous,
+            'privatereplyfrom' => $this->post->privatereplyfrom,
+            'privatereplyto' => $this->post->privatereplyto,
             'authorname' => $this->author->name,
             'authorpicture' => $this->author->picture,
             'postid' => $this->post->id,
@@ -171,6 +174,27 @@ class post_letter extends letter {
             $this->post->anonymous = $postevent->anonymous;
         } else {
             $this->post->anonymous = false;
+        }
+    }
+
+    /**
+     * Method to add a boolean that indicates if the post is a private reply.
+     * @param $postevent
+     * @return void
+     */
+    private function add_privatereplyattribute($postevent): void {
+        if ($postevent->modulename == 'forum') {
+            // Check if the private author is the same private recipient.
+            if ($postevent->privatereplyto && $postevent->privatereplyfrom) {
+                $this->post->privatereplyto = false;
+                $this->post->privatereplyfrom = true;
+            } else {
+                $this->post->privatereplyto = $postevent->privatereplyto;
+                $this->post->privatereplyfrom = $postevent->privatereplyfrom;
+            }
+        } else {
+            $this->post->privatereplyto = false;
+            $this->post->privatereplyfrom = false;
         }
     }
 

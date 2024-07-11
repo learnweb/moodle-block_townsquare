@@ -111,6 +111,8 @@ function townsquare_merge(array $left, array $right): array {
 
 /**
  * Filter that checks if the event needs to be filtered out for the current user because it is not available.
+ * @param object $event event that is checked
+ * @return bool true if the event needs to filtered out, false if not.
  */
 function townsquare_filter_availability($event): bool {
     // If there is no restriction defined, the event is available.

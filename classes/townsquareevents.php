@@ -139,7 +139,7 @@ class townsquareevents {
         $forumposts = $this->get_forumposts_from_db($this->courses, $this->timestart);
 
         foreach ($forumposts as $post) {
-            if (townsquare_filter_availability($post)) {
+            if (townsquare_filter_availability($post) || $this->filter_forum_privatepost($post)) {
                 unset($forumposts[$post->row_num]);
             }
 
@@ -190,7 +190,8 @@ class townsquareevents {
                     posts.userid AS postuserid,
                     posts.created AS timestart,
                     posts.message AS postmessage,
-                    posts.messageformat AS postmessageformat
+                    posts.messageformat AS postmessageformat,
+                    posts.privatereplyto AS postprivatereplyto
                 FROM {forum_posts} posts
                 JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
                 JOIN {forum} module ON module.id = discuss.forum
@@ -277,6 +278,34 @@ class townsquareevents {
         if ($overduecheck || $cannotgradecheck || $stillclosedcheck) {
             return true;
         }
+        return false;
+    }
+
+    /**
+     * Filter that checks if a forum posts is a private reply that only the author and the receiver can see.
+     * If the post is a private reply but is not filtered out, the functions adds to attributes to the post object.
+     * Applies to forum posts.
+     * @param object $forumpost The post that is checked.
+     * @return bool true if the posts needs to be filtered out, false if not.
+     */
+    private function filter_forum_privatepost(&$forumpost): bool {
+        global $USER;
+        // Check if the postuserid or the userid from the private attribute is the current user.
+        $isprivatemessage = $forumpost->postprivatereplyto != 0;
+        $isauthor = $forumpost->postuserid == $USER->id;
+        $isreceiver = $forumpost->postprivatereplyto == $USER->id;
+
+        // Filter out the post if the current user is not the author or the receiver.
+        if ($isprivatemessage && !$isauthor && !$isreceiver) {
+            return true;
+        }
+
+        // Add attributes to know if the private reply is from or to the current user.
+        $forumpost->privatereplyfrom = $isprivatemessage && $isauthor;
+        $forumpost->privatereplyto = $isprivatemessage && $isreceiver;
+
+        // Add attributes as the posts is further processed.
+
         return false;
     }
 

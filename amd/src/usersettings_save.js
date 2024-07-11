@@ -88,7 +88,6 @@ function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter,
         },
     };
     result = Ajax.call([data]);
-    console.log('HI I AM HERE');
     // Make the clicked button green by adding a class.
     savebutton.classList.add('bg-success', 'text-white', 'ts_button_transition');
 
