@@ -62,7 +62,7 @@ final class postevents_test extends \advanced_testcase {
     }
 
     public function tearDown(): void {
-       // $this->testdata = null;
+        $this->testdata = null;
     }
 
     // Tests.
