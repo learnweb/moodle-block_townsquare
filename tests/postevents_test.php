@@ -154,6 +154,44 @@ final class postevents_test extends \advanced_testcase {
     }
 
     /**
+     * Test, if the post events are processed correctly if the forum post has a private reply.
+     * @return void
+     */
+    public function test_forum_privatereply(): void {
+        $this->create_forum_posts();
+
+        // Test case: there is a private reply from the second student in the forum.
+        $this->create_forum_privatereply();
+
+        // The teacher (and second student) can see the post. The first student should not see the post.
+        // Get the post events from the first student.
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
+
+        // There should be 3 forum posts and the private reply should among them.
+        $this->assertEquals(3, count($posts));
+        $result = false;
+        foreach ($posts as $post) {
+            if ($post->postmessage == 'This is a private reply.') {
+                $result = true;
+            }
+        }
+        $this->assertEquals(true, $result);
+
+        // Get the post events from the first student.
+        $posts = $this->get_postevents_from_user($this->testdata->student1);
+
+        // There should be 1 forum posts and the private reply should not be among them.
+        $this->assertEquals(1, count($posts));
+        $result = true;
+        foreach ($posts as $post) {
+            if ($post->postmessage == 'This is a private reply.') {
+                $result = false;
+            }
+        }
+        $this->assertEquals(true, $result);
+    }
+
+    /**
      * Test, if the post events are processed correctly if the course disappears.
      * @return void
      */
@@ -402,6 +440,24 @@ final class postevents_test extends \advanced_testcase {
         $record = (array)$this->testdata->forum2 + ['forum' => $this->testdata->forum2->id,
                 'userid' => $this->testdata->teacher->id, ];
         $this->testdata->fdiscussion2 = (object)$forumgenerator->create_discussion($record);
+    }
+
+    /**
+     * Helper function that adds a private reply post to the first forum.
+     * A private reply is a message, that only the discussion author and reply author can see
+     * @return void
+     */
+    private function create_forum_privatereply() {
+        $forumgenerator = $this->getDataGenerator()->get_plugin_generator('mod_forum');
+
+        // Enrol the second student in the first course.
+        $this->getDataGenerator()->enrol_user($this->testdata->student2->id, $this->testdata->course1->id, 'student');
+
+        // The second student replies privately to the forum post of the teacher.
+        $record = (array)$this->testdata->forum1 + ['discussion' => $this->testdata->fdiscussion1->id,
+                'userid' => $this->testdata->student2->id, 'parent' => $this->testdata->fdiscussion1->firstpost,
+                'message' => 'This is a private reply.', 'privatereplyto' => $this->testdata->teacher->id, ];
+        $this->testdata->fprivatereply = (object)$forumgenerator->create_post($record);
     }
 
     /**
