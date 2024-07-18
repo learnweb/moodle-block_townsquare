@@ -132,15 +132,15 @@ async function changeButtonString(index, toshowmore) {
  * @param {object} element
  */
 async function replaceParagraghTags(element) {
-    // Identify and store the first <p> and </p> tags
+    // Identify and store the first <p> and </p> tags.
     let message = element.innerHTML;
     const firstPTag = message.indexOf('<p>');
     const lastPTag = message.lastIndexOf('</p>');
 
-    // Remove &nbsp; and surrounding <p> tags excluding the first occurrence
+    // Remove &nbsp; and surrounding <p> tags excluding the first occurrence.
     message = message.replace(/<p>&nbsp;<\/p>/g, '').replace(/&nbsp;/g, '');
 
-    // Replace <p> tags with <br> excluding the first occurrence
+    // Replace <p> tags with <br> excluding the first occurrence.
     message = message.substring(0, firstPTag + 3) +
         message.substring(firstPTag + 3, lastPTag).replace(/<p>/g, '<br>').replace(/<\/p>/g, '') +
         message.substring(lastPTag);

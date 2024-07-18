@@ -94,8 +94,7 @@ class post_letter extends letter {
         $this->post->instanceid = $postevent->instanceid;
         $this->post->discussionid = $postevent->postdiscussion;
         $this->post->id = $postevent->postid;
-        $this->post->message = $this->format_post($postevent->postmessage, $postevent->postmessageformat,
-                                                   $postevent->coursemoduleid);
+        $this->post->message = $this->format_post($postevent);
         $this->post->discussionsubject = $postevent->discussionsubject;
         $this->post->parentid = $postevent->postparentid;
         $this->post->anonymous = $postevent->anonymous ?? false;
@@ -200,14 +199,17 @@ class post_letter extends letter {
 
     /**
      * Function to format the post message before exporting it to the mustache template.
-     * @param $message
-     * @param $messageformat
-     * @param $cmid
+     * @param $postevent
      * @return string
      */
-    private function format_post($message, $messageformat, $cmid) {
-        $options = (array) portfolio_format_text_options() + ['context' => \context_module::instance($cmid)];
-        return format_text($message, $messageformat, $options);
+    private function format_post($postevent) {
+        $context = \context_module::instance($postevent->coursemoduleid);
+        $message = file_rewrite_pluginfile_urls($postevent->postmessage, 'pluginfile.php', $context->id,
+                                    'mod_'. $postevent->modulename, 'post', $postevent->postid, ['includetoken' => true]);
+        $options = new stdClass();
+        $options->para = true;
+        $options->context = $context;
+        return format_text($message, $postevent->postmessageformat, $options);
     }
 
 }

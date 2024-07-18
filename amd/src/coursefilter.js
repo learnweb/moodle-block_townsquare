@@ -33,7 +33,7 @@ const checkboxes = document.querySelectorAll('.ts_course_checkbox');
 export function init() {
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
-            // Get the courseid associated with the checkbox
+            // Get the courseid associated with the checkbox.
             const courseid = checkbox.id;
 
             // Get all letters that are "activated".
