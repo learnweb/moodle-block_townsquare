@@ -69,7 +69,7 @@ class townsquareevents {
     }
 
     /**
-     * Retrieves calendar and post events, merges and sorts them.
+     * Retrieves calendar, post events, merges and sorts them.
      * @return array
      */
     public function get_all_events_sorted(): array {
@@ -226,7 +226,7 @@ class townsquareevents {
             return [];
         }
 
-        // Due to compatability reasons, only events from supported modules are shown.
+        // Due to compatability reasons, only events from core modules are shown.
         $modules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
                     'h5pactivity', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url',
                     'wiki', 'workshop', ];
