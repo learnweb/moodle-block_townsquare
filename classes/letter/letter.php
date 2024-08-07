@@ -115,7 +115,7 @@ class letter {
      * Export function for the mustache template.
      * @return array
      */
-    public function export_letter() {
+    public function export_letter(): array {
         // Change the timestamp to a date.
         return [
             'contentid' => $this->contentid,

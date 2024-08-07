@@ -18,6 +18,25 @@
     @template block_townsquare/blockcontent
 
     This template renders the side panel with the filters for the townsquare content.
+
+    Variables required for this template:
+    * courses - Array of courses that show notifications in townsquare
+    * helpicon - Text that the help icon shows
+
+    Example (json):
+    {
+        "courses" : [
+            {
+                "courseid" => 20,
+                "coursename" => "
+            },
+        ],
+        "helpicon" : [
+            {
+                "text" => "By clicking on the save button ..."
+            }
+         ]
+     }
 }}
 <div class="townsquare_filter_menu accordion" id="ts_filter">
     <div class="card">
@@ -124,7 +143,9 @@
             </div>
         </div>
     </div>
+
     <div class = "dropdown-divider"></div>
+
     <div class="ts_usersettings_save">
         <div class="ts_usersettings_button btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
             <button type="button" class="btn btn-secondary" id="ts_usersettings_savebutton">{{#str}}savebutton, block_townsquare{{/str}}</button>
@@ -135,8 +156,4 @@
             {{/helpicon}}
         </div>
     </div>
-    <div class ="ts_usersettings_message text-success" id="ts_usersettings_successlabel">
-        {{#str}}savemessage, block_townsquare{{/str}}
-    </div>
-    <div class = "dropdown-divider"></div>
 </div>

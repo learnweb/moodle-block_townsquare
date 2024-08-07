@@ -53,7 +53,6 @@ class contentcontroller {
         $this->townsquareevents = new townsquareevents();
         $this->courses = [];
         $this->content = [];
-        $this->build_content();
     }
 
     // Core functions.
@@ -63,6 +62,7 @@ class contentcontroller {
      * @return array
      */
     public function build_content(): array {
+        $this->content = [];
         $this->events = $this->townsquareevents->get_all_events_sorted();
 
         $orientationmarkerset = false;
@@ -107,7 +107,7 @@ class contentcontroller {
      * @return array
      */
     public function get_content(): array {
-        return $this->content;
+        return $this->build_content();
     }
 
     /**

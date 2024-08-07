@@ -49,7 +49,7 @@ class block_townsquare extends block_base {
 
         $controller = new contentcontroller();
         $mustachedata = new stdClass();
-        $mustachedata->content = $controller->content;
+        $mustachedata->content = $controller->get_content();
         $mustachedata->courses = $controller->courses;
         $mustachedata->helpicon = ['text' => get_string('savehelpicontext', 'block_townsquare')];
         $this->content = new stdClass();
