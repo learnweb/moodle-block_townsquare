@@ -36,19 +36,18 @@ export function init() {
             // Get the courseid associated with the checkbox.
             const courseid = checkbox.id;
 
-            // Get all letters that are "activated".
-            // Activated means that all filters accept the letter and want to show it.
-            const letters = document.querySelectorAll('.townsquare_letter.ts_timefilter_active.ts_letterfilter_active');
+            // Get all letters.
+            const letters = document.querySelectorAll('.townsquare_letter');
 
-            // Loop through each letter mark it as "active" or not based on checkbox state and the letter id.
+            // Loop through each letter and mark it as "approved" or not based on checkbox state and the letter id.
             letters.forEach(function(letter) {
                 let letterCourseId = letter.querySelector('.townsquareletter_course').id;
 
                 if (courseid === letterCourseId) {
                     if (checkbox.checked) {
-                        letter.classList.add('ts_coursefilter_active'); // Mark the letter as "active".
+                        letter.classList.add('ts_coursefilter_approved'); // Mark the letter as "approved".
                     } else {
-                        letter.classList.remove('ts_coursefilter_active'); // Mark the letter as "not active".
+                        letter.classList.remove('ts_coursefilter_approved'); // Mark the letter as "not approved".
                     }
                 }
             });

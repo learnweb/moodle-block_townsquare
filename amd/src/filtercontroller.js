@@ -33,9 +33,9 @@ const letters = document.querySelectorAll('.townsquare_letter');
 export function init() {
     // First step: activate every letter by adding the filter classes.
     letters.forEach(function(letter) {
-        letter.classList.add('ts_coursefilter_active');
-        letter.classList.add('ts_timefilter_active');
-        letter.classList.add('ts_letterfilter_active');
+        letter.classList.add('ts_coursefilter_approved');
+        letter.classList.add('ts_timefilter_approved');
+        letter.classList.add('ts_letterfilter_approved');
     });
 
     // Add a mutation listener to each letter.
@@ -44,11 +44,11 @@ export function init() {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === 'class') {
                     // If the class of the letter changes, check if the letter should be shown or hidden.
-                    let coursefilter = letter.classList.contains('ts_coursefilter_active');
-                    let timefilter = letter.classList.contains('ts_timefilter_active');
-                    let letterfilter = letter.classList.contains('ts_letterfilter_active');
+                    let coursefilter = letter.classList.contains('ts_coursefilter_approved');
+                    let timefilter = letter.classList.contains('ts_timefilter_approved');
+                    let letterfilter = letter.classList.contains('ts_letterfilter_approved');
 
-                    // If all filters are active, show the letter.
+                    // If all filters approve the letter, show the letter.
                     if (coursefilter && timefilter && letterfilter) {
                         letter.style.display = 'block';
                     } else {

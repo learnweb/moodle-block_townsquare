@@ -58,9 +58,8 @@ export function init() {
  * @param {boolean} buttonstate State of the radio button (true or false)
  */
 function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate) {
-    // Get all letters that are "activated".
-    // Activated means that all filters accept the letter and want to show it.
-    const letters = document.querySelectorAll('.townsquare_letter.ts_coursefilter_active.ts_letterfilter_active');
+    // Get all letters.
+    const letters = document.querySelectorAll('.townsquare_letter');
 
     // Loop through each letter and hide/show based on radiobutton state.
     letters.forEach(function(letter) {
@@ -71,9 +70,9 @@ function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate
         // If the radio button is checked and the letter is in the time span, activate it.
         if ((buttonstate && (lettertime >= starttime && lettertime <= endtime)) ||
             (lettertime >= addstarttime && lettertime <= addendtime)) {
-            letter.classList.add('ts_timefilter_active'); // Mark the letter as "active".
+            letter.classList.add('ts_timefilter_approved'); // Mark the letter as "approved".
         } else {
-            letter.classList.remove('ts_timefilter_active'); // Mark the letter as "not active".
+            letter.classList.remove('ts_timefilter_approved'); // Mark the letter as "not approved".
         }
     });
 }

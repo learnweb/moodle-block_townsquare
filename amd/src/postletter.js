@@ -46,7 +46,7 @@ const Selectors = {
 export function init() {
     contentElements.forEach(
         (element) => {
-            // Replace all <p> within the text with simple line breaks..
+            // Replace all <p> within the text with simple line breaks.
             replaceParagraghTags(element);
 
             // Check if the text is too long.
