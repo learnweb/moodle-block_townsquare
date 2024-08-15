@@ -49,7 +49,7 @@ function townsquare_get_courses(): array {
  * @return int
  */
 function townsquare_get_timestart(): int {
-    return time() - 15768000;
+    return time() - 7884000;
 }
 
 /**
@@ -57,7 +57,7 @@ function townsquare_get_timestart(): int {
  * @return int
  */
 function townsquare_get_timeend(): int {
-    return time() + 15768000;
+    return time() + 7884000;
 }
 
 /**
