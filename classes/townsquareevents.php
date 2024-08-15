@@ -189,7 +189,7 @@ class townsquareevents {
                     posts.parent AS postparentid,
                     posts.userid AS postuserid,
                     posts.created AS timestart,
-                    posts.message AS postmessage,
+                    posts.message AS content,
                     posts.messageformat AS postmessageformat,
                     posts.privatereplyto AS postprivatereplyto
                 FROM {forum_posts} posts
@@ -238,8 +238,8 @@ class townsquareevents {
                    'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses + $inparamsmodules;
 
         // Set the sql statement.
-        $sql = "SELECT e.id, e.name, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability, e.groupid, e.userid,
-                       e.modulename, e.instance, e.eventtype, e.timestart, e.timemodified, e.visible
+        $sql = "SELECT e.id, e.name AS content, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability,
+                e.groupid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart, e.timemodified, e.visible
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
                 JOIN {course_modules} cm ON (cm.course = e.courseid AND cm.module = m.id AND cm.instance = e.instance)

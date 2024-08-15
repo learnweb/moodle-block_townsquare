@@ -171,7 +171,7 @@ final class postevents_test extends \advanced_testcase {
         $this->assertEquals(3, count($posts));
         $result = false;
         foreach ($posts as $post) {
-            if ($post->postmessage == 'This is a private reply.') {
+            if ($post->content == 'This is a private reply.') {
                 $result = true;
             }
         }
@@ -184,7 +184,7 @@ final class postevents_test extends \advanced_testcase {
         $this->assertEquals(1, count($posts));
         $result = true;
         foreach ($posts as $post) {
-            if ($post->postmessage == 'This is a private reply.') {
+            if ($post->content == 'This is a private reply.') {
                 $result = false;
             }
         }

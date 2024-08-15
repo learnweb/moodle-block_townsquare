@@ -85,7 +85,7 @@ class contentcontroller {
                 $templetter = new letter\activitycompletion_letter($index, $event);
             } else {
                 $templetter = new letter\letter($index, $event->courseid, $event->modulename, $event->instancename,
-                                                        $event->name, $event->timestart, $event->coursemoduleid);
+                                                        $event->content, $event->timestart, $event->coursemoduleid);
             }
             $this->content[$index] = $templetter->export_letter();
 

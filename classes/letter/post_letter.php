@@ -83,7 +83,7 @@ class post_letter extends letter {
      */
     public function __construct($contentid, $postevent) {
         parent::__construct($contentid, $postevent->courseid, $postevent->modulename, $postevent->instancename,
-                            $postevent->postmessage, $postevent->timestart, $postevent->coursemoduleid);
+                            $postevent->content, $postevent->timestart, $postevent->coursemoduleid);
 
         $this->author = new stdClass();
         $this->post = new stdClass();
@@ -204,7 +204,7 @@ class post_letter extends letter {
      */
     private function format_post($postevent) {
         $context = \context_module::instance($postevent->coursemoduleid);
-        $message = file_rewrite_pluginfile_urls($postevent->postmessage, 'pluginfile.php', $context->id,
+        $message = file_rewrite_pluginfile_urls($postevent->content, 'pluginfile.php', $context->id,
                                     'mod_'. $postevent->modulename, 'post', $postevent->postid, ['includetoken' => true]);
         $options = new stdClass();
         $options->para = true;

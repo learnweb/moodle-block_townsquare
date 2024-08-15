@@ -48,7 +48,7 @@ class activitycompletion_letter extends letter {
      */
     public function __construct($contentid, $coreevent) {
         parent::__construct($contentid, $coreevent->courseid, $coreevent->modulename, $coreevent->instancename,
-                                        $coreevent->name, $coreevent->timestart, $coreevent->coursemoduleid);
+                                        $coreevent->content, $coreevent->timestart, $coreevent->coursemoduleid);
         $this->lettertype = 'activitycompletion';
         $this->lettercolor = townsquare_get_colorsetting('completionletter');
     }
