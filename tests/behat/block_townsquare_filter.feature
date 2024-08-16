@@ -19,10 +19,10 @@ Feature: The townsquare block allows users to see notifications from different c
       | student1 | C2     | student |
       | student1 | C3     | student |
     And the following "activities" exist:
-      | activity | course | idnumber  | name          | intro                  | timeopen          | duedate          |
-      | assign   | C1     | 10        | Test assign 1 | Assign due in 2 months | ##now -2 days##   | ##now +1 days##  |
-      | assign   | C2     | 11        | Test assign 2 | Assign due in 4 days   | ##now -2 days##   | ##now +4 days##  |
-      | assign   | C3     | 12        | Test assign 3 | Assign due in 6 days   | ##now -2 days##   | ##now +6 days##  |
+      | activity | course | idnumber  | name           | intro                  | timeopen          | duedate           |
+      | assign   | C1     | 10        | Test assign 1  | Assign due in 2 months | ##now -2 days##   | ##now +1 days##   |
+      | assign   | C2     | 11        | Test assign 2  | Assign due in 4 days   | ##now -2 days##   | ##now +4 days##   |
+      | assign   | C3     | 12        | Test assign 3  | Assign due in 6 days   | ##now -2 days##   | ##now +6 days##   |
     And the following "blocks" exist:
       | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
       | townsquare | System       | 1         | my-index        | content       |
