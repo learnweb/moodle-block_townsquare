@@ -44,6 +44,9 @@ const Selectors = {
  * The function can cut the text or extract paragraphs of a post.
  */
 export function init() {
+    // Get the strings for the show more/show less button.
+    prefetchStrings('moodle', ['showmore', 'showless',]);
+
     contentElements.forEach(
         (element) => {
             // Replace all <p> within the text with simple line breaks.
@@ -62,9 +65,6 @@ export function init() {
             }
         }
     );
-
-    // Get the strings for the show more/show less button.
-    prefetchStrings('moodle', ['showmore', 'showless',]);
 
     // Add event listeners for the show more Button.
     addEventListener();
