@@ -73,7 +73,6 @@ class contentcontroller {
         foreach ($this->events as $event) {
             // Display a orientation marker on the current date between the other events.
             if (!$orientationmarkerset && (($event->timestart <= $time))) {
-
                 $orientationmarkerset = true;
                 $tempcontent = new orientation_marker($index, $time);
                 $this->content[$index] = $tempcontent->export_data();
@@ -87,6 +86,7 @@ class contentcontroller {
                 $templetter = new letter\letter($index, $event->courseid, $event->modulename, $event->instancename,
                                                         $event->content, $event->timestart, $event->coursemoduleid);
             }
+
             $this->content[$index] = $templetter->export_letter();
 
             // Collect the courses shown in the townsquare to be able to filter them afterwards.

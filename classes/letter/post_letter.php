@@ -28,9 +28,6 @@ use stdClass;
 
 defined('MOODLE_INTERNAL') || die;
 
-global $CFG;
-require_once($CFG->libdir . '/portfoliolib.php');
-
 /**
  * Class that represents a post from the forum or moodleoverflow module.
  *

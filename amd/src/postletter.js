@@ -126,7 +126,7 @@ async function changeButtonString(index, toshowmore) {
 }
 
 /**
- * Removes in a text all &nbsp; and surrounding <p> tags excluding the first occurrence.
+ * Removes in a text all &nbsp and surrounding <p> tags excluding the first occurrence.
  *
  * Helper function to make post look better.
  * @param {object} element

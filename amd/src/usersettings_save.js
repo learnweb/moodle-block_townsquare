@@ -195,12 +195,12 @@ function collecttimefiltersettings() {
     // Get the relevant time spans of the time filter.
     // Check if the alltimebutton is set.
     alltimebutton.forEach(function(button) {
-       if (button.parentNode.classList.contains('active')) {
-           // Get the timespan.
-           settings['timepast'] = convertidtotime(button.id);
-           settings['timefuture'] = convertidtotime(button.id);
-           settingsset = true;
-       }
+        if (button.parentNode.classList.contains('active')) {
+            // Get the timespan.
+            settings['timepast'] = convertidtotime(button.id);
+            settings['timefuture'] = convertidtotime(button.id);
+            settingsset = true;
+        }
     });
 
     if (settingsset) {

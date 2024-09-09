@@ -27,6 +27,5 @@
  * Custom code to be run on installing the plugin.
  */
 function xmldb_block_townsquare_install() {
-
     return true;
 }

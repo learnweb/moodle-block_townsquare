@@ -99,7 +99,7 @@ class townsquareevents {
     public function get_coreevents(): array {
         global $DB;
 
-        // Get all events from the last six months and the next six months.
+        // Get all events from the database.
         $coreevents = $this->get_events_from_db($this->timestart, $this->timeend, $this->courses);
 
         // Filter the events and add the instancename.
@@ -123,19 +123,13 @@ class townsquareevents {
     }
 
     /**
-     * Function to get the newest posts from modules like the forum or moodleoverflow.
+     * Function to get the newest posts from the forum.
      *
      * The events are sorted in descending order by time created (newest event first)
      * @return array;
      */
     public function get_postevents(): array {
-        global $DB;
-
-        // If forum is not installed or not activated, return empty array.
-        if (!$DB->get_record('modules', ['name' => 'forum', 'visible' => 1])) {
-            return [];
-        }
-
+        // Get all post from the database.
         $forumposts = $this->get_forumposts_from_db($this->courses, $this->timestart);
 
         foreach ($forumposts as $post) {
@@ -303,8 +297,6 @@ class townsquareevents {
         // Add attributes to know if the private reply is from or to the current user.
         $forumpost->privatereplyfrom = $isprivatemessage && $isauthor;
         $forumpost->privatereplyto = $isprivatemessage && $isreceiver;
-
-        // Add attributes as the posts is further processed.
 
         return false;
     }

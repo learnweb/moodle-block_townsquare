@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 /**
  * Class that represents an unspecific type of content.
  *
- * This class is used for the basic letter type and is the top-class for more specific letters..
+ * This class is used for the basic letter type and is the top-class for more specific letters.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter

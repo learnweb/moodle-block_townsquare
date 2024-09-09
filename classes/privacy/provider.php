@@ -23,6 +23,7 @@
 namespace block_townsquare\privacy;
 
 use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\userlist;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
@@ -40,7 +41,7 @@ use core_privacy\local\request\writer;
 class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
+    core_userlist_provider {
 
     /**
      * Function that describes the type of data that is stored.
@@ -50,11 +51,11 @@ class provider implements
     public static function get_metadata(collection $collection): collection {
         $collection->add_database_table('block_townsquare', [
             'userid' => 'privacy:metadata:block_townsquare_preferences:userid',
-                'timefilterpast' => 'privacy:metadata:block_townsquare_preferences:timefilterpast',
-                'timefilterfuture' => 'privacy:metadata:block_townsquare_preferences:timefilterfuture',
-                'basicletter' => 'privacy:metadata:block_townsquare_preferences:basicletter',
-                'completionletter' => 'privacy:metadata:block_townsquare_preferences:completionletter',
-                'postletter' => 'privacy:metadata:block_townsquare_preferences:postletter',
+            'timefilterpast' => 'privacy:metadata:block_townsquare_preferences:timefilterpast',
+            'timefilterfuture' => 'privacy:metadata:block_townsquare_preferences:timefilterfuture',
+            'basicletter' => 'privacy:metadata:block_townsquare_preferences:basicletter',
+            'completionletter' => 'privacy:metadata:block_townsquare_preferences:completionletter',
+            'postletter' => 'privacy:metadata:block_townsquare_preferences:postletter',
             ], 'privacy:metadata:block_townsquare_preferences');
         return $collection;
     }
@@ -154,7 +155,6 @@ class provider implements
         }
     }
 
-
     /**
      * Delete all user data for the specified user, in the specified contexts.
      * @param approved_contextlist $contextlist     The approved contexts and user information to delete information for.
@@ -169,4 +169,5 @@ class provider implements
             }
         }
     }
+
 }
