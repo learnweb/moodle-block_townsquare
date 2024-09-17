@@ -146,14 +146,33 @@
 
     <div class = "dropdown-divider"></div>
 
-    <div class="ts_usersettings_save">
-        <div class="ts_usersettings_button btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
-            <button type="button" class="btn btn-secondary" id="ts_usersettings_savebutton">{{#str}}savebutton, block_townsquare{{/str}}</button>
+    <div class="ts_usersettings">
+        <div class="ts_usersettings_button">
+            <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
+                <button type="button" class="btn btn-secondary" id="ts_usersettings_savebutton">{{#str}}savebutton, block_townsquare{{/str}}</button>
+            </div>
+            <div class="ts_usersettings_help">
+                {{#savehelpicon}}
+                    {{>core/help_icon}}
+                {{/savehelpicon}}
+            </div>
         </div>
-        <div class="ts_usersettings_help">
-            {{#helpicon}}
-                {{>core/help_icon}}
-            {{/helpicon}}
+        <div class = "dropdown-divider"></div>
+        <div class="ts_usersettings_button">
+            <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
+                <button type="button" class="btn btn-secondary" id="ts_usersettings_resetbutton">{{#str}}resetbutton, block_townsquare{{/str}}</button>
+            </div>
+            <div class="ts_usersettings_help">
+                {{#resethelpicon}}
+                    {{>core/help_icon}}
+                {{/resethelpicon}}
+            </div>
         </div>
+    </div>
+
+
+
+    <div class="ts_usersettings_reset">
+
     </div>
 </div>

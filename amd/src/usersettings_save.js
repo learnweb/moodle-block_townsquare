@@ -88,14 +88,14 @@ function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter,
         },
     };
     result = Ajax.call([data]);
-    // Make the clicked button green by adding a class.
-    savebutton.classList.add('bg-success', 'text-white', 'ts_button_transition');
 
-    // Remove the classes after one second.
+    // Make the clicked button green by adding a class and remove it afterward.
+    savebutton.classList.add('bg-success', 'text-white', 'ts_button_transition');
     setTimeout(function() {
         savebutton.classList.remove('bg-success');
         savebutton.classList.remove('text-white');
     }, 1500);
+
     return result;
 
 }
@@ -147,7 +147,7 @@ function executeusersettings(settingsfromdb) {
     // Second step: set the letter filter settings.
     // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
     checkboxes.forEach(function(checkbox) {
-        let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb['basicletter'] === "";
+        let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb['basicletter'] === "0";
         let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb['completionletter'] === "0";
         let postlettercheck = checkbox.id === 'postletter' && settingsfromdb['postletter'] === "0";
 

@@ -30,7 +30,15 @@ $functions = [
         'methodname' => 'record_usersettings',
         'classpath' => 'blocks/townsquare/classes/external.php',
         'description' => 'Records the user settings for the townsquare block',
-        'type' => 'read',
+        'type' => 'write',
+        'ajax' => true,
+    ],
+    'block_townsquare_reset_usersettings' => [
+        'classname' => 'block_townsquare\external',
+        'methodname' => 'reset_usersettings',
+        'classpath' => 'blocks/townsquare/classes/external.php',
+        'description' => 'Resets the user settings for the townsquare block',
+        'type' => 'write',
         'ajax' => true,
     ],
 ];

@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @copyright 2024 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\external::record_usersettings
+ * @covers \block_townsquare\external
  * @runTestsInSeparateProcesses
  */
 final class external_test extends \advanced_testcase {
@@ -103,6 +103,35 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals($usersetting->basicletter, $record->basicletter);
         $this->assertEquals($usersetting->completionletter, $record->completionletter);
         $this->assertEquals($usersetting->postletter, $record->postletter);
+    }
 
+    /**
+     * Test the reset_usersettings_method
+     */
+    public function test_reset_usersettings(): void {
+        global $DB;
+        // Load a usersetting in the database.
+        $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
+                            'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+
+        // Test case 1: Wrong parameters.
+        \block_townsquare\external::reset_usersettings(2);
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+
+        // Test case 2: For some reason, many records from the same user exist.
+        $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
+            'timefilterfuture' => 2592000, 'basicletter' => 1, 'completionletter' => 0, 'postletter' => 0, ]);
+        $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+
+        external::reset_usersettings(1);
+        $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+
+        // Test case 3: normal case.
+        $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
+            'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+        external::reset_usersettings(1);
+        $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
     }
 }

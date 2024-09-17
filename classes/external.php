@@ -47,6 +47,56 @@ class external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
+    public static function reset_usersettings_parameters() {
+        return new external_function_parameters(['userid' => new external_value(PARAM_INT, 'the user id')]);
+    }
+
+    /**
+     * Return the result of the reset_usersettings function
+     * @return external_value
+     */
+    public static function reset_usersettings_returns(): external_value {
+        return new external_value(PARAM_BOOL, 'true if successful');
+    }
+
+    /**
+     * Reset the user settings
+     *
+     * @param $userid
+     * @return bool
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     */
+    public static function reset_usersettings($userid) {
+        global $DB;
+
+        // Parameter validation.
+        if (!self::validate_parameters(self::reset_usersettings_parameters(), ['userid' => $userid])) {
+            return false;
+        }
+
+        $transaction = $DB->start_delegated_transaction();
+
+        // Check if there is a record in the database with the userid and delete it.
+        if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
+            try {
+                foreach ($records as $record) {
+                    $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
+                }
+            } catch (Exception $e) {
+                $transaction->rollback($e);
+                return false;
+            }
+            $transaction->allow_commit();
+            return true;
+        }
+        return true;
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
     public static function record_usersettings_parameters() {
         return new external_function_parameters(
             [
@@ -97,7 +147,6 @@ class external extends external_api {
                         $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
                     }
                 } catch (Exception $e) {
-
                     return false;
                 }
             } else {

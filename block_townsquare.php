@@ -51,7 +51,8 @@ class block_townsquare extends block_base {
         $mustachedata = new stdClass();
         $mustachedata->content = $controller->get_content();
         $mustachedata->courses = $controller->courses;
-        $mustachedata->helpicon = ['text' => get_string('savehelpicontext', 'block_townsquare')];
+        $mustachedata->savehelpicon = ['text' => get_string('savehelpicontext', 'block_townsquare')];
+        $mustachedata->resethelpicon = ['text' => get_string('resethelpicontext', 'block_townsquare')];
         $this->content = new stdClass();
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
 
@@ -65,6 +66,7 @@ class block_townsquare extends block_base {
         $this->page->requires->js_call_amd('block_townsquare/letterfilter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/filtercontroller', 'init');
         $this->page->requires->js_call_amd('block_townsquare/usersettings_save', 'init', [$USER->id, $usersettings]);
+        $this->page->requires->js_call_amd('block_townsquare/usersettings_reset', 'init', [$USER->id]);
         return $this->content;
     }
 

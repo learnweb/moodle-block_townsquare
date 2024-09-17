@@ -15,12 +15,12 @@
 }
 
 /* Style for the side panel filter */
-.ts_usersettings_save {
-    display: flex;
+.ts_usersettings {
+    padding-left: 0.5em;
 }
 
 .ts_usersettings_button {
-    flex: 1;
+    display: flex;
 }
 
 .ts_usersettings_message {
