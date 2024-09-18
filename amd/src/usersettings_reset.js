@@ -59,5 +59,24 @@ export function init(userid) {
         const coursecheckboxes = document.querySelectorAll('.ts_course_checkbox');
         const lettercheckboxes = document.querySelectorAll('.ts_letter_checkbox');
         const alltimebutton = document.querySelectorAll('.ts_all_time_button');
+
+        coursecheckboxes.forEach(function(checkbox) {
+            if (!checkbox.checked) {
+                checkbox.click();
+            }
+        });
+
+        alltimebutton.forEach(function(button) {
+            button.parentNode.classList.add('active');
+            button.checked = true;
+            button.dispatchEvent(new Event('change'));
+        });
+
+        lettercheckboxes.forEach(function(checkbox) {
+            if (!checkbox.checked) {
+                checkbox.click();
+            }
+        });
+        return result;
     });
 }

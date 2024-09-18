@@ -26,8 +26,6 @@ namespace block_townsquare\letter;
 use moodle_url;
 use stdClass;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Class that represents a post from the forum or moodleoverflow module.
  *
