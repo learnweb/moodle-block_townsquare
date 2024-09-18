@@ -23,8 +23,6 @@
  */
 
 namespace block_townsquare\letter;
-
-use moodle_exception;
 use moodle_url;
 use stdClass;
 
@@ -80,25 +78,29 @@ class post_letter extends letter {
      */
     public function __construct($contentid, $postevent) {
         parent::__construct($contentid, $postevent->courseid, $postevent->modulename, $postevent->instancename,
-                            $postevent->postmessage, $postevent->postcreated, $postevent->coursemoduleid);
+                            $postevent->content, $postevent->timestart, $postevent->coursemoduleid);
 
         $this->author = new stdClass();
         $this->post = new stdClass();
         $this->posturls = new stdClass();
 
         $this->lettertype = 'post';
+        $this->lettercolor = townsquare_get_colorsetting('postletter');
         $this->post->instanceid = $postevent->instanceid;
         $this->post->discussionid = $postevent->postdiscussion;
         $this->post->id = $postevent->postid;
-        $this->post->message = $postevent->postmessage;
+        $this->post->message = $this->format_post($postevent);
         $this->post->discussionsubject = $postevent->discussionsubject;
         $this->post->parentid = $postevent->postparentid;
+        $this->post->anonymous = $postevent->anonymous ?? false;
         $this->author->id = $postevent->postuserid;
         $this->author->name = $postevent->postuserfirstname . ' ' . $postevent->postuserlastname;
+        $this->posturls->linktopost = $postevent->linktopost;
+        $this->posturls->linktoauthor = $postevent->linktoauthor;
 
         $this->add_anonymousattribute($postevent);
+        $this->add_privatereplyattribute($postevent);
         $this->retrieve_profilepicture();
-        $this->build_links();
     }
 
     // Functions.
@@ -107,7 +109,7 @@ class post_letter extends letter {
      * Export Function for the mustache template.
      * @return array
      */
-    public function export_letter():array {
+    public function export_letter(): array {
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -118,41 +120,23 @@ class post_letter extends letter {
             'instancename' => $this->instancename,
             'discussionsubject' => $this->post->discussionsubject,
             'anonymous' => $this->post->anonymous,
+            'privatereplyfrom' => $this->post->privatereplyfrom,
+            'privatereplyto' => $this->post->privatereplyto,
             'authorname' => $this->author->name,
             'authorpicture' => $this->author->picture,
             'postid' => $this->post->id,
-            'message' => format_text($this->post->message),
+            'message' => $this->post->message,
             'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
             'linktopost' => $this->posturls->linktopost->out(),
             'linktoauthor' => $this->posturls->linktoauthor->out(),
+            'postlettercolor' => $this->lettercolor,
         ];
     }
 
     // Helper functions.
-
-    /**
-     * Function to build the links to the post, author.
-     * @return void
-     */
-    private function build_links() {
-        $this->posturls->linktoauthor = new moodle_url('/user/view.php', ['id' => $this->author->id]);
-        if ($this->modulename == 'forum') {
-            $this->posturls->linktopost = new moodle_url('/mod/forum/discuss.php',
-                                                        ['d' => $this->post->discussionid], 'p' . $this->post->id);
-        } else {
-            $this->posturls->linktopost = new moodle_url('/mod/moodleoverflow/discussion.php',
-                                                        ['d' => $this->post->discussionid], 'p' . $this->post->id);
-
-            // If the post in the moodleoverflow is anonymous, the user should not be visible.
-            if ($this->post->anonymous) {
-                $this->posturls->linktoauthor = new moodle_url('');
-                $this->author->id = -1;
-                $this->author->name = 'anonymous';
-            }
-        }
-    }
 
     /**
      * Method to retrieve the profile picture of the author.
@@ -180,18 +164,47 @@ class post_letter extends letter {
      * @return void
      */
     private function add_anonymousattribute($postevent): void {
-        if ($this->modulename == 'moodleoverflow') {
-            if ($postevent->anonymoussetting == \mod_moodleoverflow\anonymous::EVERYTHING_ANONYMOUS) {
-                $this->post->anonymous = true;
-            } else if ($postevent->anonymoussetting == \mod_moodleoverflow\anonymous::QUESTION_ANONYMOUS) {
-                $this->post->anonymous = $this->author->id == $postevent->discussionuserid;
-            } else {
-                $this->post->anonymous = false;
-            }
+        if ($postevent->modulename == 'moodleoverflow') {
+            $this->post->anonymous = $postevent->anonymous;
         } else {
             $this->post->anonymous = false;
         }
+    }
 
+    /**
+     * Method to add a boolean that indicates if the post is a private reply.
+     * @param $postevent
+     * @return void
+     */
+    private function add_privatereplyattribute($postevent): void {
+        if ($postevent->modulename == 'forum') {
+            // Check if the private author is the same private recipient.
+            if ($postevent->privatereplyto && $postevent->privatereplyfrom) {
+                $this->post->privatereplyto = false;
+                $this->post->privatereplyfrom = true;
+            } else {
+                $this->post->privatereplyto = $postevent->privatereplyto;
+                $this->post->privatereplyfrom = $postevent->privatereplyfrom;
+            }
+        } else {
+            $this->post->privatereplyto = false;
+            $this->post->privatereplyfrom = false;
+        }
+    }
+
+    /**
+     * Function to format the post message before exporting it to the mustache template.
+     * @param $postevent
+     * @return string
+     */
+    private function format_post($postevent) {
+        $context = \context_module::instance($postevent->coursemoduleid);
+        $message = file_rewrite_pluginfile_urls($postevent->content, 'pluginfile.php', $context->id,
+                                    'mod_'. $postevent->modulename, 'post', $postevent->postid, ['includetoken' => true]);
+        $options = new stdClass();
+        $options->para = true;
+        $options->context = $context;
+        return format_text($message, $postevent->postmessageformat, $options);
     }
 
 }

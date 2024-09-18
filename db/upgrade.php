@@ -35,9 +35,33 @@ function xmldb_block_townsquare_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     // For further information please read {@link https://docs.moodle.org/dev/Upgrade_API}.
-    //
     // You will also have to create the db/install.xml file by using the XMLDB Editor.
     // Documentation for the XMLDB Editor can be found at {@link https://docs.moodle.org/dev/XMLDB_editor}.
+
+    if ($oldversion < 2024032201) {
+        // Define new table block_townsquare_preferences to be created.
+        $table = new xmldb_table('block_townsquare_preferences');
+
+        // Adding fields to table block_townsquare_preferences.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timefilterpast', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timefilterfuture', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('basicletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('completionletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('postletter', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table block_townsquare_preferences.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for block_townsquare_preferences.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Moodleoverflow savepoint reached.
+        upgrade_block_savepoint(true, 2024032201, 'townsquare');
+    }
 
     return true;
 }

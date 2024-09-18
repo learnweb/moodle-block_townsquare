@@ -21,10 +21,7 @@
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace block_townsquare\letter;
-
-use moodle_url;
 
 /**
  * Class that represents an activity completion reminder.
@@ -47,12 +44,13 @@ class activitycompletion_letter extends letter {
      * Constructor for the activity completion letter
      *
      * @param int $contentid        internal ID in the townsquare block
-     * @param object $calendarevent a calendar event with information, for more see classes/townsquareevents.php
+     * @param object $coreevent a calendar event with information, for more see classes/townsquareevents.php
      */
-    public function __construct($contentid, $calendarevent) {
-        parent::__construct($contentid, $calendarevent->courseid, $calendarevent->modulename, $calendarevent->instancename,
-                                        $calendarevent->name, $calendarevent->timestart, $calendarevent->coursemoduleid);
+    public function __construct($contentid, $coreevent) {
+        parent::__construct($contentid, $coreevent->courseid, $coreevent->modulename, $coreevent->instancename,
+                                        $coreevent->content, $coreevent->timestart, $coreevent->coursemoduleid);
         $this->lettertype = 'activitycompletion';
+        $this->lettercolor = townsquare_get_colorsetting('completionletter');
     }
 
     // Functions.
@@ -61,10 +59,7 @@ class activitycompletion_letter extends letter {
      * Export function for the mustache template.
      * return array
      */
-    public function export_letter():array {
-        // Change the timestamp to a date.
-        $date = date('d.m.Y', $this->created);
-
+    public function export_letter(): array {
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -73,9 +68,11 @@ class activitycompletion_letter extends letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => $date,
+            'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),
+            'completionlettercolor' => $this->lettercolor,
         ];
     }
 

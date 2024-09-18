@@ -21,15 +21,18 @@
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 namespace block_townsquare\letter;
-
 use moodle_url;
+
+defined('MOODLE_INTERNAL') || die;
+
+global $CFG;
+require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
  * Class that represents an unspecific type of content.
  *
- * This class is used for the basic letter type and is the top-class for more specific letters..
+ * This class is used for the basic letter type and is the top-class for more specific letters.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -66,14 +69,17 @@ class letter {
     /** @var int Timestamp When the activity was created */
     protected int $created;
 
-    /** @var bool variable for the mustache template */
-    public bool $isbasic = true;
-
     /** @var moodle_url Link to the course */
     protected moodle_url $linktocourse;
 
     /** @var moodle_url The url to the activity */
     protected moodle_url $linktoactivity;
+
+    /** @var bool variable for the mustache template */
+    public bool $isbasic = true;
+
+    /** @var string color of the letter. Only used by mustache */
+    public string $lettercolor;
 
     // Constructor.
 
@@ -84,7 +90,7 @@ class letter {
      * @param int $courseid         Course ID from where the content comes from.
      * @param string $modulename    Name of the module/activity.
      * @param string $instancename  Name of the instance.
-     * @param mixed $content        The content that will be showed in the letter.
+     * @param string $content        The content that will be showed in the letter.
      * @param int $created          Timestamp of creation.
      * @param int $cmid             Course module id of the content module.
      */
@@ -100,6 +106,7 @@ class letter {
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
         $this->linktoactivity = new moodle_url('/mod/' . $modulename . '/view.php', ['id' => $cmid]);
+        $this->lettercolor = townsquare_get_colorsetting('basicletter');
     }
 
     // Functions.
@@ -108,10 +115,8 @@ class letter {
      * Export function for the mustache template.
      * @return array
      */
-    public function export_letter() {
+    public function export_letter(): array {
         // Change the timestamp to a date.
-        $date = date('d.m.Y', $this->created);
-
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -120,9 +125,11 @@ class letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => $date,
+            'created' => date('d.m.Y', $this->created),
+            'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
+            'basiclettercolor' => $this->lettercolor,
         ];
     }
 }

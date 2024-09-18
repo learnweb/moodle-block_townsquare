@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
@@ -33,15 +32,15 @@ use stdClass;
  */
 
 /**
- * PHPUnit tests for testing the process of collecting post events.
+ * PHPUnit tests for testing the process of collecting calendar events from core plugins.
  *
  * @package   block_townsquare
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::get_calendarevents()
+ * @covers \block_townsquare\townsquareevents::get_coreevents()
  */
-class calendarevents_test extends \advanced_testcase {
+final class coreevents_test extends \advanced_testcase {
 
     // Attributes.
 
@@ -76,12 +75,12 @@ class calendarevents_test extends \advanced_testcase {
     public function test_sortorder(): void {
 
         // Get the current calendar events from the teacher.
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
 
         // Iterate trough all posts and check if the sort order is correct.
         $timestamp = 9999999999;
         $result = true;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($timestamp >= $event->timestart) {
                 $timestamp = $event->timestart;
             } else {
@@ -96,17 +95,17 @@ class calendarevents_test extends \advanced_testcase {
      * Test, if the post events are processed correctly if the course disappears.
      * @return void
      */
-    public function test_course_deleted() {
+    public function test_course_deleted(): void {
         global $DB;
         // Delete the course from the database.
         $DB->delete_records('course', ['id' => $this->testdata->course1->id]);
 
         // Get the post events from the teacher.
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
 
         // There should be no posts from the first course.
         $result = true;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($event->courseid == $this->testdata->course1->id) {
                 $result = false;
             }
@@ -120,20 +119,20 @@ class calendarevents_test extends \advanced_testcase {
      */
     public function test_coursefilter(): void {
         // Test case 1: Posts for the teacher.
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
 
         // Two checks: Is every event in the course of the teacher and is the number of events correct.
-        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->teacher->id, true));
+        $result = $this->check_eventcourses($coreevents, enrol_get_all_users_courses($this->testdata->teacher->id, true));
         $this->assertEquals(true, $result);
-        $this->assertEquals(5, count($calendarevents));
+        $this->assertEquals(5, count($coreevents));
 
         // Test case 2: Post for a student.
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student2);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->student2);
 
         // Two checks: Is every event in the course of the student and is the number of events correct.
-        $result = $this->check_eventcourses($calendarevents, enrol_get_all_users_courses($this->testdata->student2->id, true));
+        $result = $this->check_eventcourses($coreevents, enrol_get_all_users_courses($this->testdata->student2->id, true));
         $this->assertEquals(true, $result);
-        $this->assertEquals(1, count($calendarevents));
+        $this->assertEquals(1, count($coreevents));
     }
 
     /**
@@ -147,11 +146,11 @@ class calendarevents_test extends \advanced_testcase {
                                                    $time - 907200, $time - 907200, false);
 
         // Get the current calendar events.
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
 
         // The assignment should not appear.
         $result = true;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($event->coursemoduleid == $pastassignment->cmid) {
                 $result = false;
             }
@@ -161,7 +160,7 @@ class calendarevents_test extends \advanced_testcase {
         // Test case 2: The student should not see the gradingdue event, the teacher should see it.
         // First the events of the student.
         $result = true;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($event->eventtype == 'gradingdue') {
                 $result = false;
             }
@@ -169,10 +168,10 @@ class calendarevents_test extends \advanced_testcase {
         $this->assertEquals(true, $result);
 
         // Then the events of the teacher.
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->teacher);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
 
         $result = false;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($event->eventtype == 'gradingdue') {
                 $result = true;
             }
@@ -182,9 +181,9 @@ class calendarevents_test extends \advanced_testcase {
         // Test case 3: Assignments that are not open should not be seen.
         $notopenassignment = $this->create_assignment($this->testdata->course1->id, $time + 3600,
                                             $time + 604800 , $time + 604800 , false);
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
         $result = true;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($event->coursemoduleid == $notopenassignment->cmid) {
                 $result = false;
             }
@@ -198,10 +197,10 @@ class calendarevents_test extends \advanced_testcase {
      */
     public function test_activitycompletion(): void {
         // Test case 1: The student should see the activity completion event.
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
         $result = false;
         $count = 0;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($event->eventtype == 'expectcompletionon') {
                 $result = true;
                 $count++;
@@ -213,9 +212,9 @@ class calendarevents_test extends \advanced_testcase {
         // Test case 2: The student marks the assignment as completed, the activity completion event should disappear.
         \core_completion_external::update_activity_completion_status_manually($this->testdata->assignment1->cmid, true);
 
-        $calendarevents = $this->get_calendarevents_from_user($this->testdata->student1);
+        $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
         $result = true;
-        foreach ($calendarevents as $event) {
+        foreach ($coreevents as $event) {
             if ($event->eventtype == 'expectcompletionon') {
                 $result = false;
             }
@@ -271,11 +270,11 @@ class calendarevents_test extends \advanced_testcase {
      * @param bool $activitycompletion
      * @return object
      */
-    private function create_assignment($courseid, $allowsubmissionsdate, $duedate, $gradingduedate, $activitycompletion):object {
+    private function create_assignment($courseid, $allowsubmissionsdate, $duedate, $gradingduedate, $activitycompletion): object {
         // Create an activity completion for the assignment if wanted.
-        $featurecompletionmanual = [];
+        $options = [];
         if ($activitycompletion) {
-            $featurecompletionmanual = [
+            $options = [
                 'completion' => COMPLETION_TRACKING_MANUAL,
                 'completionexpected' => $duedate,
             ];
@@ -287,7 +286,7 @@ class calendarevents_test extends \advanced_testcase {
             'allowsubmissionsfromdate' => $allowsubmissionsdate,
             'gradingduedate' => $gradingduedate,
         ];
-        return $this->getDataGenerator()->create_module('assign', $assignrecord, $featurecompletionmanual);
+        return $this->getDataGenerator()->create_module('assign', $assignrecord, $options);
     }
 
     /**
@@ -295,10 +294,10 @@ class calendarevents_test extends \advanced_testcase {
      * @param object $user  The user for whom the events should be collected (townsquareevents.php uses $USER).
      * @return array
      */
-    private function get_calendarevents_from_user($user):array {
+    private function get_coreevents_from_user($user): array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
-        return $townsquareevents->get_calendarevents();
+        return $townsquareevents->get_coreevents();
     }
 
 
@@ -308,7 +307,7 @@ class calendarevents_test extends \advanced_testcase {
      * @param array $enrolledcourses
      * @return bool
      */
-    private function check_eventcourses($events, $enrolledcourses):bool {
+    private function check_eventcourses($events, $enrolledcourses): bool {
         foreach ($events as $event) {
             $eventcourseid = $event->courseid;
 

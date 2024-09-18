@@ -44,9 +44,12 @@ const Selectors = {
  * The function can cut the text or extract paragraphs of a post.
  */
 export function init() {
+    // Get the strings for the show more/show less button.
+    prefetchStrings('moodle', ['showmore', 'showless',]);
+
     contentElements.forEach(
         (element) => {
-            // Replace all <p> within the text with simple line breaks..
+            // Replace all <p> within the text with simple line breaks.
             replaceParagraghTags(element);
 
             // Check if the text is too long.
@@ -62,9 +65,6 @@ export function init() {
             }
         }
     );
-
-    // Get the strings for the show more/show less button.
-    prefetchStrings('moodle', ['showmore', 'showless',]);
 
     // Add event listeners for the show more Button.
     addEventListener();
@@ -126,21 +126,21 @@ async function changeButtonString(index, toshowmore) {
 }
 
 /**
- * Removes in a text all &nbsp; and surrounding <p> tags excluding the first occurrence.
+ * Removes in a text all &nbsp and surrounding <p> tags excluding the first occurrence.
  *
  * Helper function to make post look better.
  * @param {object} element
  */
 async function replaceParagraghTags(element) {
-    // Identify and store the first <p> and </p> tags
+    // Identify and store the first <p> and </p> tags.
     let message = element.innerHTML;
     const firstPTag = message.indexOf('<p>');
     const lastPTag = message.lastIndexOf('</p>');
 
-    // Remove &nbsp; and surrounding <p> tags excluding the first occurrence
+    // Remove &nbsp; and surrounding <p> tags excluding the first occurrence.
     message = message.replace(/<p>&nbsp;<\/p>/g, '').replace(/&nbsp;/g, '');
 
-    // Replace <p> tags with <br> excluding the first occurrence
+    // Replace <p> tags with <br> excluding the first occurrence.
     message = message.substring(0, firstPTag + 3) +
         message.substring(firstPTag + 3, lastPTag).replace(/<p>/g, '<br>').replace(/<\/p>/g, '') +
         message.substring(lastPTag);

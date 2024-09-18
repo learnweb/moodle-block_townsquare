@@ -23,32 +23,37 @@
     * contentid - Unique identification for every shown plugin content
     * isactivitycompletion - Variable for the blockcontent template to assure this template is used.
     * coursename - Name of the course
+    * courseid - Id of the course
     * instancename - Name of the instance
     * created - Due date of activity completions
     * linktocourse - Link to the course
     * linktoactivity - Link to the module instance
+    * completionlettercolor - Color of the letter
 
     Example (json):
     {
         "contentid": 28,
         "isactivitycompletion": true,
         "coursename": "Moodle Engineering",
+        "courseid": 3,
         "modulename": "survey",
         "instancename": "How difficult was the exam?",
         "created": "28.10.2023",
         "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
         "linktocourse": "http://localhost/moodle/course/view.php?id=3"
+        "completionlettercolor": "#ca3120"
     }
 }}
-<div class="townsquare_letter completionletter card mb-3" id="content-nr-{{contentid}}">
-    <div class="townsquareletter_header completionletter_header card-header">
+<div class="townsquare_letter completionletter card mb-3" id="content-nr-{{contentid}}"
+     style="border-color: {{completionlettercolor}}">
+    <div class="townsquareletter_header completionletter_header card-header" style="background-color: {{completionlettercolor}}">
         <div class = "townsquareletter_top completionletter_top">
-            <div class = "townsquareletter_course completionletter_course">
+            <div class = "townsquareletter_course completionletter_course" id="{{courseid}}">
                 {{#str}} coursetitle, moodle, {"course":
                     {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}} </a> {{/quote}} }
                 {{/str}}
             </div>
-            <div class = "townsquareletter_date completionletter_date">
+            <div class = "townsquareletter_date completionletter_date" id="{{createdtimestamp}}">
                 {{created}}
             </div>
         </div>
@@ -57,8 +62,7 @@
         <div class="completionletter_content">
             <b>
                 {{#str}} completionletterorigin, block_townsquare, {
-                    "modulename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}},
-                    "date": {{#quote}} {{created}} {{/quote}} }
+                    "modulename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
                 {{/str}}
             </b>
         </div>

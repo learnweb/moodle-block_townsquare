@@ -43,12 +43,16 @@ class contentcontroller {
     /** @var array letters and other content that will be shown to the user */
     public array $content;
 
+    /** @var array courses that show content in townsquare (not the same as enrolled courses) */
+    public array $courses;
+
     /**
      * Constructor for the controller.
      */
     public function __construct() {
         $this->townsquareevents = new townsquareevents();
-        $this->content = $this->build_content();
+        $this->courses = [];
+        $this->content = [];
     }
 
     // Core functions.
@@ -57,33 +61,40 @@ class contentcontroller {
      * Builds the content from events.
      * @return array
      */
-    public function build_content():array {
+    public function build_content(): array {
+        $this->content = [];
         $this->events = $this->townsquareevents->get_all_events_sorted();
 
         $orientationmarkerset = false;
         $index = 0;
         $time = time();
+        $appearedcourses = [];
         // Build a letter for each event.
         foreach ($this->events as $event) {
             // Display a orientation marker on the current date between the other events.
-            if (!$orientationmarkerset && isset($event->eventtype) && (
-               ($event->eventtype != 'post' && $event->timestart <= $time) ||
-               ($event->eventtype == 'post' && $event->postcreated <= $time))) {
-
+            if (!$orientationmarkerset && (($event->timestart <= $time))) {
                 $orientationmarkerset = true;
                 $tempcontent = new orientation_marker($index, $time);
                 $this->content[$index] = $tempcontent->export_data();
                 $index++;
             }
-            if (isset($event->eventtype) && $event->eventtype == 'post') {
+            if ($event->eventtype == 'post') {
                 $templetter = new letter\post_letter($index, $event);
-            } else if (isset($event->eventtype) && $event->eventtype == 'expectcompletionon') {
+            } else if ($event->eventtype == 'expectcompletionon') {
                 $templetter = new letter\activitycompletion_letter($index, $event);
             } else {
                 $templetter = new letter\letter($index, $event->courseid, $event->modulename, $event->instancename,
-                                                        $event->name, $event->timestart, $event->coursemoduleid);
+                                                        $event->content, $event->timestart, $event->coursemoduleid);
             }
+
             $this->content[$index] = $templetter->export_letter();
+
+            // Collect the courses shown in the townsquare to be able to filter them afterwards.
+            if (!array_key_exists($this->content[$index]['courseid'], $appearedcourses)) {
+                $this->courses[] = ['courseid' => $this->content[$index]['courseid'],
+                                    'coursename' => $this->content[$index]['coursename'], ];
+                $appearedcourses[$event->courseid] = true;
+            }
             $index++;
         }
         return $this->content;
@@ -95,15 +106,15 @@ class contentcontroller {
      * Getter for the content
      * @return array
      */
-    public function get_content():array {
-        return $this->content;
+    public function get_content(): array {
+        return $this->build_content();
     }
 
     /**
      * Getter for the events
      * @return array
      */
-    public function get_events():array {
+    public function get_events(): array {
         return $this->events;
     }
 }

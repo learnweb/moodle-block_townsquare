@@ -23,6 +23,7 @@
     * contentid - Unique identification for every shown plugin content
     * ispost - Variable for the blockcontent template to assure this template is used.
     * coursename - Name of the course
+    * courseid - Id of the course
     * instancename - Name of the forum/moodleoverflow
     * discussionsubject - Name of the discussion
     * anonymous - if the post is anonymous
@@ -34,12 +35,14 @@
     * linktoactivity - Link to the module instance
     * linktopost - Link to the discussion post
     * linttoauthor - Link to the user
+    * postlettercolor - Color of the letter
 
     Example (json):
     {
         "contentid": 27,
         "ispost": true,
         "coursename": "Moodle Engineering",
+        "courseid": 3,
         "instancename": "Exam Questions",
         "discussionsubject": "Hour of Exam",
         "anonymous": false,
@@ -51,18 +54,19 @@
         "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
         "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
         "linktoauthor": "http://localhost/moodle/user/view.php?id=2"
+        "postlettercolor": "#f7634d"
     }
 }}
-<div class="townsquare_letter postletter card mb-3" id="content-nr-{{contentid}}">
-    <div class="townsquareletter_header postletter_header card-header">
+<div class="townsquare_letter postletter card mb-3" id="content-nr-{{contentid}}" style="border-color: {{postlettercolor}}">
+    <div class="townsquareletter_header postletter_header card-header" style="background-color: {{postlettercolor}}">
         <div class = "townsquareletter_top postletter_top">
-            <div class = "townsquareletter_course postletter_course">
+            <div class = "townsquareletter_course postletter_course" id="{{courseid}}">
                 {{#str}} coursetitle, moodle, {
                     "course": {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a>
                               {{/quote}} }
                 {{/str}}
             </div>
-            <div class = "townsquareletter_date postletter_date">
+            <div class = "townsquareletter_date postletter_date" id="{{createdtimestamp}}">
                 {{created}}
             </div>
         </div>
@@ -93,7 +97,17 @@
                 </span>
                 <span class="townsquare_showmore badge rounded-pill bg-light" id="content-nr-{{contentid}}"
                       data-action="block_townsquare/showmore_button">
-                    {{#str}} showmore, moodle {{/str}}
+                    {{#str}} showmore, block_townsquare {{/str}}
+                </span>
+                <span>
+                    {{#privatereplyto}}
+                        <hr>
+                        <i>{{#str}} privatereplyto, block_townsquare {{/str}}</i>
+                    {{/privatereplyto}}
+                    {{#privatereplyfrom}}
+                        <hr>
+                        <i>{{#str}} privatereplyfrom, block_townsquare {{/str}}</i>
+                    {{/privatereplyfrom}}
                 </span>
         </div>
     </div>

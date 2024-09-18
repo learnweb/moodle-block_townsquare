@@ -33,7 +33,7 @@ namespace block_townsquare;
  *
  * @covers \block_townsquare\contentcontroller
  */
-class contentcontroller_test extends \advanced_testcase {
+final class contentcontroller_test extends \advanced_testcase {
 
     // Attributes.
 
@@ -49,7 +49,7 @@ class contentcontroller_test extends \advanced_testcase {
     /** @var bool If the moodleoverflow module is available.
      * This Plugin can support moodleoverflow, but it is not necessary to have it installed.
      */
-    private bool $moodleoverflowavailable;
+    private bool $modoverflowinstalled;
 
     // Construct functions.
 
@@ -69,7 +69,7 @@ class contentcontroller_test extends \advanced_testcase {
      * Test, if the right letters are created.
      * @return void
      */
-    public function test_letters() {
+    public function test_letters(): void {
         // Set an logged in user.
         $this->setUser($this->testdata->teacher);
 
@@ -84,20 +84,20 @@ class contentcontroller_test extends \advanced_testcase {
 
         for ($i = 0; $i < $length; $i++) {
             // The content has an orientation marker.
-            if (isset(current($content)['isorientationmarker']) && current($content)['isorientationmarker']) {
+            if (isset(current($content)['isorientationmarker'])) {
                 next($content);
                 continue;
             }
 
             // Declare the three types of letter checks.
-            $postcheck = current($events)->eventtype == 'post' && current($content)['lettertype'] == 'post';
-            $completioncheck = current($events)->eventtype == 'expectcompletionon' &&
-                              current($content)['lettertype'] == 'activitycompletion';
+            $postcheck = $this->check_two_params(current($events)->eventtype, 'post', current($content)['lettertype'], 'post');
+            $completioncheck = $this->check_two_params(current($events)->eventtype, 'expectcompletionon',
+                                                       current($content)['lettertype'], 'activitycompletion');
 
             $basiccheck = (current($events)->eventtype != 'post' && current($events)->eventtype != 'expectcompletionon') &&
                            current($content)['lettertype'] == 'basic';
 
-            // If one of the checks fails there is a problem while creating the letters..
+            // If one of the checks fails there is a problem while creating the letters.
             if (!$postcheck && !$completioncheck && !$basiccheck) {
                 $result = false;
                 break;
@@ -107,7 +107,7 @@ class contentcontroller_test extends \advanced_testcase {
             next($events);
         }
 
-        if ($this->moodleoverflowavailable) {
+        if ($this->modoverflowinstalled) {
             $this->assertEquals(6, count($content));
         } else {
             $this->assertEquals(5, count($content));
@@ -121,7 +121,7 @@ class contentcontroller_test extends \advanced_testcase {
      * Helper function that sets up the testdata.
      * @return void
      */
-    private function helper_course_set_up():void {
+    private function helper_course_set_up(): void {
         global $DB;
         // Declare generators.
         $datagenerator = $this->getDataGenerator();
@@ -138,14 +138,14 @@ class contentcontroller_test extends \advanced_testcase {
         $this->testdata->fdiscussion = (object)$forumgenerator->create_discussion($record);
 
         if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
-            $this->moodleoverflowavailable = true;
-            $moodleoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
+            $this->modoverflowinstalled = true;
+            $modoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
             $this->testdata->moodleoverflow = $datagenerator->create_module('moodleoverflow',
                                                                              ['course' => $this->testdata->course->id]);
-            $this->testdata->mdiscussion = $moodleoverflowgenerator->post_to_forum($this->testdata->moodleoverflow,
+            $this->testdata->mdiscussion = $modoverflowgenerator->post_to_forum($this->testdata->moodleoverflow,
                                                                                    $this->testdata->teacher);
         } else {
-            $this->moodleoverflowavailable = false;
+            $this->modoverflowinstalled = false;
         }
 
         // Create an assign module with activity completion.
@@ -160,9 +160,9 @@ class contentcontroller_test extends \advanced_testcase {
      * @param int $gradingduedate            timestamp
      * @return object
      */
-    private function create_assignment($allowsubmissionsdate, $duedate, $gradingduedate):object {
+    private function create_assignment($allowsubmissionsdate, $duedate, $gradingduedate): object {
         // Create an activity completion for the assignment if wanted.
-        $featurecompletionmanual = [
+        $options = [
             'completion' => COMPLETION_TRACKING_MANUAL,
             'completionexpected' => $duedate,
         ];
@@ -174,6 +174,18 @@ class contentcontroller_test extends \advanced_testcase {
             'allowsubmissionsfromdate' => $allowsubmissionsdate,
             'gradingduedate' => $gradingduedate,
         ];
-        return $this->getDataGenerator()->create_module('assign', $assignrecord, $featurecompletionmanual);
+        return $this->getDataGenerator()->create_module('assign', $assignrecord, $options);
+    }
+
+    /**
+     * Little helper function to reduce cyclomatic complexity. Checks if two params equal values.
+     * @param mixed $param1
+     * @param mixed $equal1
+     * @param mixed $param2
+     * @param mixed $equal2
+     * @return bool
+     */
+    private function check_two_params($param1, $equal1, $param2, $equal2) {
+        return $param1 == $equal1 && $param2 == $equal2;
     }
 }

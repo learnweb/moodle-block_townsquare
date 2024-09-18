@@ -1,6 +1,32 @@
 # Town Square #
 
-A moodle block for the dashboard.This Plugin shows current events and forum posts in courses the user is enrolled to.
+A moodle block for the dashboard. This Plugin shows current events and forum posts in courses the user is enrolled.
+
+## Description ##
+
+This plugin shows different notifications (e.g. deadlines), activity completion and forum posts
+from all courses an user is enrolled. Additionally, the user is able to filter the notifications by different parameters.
+Goal is to provide a easy way to get an overview of all current events and deadlines, without the need to visit every course.
+
+A typical townsquare site looks like this:
+
+![townsquare](https://github.com/user-attachments/assets/2933ffe6-6e37-4001-aad9-a50eb9f2a46e)
+
+
+Townsquare is build as user-friendly as possible. The user can filter notifications and save the filter settings for future uses.
+Notifications are pre-categorized into 3 categories with different colors: Deadlines and information, posts and activity completions.
+
+
+## Subplugin functionality ##
+
+Townsquare does not show notifications from every installed plugin, as every plugin can have different types of notifications that
+not always should be shown to the current user (e.g. a teacher should not see the same notifications as a student).
+Therefore, only the Moodle core plugins are supported by the plugin.
+To show notifications from other plugins, a subplugin can be implemented or installed. To do that, install the local plugin
+[local_townsquaresupport](https://github.com/learnweb/moodle-local_townsquaresupport). Townsquaresupport manages
+subplugins and makes them available to Townsquare.
+
+More information on townsquare subplugins: https://github.com/learnweb/moodle-local_townsquaresupport/wiki
 
 ## Installing via uploaded ZIP file ##
 
