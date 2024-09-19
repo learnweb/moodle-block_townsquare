@@ -28,25 +28,34 @@ global $ADMIN, $CFG;
 if ($ADMIN->fulltree) {
     require_once($CFG->dirroot . '/blocks/townsquare/lib.php');
 
-    // Color Setting for the color that will be used on basic letters.
+    // Time setting for the search span.
+    $options = [];
+    $options[TOWNSQUARE_TIME_TWOMONTHS] = get_string('timetwomonths', 'block_townsquare');
+    $options[TOWNSQUARE_TIME_THREEMONTHS] = get_string('timethreemonths', 'block_townsquare');
+    $options[TOWNSQUARE_TIME_SIXMONTHS] = get_string('timesixmonths', 'block_townsquare');
+
+    $settings->add(new admin_setting_configselect('block_townsquare/timespan', get_string('timespan', 'block_townsquare'),
+        get_string('configtimespan', 'block_townsquare'), TOWNSQUARE_TIME_THREEMONTHS, $options));
+
+    // Color setting for the color that will be used on basic letters.
     $settings->add(new admin_setting_configcolourpicker('block_townsquare/basiclettercolor',
                                                         get_string('basiclettercolor', 'block_townsquare'),
                                                         get_string('configbasiclettercolor', 'block_townsquare'),
                                         TOWNSQUARE_BASICLETTER_DEFAULTCOLOR));
 
-    // Color Setting for the color that will be used on post letters.
+    // Color setting for the color that will be used on post letters.
     $settings->add(new admin_setting_configcolourpicker('block_townsquare/postlettercolor',
                                                         get_string('postlettercolor', 'block_townsquare'),
                                                         get_string('configpostlettercolor', 'block_townsquare'),
                                         TOWNSQUARE_POSTLETTER_DEFAULTCOLOR));
 
-    // Color Setting for the color that will be used on completion letters.
+    // Color setting for the color that will be used on completion letters.
     $settings->add(new admin_setting_configcolourpicker('block_townsquare/completionlettercolor',
                                                         get_string('completionlettercolor', 'block_townsquare'),
                                                         get_string('configcompletionlettercolor', 'block_townsquare'),
                                         TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR));
 
-    // Color Setting for the orientation marker.
+    // Color setting for the orientation marker.
     $settings->add(new admin_setting_configcolourpicker('block_townsquare/orientationmarkercolor',
                                                         get_string('orientationmarkercolor', 'block_townsquare'),
                                                         get_string('configorientationmarkercolor', 'block_townsquare'),
