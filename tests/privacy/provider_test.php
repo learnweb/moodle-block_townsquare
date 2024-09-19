@@ -27,9 +27,9 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\userlist;
-use block_townsquare\privacy\provider;
 use core_privacy\local\request\writer;
 use core_privacy\tests\provider_testcase;
+use stdClass;
 
 /**
  * PHPUnit tests for testing the functionalities of the townsquare privacy provider
@@ -51,7 +51,7 @@ final class provider_test extends provider_testcase {
 
     public function setUp(): void {
         // Create a course and a user.
-        $this->testdata = new \stdClass();
+        $this->testdata = new stdClass();
         $this->testdata->course = $this->getDataGenerator()->create_course(['enablecompletion' => 1]);
         $this->testdata->student = $this->getDataGenerator()->create_user();
         $this->testdata->studentcontext = \context_user::instance($this->testdata->student->id);
@@ -235,7 +235,7 @@ final class provider_test extends provider_testcase {
     private function helper_add_preference($userid) {
         global $DB;
         // Create a user preference for townsquare content filter.
-        $this->testdata->setting = new \stdClass();
+        $this->testdata->setting = new stdClass();
         $this->testdata->setting->userid = $userid;
         $this->testdata->setting->timefilterpast = 15778463;
         $this->testdata->setting->timefilterfuture = 15778463;

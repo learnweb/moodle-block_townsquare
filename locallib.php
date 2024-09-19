@@ -40,7 +40,7 @@ function townsquare_get_colorsetting($lettertype): string {
         case 'orientationmarker':
             return get_config('block_townsquare', 'orientationmarkercolor');
         default:
-            throw new \moodle_exception('invalidlettertype', 'block_townsquare');
+            throw new moodle_exception('invalidlettertype', 'block_townsquare');
     }
 }
 

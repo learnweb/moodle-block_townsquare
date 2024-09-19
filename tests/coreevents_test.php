@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/completionlib.php');
 
+use core_completion_external;
 use stdClass;
 
 /**
@@ -81,11 +82,11 @@ final class coreevents_test extends \advanced_testcase {
         $timestamp = 9999999999;
         $result = true;
         foreach ($coreevents as $event) {
-            if ($timestamp >= $event->timestart) {
-                $timestamp = $event->timestart;
-            } else {
+            if ($timestamp < $event->timestart) {
                 $result = false;
+                break;
             }
+            $timestamp = $event->timestart;
         }
 
         $this->assertEquals(true, $result);
@@ -210,7 +211,7 @@ final class coreevents_test extends \advanced_testcase {
         $this->assertEquals(1, $count);
 
         // Test case 2: The student marks the assignment as completed, the activity completion event should disappear.
-        \core_completion_external::update_activity_completion_status_manually($this->testdata->assignment1->cmid, true);
+        core_completion_external::update_activity_completion_status_manually($this->testdata->assignment1->cmid, true);
 
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
         $result = true;
