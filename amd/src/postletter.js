@@ -19,9 +19,8 @@ import {prefetchStrings} from 'core/prefetch';
 /**
  * Javascript for the post letter
  *
- * This file implements 2 functionalities:
+ * This file implements following functionality:
  * - cuts posts that have many characters and shows a "see more" Button to see the whole text.
- * - Unnecessary <p> Tags from the Database are being replaced with line breaks to make the text more readable.
  *
  * @module     block_townsquare/postletter
  * @copyright  2023 Tamaro Walter
@@ -49,9 +48,6 @@ export function init() {
 
     contentElements.forEach(
         (element) => {
-            // Replace all <p> within the text with simple line breaks.
-            replaceParagraghTags(element);
-
             // Check if the text is too long.
             if (element.textContent.length >= 250) {
                 // If the text is too long, cut it.
@@ -77,12 +73,8 @@ export function init() {
  * @param {object} element
  */
 function cutString(element) {
-    let text = element.textContent;
-    let index = 250;
-    while (text.charAt(index) != " ") {
-        index++;
-    }
-    element.innerHTML = text.substring(0,index);
+    // TODO: Write a function that cuts the string without destroying the complex html.
+    return element.textContent;
 }
 
 /**
@@ -123,26 +115,4 @@ async function changeButtonString(index, toshowmore) {
         buttons[index].textContent = await getString('showless', 'moodle');
         buttons[index].setAttribute('showmore', 'false');
     }
-}
-
-/**
- * Removes in a text all &nbsp and surrounding <p> tags excluding the first occurrence.
- *
- * Helper function to make post look better.
- * @param {object} element
- */
-async function replaceParagraghTags(element) {
-    // Identify and store the first <p> and </p> tags.
-    let message = element.innerHTML;
-    const firstPTag = message.indexOf('<p>');
-    const lastPTag = message.lastIndexOf('</p>');
-
-    // Remove &nbsp; and surrounding <p> tags excluding the first occurrence.
-    message = message.replace(/<p>&nbsp;<\/p>/g, '').replace(/&nbsp;/g, '');
-
-    // Replace <p> tags with <br> excluding the first occurrence.
-    message = message.substring(0, firstPTag + 3) +
-        message.substring(firstPTag + 3, lastPTag).replace(/<p>/g, '<br>').replace(/<\/p>/g, '') +
-        message.substring(lastPTag);
-    element.innerHTML = message;
 }
