@@ -29,7 +29,6 @@ import {prefetchStrings} from 'core/prefetch';
 
 const contentElements = document.getElementsByClassName('postletter_message');
 const buttons = document.getElementsByClassName('townsquare_showmore');
-const originalTexts = [];
 
 const Selectors = {
     actions: {
@@ -48,15 +47,12 @@ export function init() {
 
     contentElements.forEach(
         (element) => {
-            // Check if the text is too long.
-            if (element.textContent.length >= 250) {
-                // If the text is too long, cut it.
-                originalTexts[element.id] = element.innerHTML;
-                cutString(element);
-                element.parentElement.insertAdjacentHTML('beforeend', '<p>');
+            // Check if the div is too long.
+            if (element.clientHeight >= 85) {
+                // If the text is too long, show the showmore button.
                 buttons[element.id].setAttribute('showmore', 'true');
             } else {
-                // If the text is not too long, hide the show more button.
+                // If the text is not too long, hide the showmore button.
                 buttons[element.id].style.display = "none";
             }
         }
@@ -64,17 +60,6 @@ export function init() {
 
     // Add event listeners for the show more Button.
     addEventListener();
-}
-
-/**
- * Function to cut a String at a length of 250 characters.
- * The function does not cut within a word or after a space.
- * If the cutting point is within a word, the function searches for the next space and cuts there.
- * @param {object} element
- */
-function cutString(element) {
-    // TODO: Write a function that cuts the string without destroying the complex html.
-    return element.textContent;
 }
 
 /**
@@ -89,10 +74,10 @@ const addEventListener = () => {
                 (element) => {
                     if (element.id == letterid) {
                         if (buttons[letterid].getAttribute('showmore') == 'true') {
-                            element.innerHTML = originalTexts[letterid];
+                            element.classList.add("expanded");
                             changeButtonString(letterid, false);
                         } else {
-                            cutString(element);
+                            element.classList.remove("expanded");
                             changeButtonString(letterid, true);
                         }
                     }
