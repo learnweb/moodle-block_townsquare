@@ -29,6 +29,7 @@ use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\writer;
+use stdClass;
 
 
 /**
@@ -113,7 +114,7 @@ class provider implements
         $results = $DB->get_records('block_townsquare_preferences', ['userid' => $contextlist->get_user()->id]);
 
         foreach ($results as $result) {
-            $data = new \stdClass();
+            $data = new stdClass();
             $data->userid = $result->userid;
             $data->timefilterpast = $result->timefilterpast;
             $data->timefilterfuture = $result->timefilterfuture;

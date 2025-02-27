@@ -141,15 +141,7 @@ class external extends external_api {
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
             // If there more than a record (it only should be only one), delete all of them and insert the new one.
-            if (count($records) > 1) {
-                try {
-                    foreach ($records as $record) {
-                        $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
-                    }
-                } catch (Exception $e) {
-                    return false;
-                }
-            } else {
+            if (count($records) <= 1) {
                 // Upgrade the existing record.
                 $record = reset($records);
                 $record->timefilterpast = $params['timefilterpast'];
@@ -160,6 +152,13 @@ class external extends external_api {
 
                 $DB->update_record('block_townsquare_preferences', $record);
                 return true;
+            }
+            try {
+                foreach ($records as $record) {
+                    $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
+                }
+            } catch (Exception $e) {
+                return false;
             }
         }
         $record = new stdClass();

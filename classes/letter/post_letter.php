@@ -23,6 +23,8 @@
  */
 
 namespace block_townsquare\letter;
+use context_module;
+use core_user\fields;
 use moodle_url;
 use stdClass;
 
@@ -146,16 +148,16 @@ class post_letter extends letter {
         global $DB, $OUTPUT;
 
         // Profile picture is only retrieved if the author is visible.
-        if (!$this->post->anonymous) {
-            $user = new stdClass();
-            $picturefields = \core_user\fields::get_picture_fields();
-            $user = username_load_fields_from_object($user, $DB->get_record('user', ['id' => $this->author->id]),
-                                            null, $picturefields);
-            $user->id = $this->author->id;
-            $this->author->picture = $OUTPUT->user_picture($user, ['courseid' => $this->courseid, 'link' => false]);
-        } else {
+        if ($this->post->anonymous) {
             $this->author->picture = '';
+            return;
         }
+        $user = new stdClass();
+        $picturefields = fields::get_picture_fields();
+        $user = username_load_fields_from_object($user, $DB->get_record('user', ['id' => $this->author->id]),
+            null, $picturefields);
+        $user->id = $this->author->id;
+        $this->author->picture = $OUTPUT->user_picture($user, ['courseid' => $this->courseid, 'link' => false]);
     }
 
     /**
@@ -164,11 +166,11 @@ class post_letter extends letter {
      * @return void
      */
     private function add_anonymousattribute($postevent): void {
-        if ($postevent->modulename == 'moodleoverflow') {
-            $this->post->anonymous = $postevent->anonymous;
-        } else {
+        if ($postevent->modulename != 'moodleoverflow') {
             $this->post->anonymous = false;
+            return;
         }
+        $this->post->anonymous = $postevent->anonymous;
     }
 
     /**
@@ -198,7 +200,7 @@ class post_letter extends letter {
      * @return string
      */
     private function format_post($postevent) {
-        $context = \context_module::instance($postevent->coursemoduleid);
+        $context = context_module::instance($postevent->coursemoduleid);
         $message = file_rewrite_pluginfile_urls($postevent->content, 'pluginfile.php', $context->id,
                                     'mod_'. $postevent->modulename, 'post', $postevent->postid, ['includetoken' => true]);
         $options = new stdClass();

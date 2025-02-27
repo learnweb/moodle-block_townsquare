@@ -24,6 +24,8 @@
 
 namespace block_townsquare;
 
+use stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -36,14 +38,21 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @copyright 2024 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\external
+ * @covers \external
  * @runTestsInSeparateProcesses
  */
 final class external_test extends \advanced_testcase {
 
+    /** @var object That that is used for testing
+     * It contains an instance of the townsquare external class.
+     * */
+    private $testdata;
+
     public function setUp(): void {
         parent::setUp();
         $this->resetAfterTest();
+        $this->testdata = new stdClass();
+        $this->testdata->external = new external();
     }
 
     /**
@@ -53,7 +62,7 @@ final class external_test extends \advanced_testcase {
     public function test_record_usersettings(): void {
         global $DB;
 
-        $usersetting = new \stdClass();
+        $usersetting = new stdClass();
         $usersetting->userid = 1;
         $usersetting->timefilterpast = 432000;
         $usersetting->timefilterfuture = 2592000;
@@ -68,7 +77,7 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals(false, $record);
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = \block_townsquare\external::record_usersettings($usersetting->userid,
+        $result = $this->testdata->external->record_usersettings($usersetting->userid,
                                                                   $usersetting->timefilterpast,
                                                                   $usersetting->timefilterfuture, $usersetting->basicletter,
                                                                   $usersetting->completionletter, $usersetting->postletter);
@@ -91,7 +100,7 @@ final class external_test extends \advanced_testcase {
         $usersetting->postletter = 0;
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = \block_townsquare\external::record_usersettings($usersetting->userid, $usersetting->timefilterpast,
+        $result = $this->testdata->external->record_usersettings($usersetting->userid, $usersetting->timefilterpast,
                                                                   $usersetting->timefilterfuture, $usersetting->basicletter,
                                                                   $usersetting->completionletter, $usersetting->postletter);
 
@@ -117,7 +126,7 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
 
         // Test case 1: Wrong parameters.
-        \block_townsquare\external::reset_usersettings(2);
+        $this->testdata->external->reset_usersettings(2);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
 
         // Test case 2: For some reason, many records from the same user exist.
@@ -125,14 +134,14 @@ final class external_test extends \advanced_testcase {
             'timefilterfuture' => 2592000, 'basicletter' => 1, 'completionletter' => 0, 'postletter' => 0, ]);
         $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
 
-        external::reset_usersettings(1);
+        $this->testdata->external->reset_usersettings(1);
         $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
 
         // Test case 3: normal case.
         $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
             'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
-        external::reset_usersettings(1);
+        $this->testdata->external->reset_usersettings(1);
         $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
     }
 }

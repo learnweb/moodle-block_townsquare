@@ -16,6 +16,8 @@
 
 namespace block_townsquare;
 
+use stdClass;
+
 /**
  * Unit tests for the block_townsquare.
  *
