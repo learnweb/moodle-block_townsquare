@@ -56,13 +56,15 @@ final class contentcontroller_test extends \advanced_testcase {
     // Construct functions.
 
     public function setUp(): void {
-        $this->testdata = new stdClass();
+        parent::setUp();
+        $this->testdata = new \stdClass();
         $this->resetAfterTest();
         $this->helper_course_set_up();
     }
 
     public function tearDown(): void {
         $this->testdata = null;
+        parent::tearDown();
     }
 
     // Tests.

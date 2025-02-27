@@ -51,6 +51,7 @@ final class provider_test extends provider_testcase {
     private $testdata;
 
     public function setUp(): void {
+        parent::setUp();
         // Create a course and a user.
         $this->testdata = new stdClass();
         $this->testdata->provider = new provider();

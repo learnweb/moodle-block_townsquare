@@ -58,6 +58,7 @@ final class coreevents_test extends \advanced_testcase {
     // Construct functions.
     public function setUp(): void {
         global $CFG;
+        parent::setUp();
         $CFG->enablecompletion = true;
         $this->testdata = new stdClass();
         $this->resetAfterTest();
@@ -66,6 +67,7 @@ final class coreevents_test extends \advanced_testcase {
 
     public function tearDown(): void {
         $this->testdata = null;
+        parent::tearDown();
     }
 
     // Tests.

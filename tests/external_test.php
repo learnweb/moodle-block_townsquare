@@ -49,6 +49,7 @@ final class external_test extends \advanced_testcase {
     private $testdata;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
         $this->testdata = new stdClass();
         $this->testdata->external = new external();
