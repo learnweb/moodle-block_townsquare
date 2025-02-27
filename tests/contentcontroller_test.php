@@ -16,6 +16,8 @@
 
 namespace block_townsquare;
 
+use stdClass;
+
 /**
  * Unit tests for the block_townsquare.
  *
@@ -54,7 +56,7 @@ final class contentcontroller_test extends \advanced_testcase {
     // Construct functions.
 
     public function setUp(): void {
-        $this->testdata = new \stdClass();
+        $this->testdata = new stdClass();
         $this->resetAfterTest();
         $this->helper_course_set_up();
     }

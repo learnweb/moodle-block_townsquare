@@ -16,7 +16,6 @@
 
 use block_townsquare\contentcontroller;
 
-
 /**
  * Plugin strings are defined here.
  *

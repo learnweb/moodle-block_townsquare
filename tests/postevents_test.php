@@ -24,6 +24,7 @@
 
 namespace block_townsquare;
 
+use Exception;
 use stdClass;
 
 /**
@@ -82,11 +83,11 @@ final class postevents_test extends \advanced_testcase {
         $timestamp = 9999999999;
         $result = true;
         foreach ($posts as $post) {
-            if ($timestamp >= $post->timestart) {
-                $timestamp = $post->timestart;
-            } else {
+            if ($timestamp < $post->timestart) {
                 $result = false;
+                break;
             }
+            $timestamp = $post->timestart;
         }
 
         $this->assertEquals(true, $result);
@@ -137,7 +138,7 @@ final class postevents_test extends \advanced_testcase {
         $posts = $this->get_postevents_from_user($this->testdata->teacher);
 
         $result = true;
-        // Check if there are no more moodleoverflow posts.
+        // Check if there are no more forum posts.
         foreach ($posts as $post) {
             if ($post->modulename == 'forum') {
                 $result = false;
@@ -384,11 +385,8 @@ final class postevents_test extends \advanced_testcase {
         $this->getDataGenerator()->enrol_user($this->testdata->student2->id, $this->testdata->course2->id, 'student');
 
         // Check if moodleoverflow is available.
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
-            $this->modoverflowinstalled = true;
-        } else {
-            $this->modoverflowinstalled = false;
-        }
+        $DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1]) ? $this->modoverflowinstalled = true :
+                                                                                           $this->modoverflowinstalled = false;
     }
 
     /**
@@ -475,7 +473,7 @@ final class postevents_test extends \advanced_testcase {
             $moodleoverflow->anonymous = $anonymoussetting;
             $DB->update_record('moodleoverflow', $moodleoverflow);
         } else {
-            throw new \Exception('invalid parameter, anonymoussetting should be 1 or 2');
+            throw new Exception('invalid parameter, anonymoussetting should be 1 or 2');
         }
     }
 

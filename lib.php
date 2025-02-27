@@ -22,6 +22,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Time constants.
+define('TOWNSQUARE_TIME_TWOMONTHS', 5259486); // 60.87 days
+define('TOWNSQUARE_TIME_THREEMONTHS', 7889229); // 91.31 days
+define('TOWNSQUARE_TIME_SIXMONTHS', 15778463); // 182,62 days
+
 // Color constants from bootstrap.
 define('TOWNSQUARE_BASICLETTER_DEFAULTCOLOR', '#0f6cbf');
 define('TOWNSQUARE_POSTLETTER_DEFAULTCOLOR', '#f7634d');
@@ -49,7 +54,7 @@ function townsquare_get_courses(): array {
  * @return int
  */
 function townsquare_get_timestart(): int {
-    return time() - 7884000;
+    return time() - get_config('block_townsquare', 'timespan');
 }
 
 /**
@@ -57,7 +62,7 @@ function townsquare_get_timestart(): int {
  * @return int
  */
 function townsquare_get_timeend(): int {
-    return time() + 7884000;
+    return time() + get_config('block_townsquare', 'timespan');
 }
 
 /**
