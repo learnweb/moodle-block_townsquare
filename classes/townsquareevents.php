@@ -152,7 +152,6 @@ class townsquareevents {
      * Searches for posts in the forum or moodleoverflow module.
      * The sql query makes sure that the modules are installed and available..
      * This is a helper function for get_postevents().
-     * @param string $modulename  The name of the module, is 'forum' or 'moodleoverflow'.
      * @param array  $courses     The ids of the courses where the posts should be searched.
      * @param int    $timestart   The timestamp from where the posts should be searched.
      * @return array

@@ -233,6 +233,8 @@ final class provider_test extends provider_testcase {
 
     /**
      * Helper function that sets up the test data.
+     * @param int $userid
+     *
      * @return void
      */
     private function helper_add_preference($userid) {

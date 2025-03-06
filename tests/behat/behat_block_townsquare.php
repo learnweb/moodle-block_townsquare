@@ -41,7 +41,7 @@ class behat_block_townsquare extends behat_base {
     /**
      * Adds an activity completion event.
      * @Given /^I add a townsquare completion event to "(?P<course>(?:[^"]|\\")*)"$/
-     * @param string $coursename, the course short name.
+     * @param string $coursename the course short name.
      */
     public function i_add_an_townsquare_completion_event(string $coursename) {
         global $DB;

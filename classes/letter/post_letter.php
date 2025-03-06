@@ -175,7 +175,7 @@ class post_letter extends letter {
 
     /**
      * Method to add a boolean that indicates if the post is a private reply.
-     * @param $postevent
+     * @param object $postevent
      * @return void
      */
     private function add_privatereplyattribute($postevent): void {
@@ -196,7 +196,7 @@ class post_letter extends letter {
 
     /**
      * Function to format the post message before exporting it to the mustache template.
-     * @param $postevent
+     * @param object $postevent
      * @return string
      */
     private function format_post($postevent) {
