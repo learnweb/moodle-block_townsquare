@@ -62,7 +62,7 @@ class external extends external_api {
     /**
      * Reset the user settings
      *
-     * @param $userid
+     * @param int $userid
      * @return bool
      * @throws \dml_exception
      * @throws \invalid_parameter_exception

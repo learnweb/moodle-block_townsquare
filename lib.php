@@ -67,7 +67,7 @@ function townsquare_get_timeend(): int {
 
 /**
  * Merge sort function for townsquare events.
- * @param $events
+ * @param array $events
  * @return array
  */
 function townsquare_mergesort($events): array {

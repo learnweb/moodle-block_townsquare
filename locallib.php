@@ -84,9 +84,8 @@ function townsquare_check_coreevent(&$event): void {
 
 /**
  * Helper function for the check function. Helps to reduce repetitive checks
- * @param $event
- * @param $pluginname
- * @param $time
+ * @param object $event
+ * @param int $time
  * @return string
  */
 function townsquare_get_open_close_message($event, $time) {

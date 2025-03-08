@@ -81,6 +81,16 @@
     margin-bottom: 0.4rem;
 }
 
+.postletter_message {
+    max-height: 85px;
+    overflow: hidden;
+    display: block;
+}
+
+.postletter_message.expanded {
+    max-height: none;
+}
+
 /* actvitiycompletionletter Style*/
 
 /* Style for the orientation marker */
