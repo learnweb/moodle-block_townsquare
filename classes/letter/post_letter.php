@@ -128,7 +128,7 @@ class post_letter extends letter {
             'authorpicture' => $this->author->picture,
             'postid' => $this->post->id,
             'message' => $this->post->message,
-            'created' => date('d.m.Y', $this->created),
+            'created' => date('d.m.Y, G:i', $this->created),
             'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
