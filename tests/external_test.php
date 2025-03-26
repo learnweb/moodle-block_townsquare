@@ -45,7 +45,8 @@ final class external_test extends \advanced_testcase {
 
     /** @var object That that is used for testing
      * It contains an instance of the townsquare external class.
-     * */
+     *
+     */
     private $testdata;
 
     public function setUp(): void {
@@ -117,9 +118,11 @@ final class external_test extends \advanced_testcase {
 
     /**
      * Test the reset_usersettings_method
+     * @runInSeparateProcess
      */
     public function test_reset_usersettings(): void {
         global $DB;
+
         // Load a usersetting in the database.
         $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
                             'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);

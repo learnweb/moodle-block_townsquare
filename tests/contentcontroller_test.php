@@ -141,7 +141,10 @@ final class contentcontroller_test extends \advanced_testcase {
         $record = (array)$this->testdata->forum + ['forum' => $this->testdata->forum->id, 'userid' => $this->testdata->teacher->id];
         $this->testdata->fdiscussion = (object)$forumgenerator->create_discussion($record);
 
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1])) {
+        // Check if mod_moodleoverflow and the townsquare support plugin are installed.
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1]) &&
+            array_key_exists('moodleoverflow', \core_plugin_manager::instance()->get_plugins_of_type('townsquareexpansion'))) {
+
             $this->modoverflowinstalled = true;
             $modoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
             $this->testdata->moodleoverflow = $datagenerator->create_module('moodleoverflow',
