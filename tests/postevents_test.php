@@ -386,9 +386,13 @@ final class postevents_test extends \advanced_testcase {
         $this->testdata->student2 = $datagenerator->create_user();
         $this->getDataGenerator()->enrol_user($this->testdata->student2->id, $this->testdata->course2->id, 'student');
 
-        // Check if moodleoverflow is available.
-        $DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1]) ? $this->modoverflowinstalled = true :
-                                                                                           $this->modoverflowinstalled = false;
+        // Check if moodleoverflow and townsquare support plugin is available.
+        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1]) &&
+            array_key_exists('moodleoverflow', \core_plugin_manager::instance()->get_plugins_of_type('townsquareexpansion'))) {
+            $this->modoverflowinstalled = true;
+        } else {
+            $this->modoverflowinstalled = false;
+        }
     }
 
     /**
