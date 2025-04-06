@@ -41,7 +41,7 @@ final class postevents_test extends \advanced_testcase {
 
     // Attributes.
 
-    /** @var stdClass|null The data that will be used for testing.
+    /** @var stdClass The data that will be used for testing.
      * This Class contains the test data:
      * - course1, course2
      * - forum1, forum2 (with one post each)
@@ -49,7 +49,7 @@ final class postevents_test extends \advanced_testcase {
      * - teacher (write one post in each forum and moodleoverflow)
      * - student1, student2 (write one post in their moodleoverflow)
      */
-    private stdClass|null $testdata;
+    private stdClass $testdata;
 
     // Construct functions.
     public function setUp(): void {
@@ -57,11 +57,6 @@ final class postevents_test extends \advanced_testcase {
         $this->testdata = new stdClass();
         $this->resetAfterTest();
         $this->helper_course_set_up();
-    }
-
-    public function tearDown(): void {
-        $this->testdata = null;
-        parent::tearDown();
     }
 
     // Tests.
@@ -249,7 +244,6 @@ final class postevents_test extends \advanced_testcase {
      *
      */
     private function helper_course_set_up(): void {
-        global $DB;
         $datagenerator = $this->getDataGenerator();
         // Create two new courses.
         $this->testdata->course1 = $datagenerator->create_course();
