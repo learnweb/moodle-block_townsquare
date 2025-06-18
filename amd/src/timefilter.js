@@ -92,16 +92,13 @@ function alltimeaddEventListener() {
             // Disable all other radio buttons that filter more specific times.
             futureradiobuttons.forEach(function(futureradiobutton) {
                 futureradiobutton.checked = false;
-                futureradiobutton.parentNode.classList.remove("active");
             });
             pastradiobuttons.forEach(function(pastradiobutton) {
                 pastradiobutton.checked = false;
-                pastradiobutton.parentNode.classList.remove("active");
-
             });
 
             // Execute the filter function.
-            executefilter(timestart, timeend, addstarttime,addendtime, button.checked);
+            executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
         });
     });
 }
@@ -115,7 +112,6 @@ function futuretimeaddEventListener() {
             // Disable the all_time button.
             alltimebutton.forEach(function(alltimebutton) {
                 alltimebutton.checked = false;
-                alltimebutton.parentNode.classList.remove('active');
             });
 
             // Set the time span based on the radiobutton id.
@@ -126,7 +122,7 @@ function futuretimeaddEventListener() {
             addstarttime = 0;
             addendtime = 0;
             pastradiobuttons.forEach(function(pastradiobutton) {
-                if (pastradiobutton.parentNode.classList.contains('active')) {
+                if (pastradiobutton.checked) {
                     addstarttime = currenttime - convertidtotime(pastradiobutton.id);
                     addendtime = currenttime;
                 }
@@ -147,7 +143,6 @@ function pasttimeaddEventListener() {
             // Disable the all_time button.
             alltimebutton.forEach(function(alltimebutton) {
                 alltimebutton.checked = false;
-                alltimebutton.parentNode.classList.remove('active');
             });
 
             // Set the time span based on the radiobutton id.
@@ -158,7 +153,7 @@ function pasttimeaddEventListener() {
             addstarttime = 0;
             addendtime = 0;
             futureradiobuttons.forEach(function(futureradiobutton) {
-                if (futureradiobutton.parentNode.classList.contains('active')) {
+                if (futureradiobutton.checked) {
                     addstarttime = currenttime;
                     addendtime = currenttime + convertidtotime(futureradiobutton.id);
                 }
@@ -176,7 +171,7 @@ function pasttimeaddEventListener() {
  * @returns {number}
  */
 function convertidtotime(id) {
-    switch(id) {
+    switch (id) {
         case "ts_time_all":
             return 15778463;
         case "ts_time_next_twodays":

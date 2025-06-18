@@ -108,48 +108,46 @@ function executeusersettings(settingsfromdb) {
 
     // First step: set the time filter settings.
     // Change the time into the correct radio button id.
-    let futurebuttonid = converttimetoid(settingsfromdb['timefilterfuture'], true);
-    let pastbuttonid = converttimetoid(settingsfromdb['timefilterpast'], false);
+    let futurebuttonid = converttimetoid(settingsfromdb.timefilterfuture, true);
+    let pastbuttonid = converttimetoid(settingsfromdb.timefilterpast, false);
 
     // If the time span is a combination of past and future, go through the two radio buttons and activate the filter.
     if (futurebuttonid !== "ts_time_all") {
+        alltimebutton.forEach(function(alltimebutton) {
+            alltimebutton.checked = false;
+        });
         futureradiobuttons.forEach(function(button) {
             if (button.id === futurebuttonid) {
-                button.parentNode.classList.add('active');
                 button.checked = true;
                 button.dispatchEvent(new Event('change'));
-                alltimebutton.forEach(function(alltimebutton) {
-                    alltimebutton.checked = false;
-                    alltimebutton.parentNode.classList.remove('active');
-                });
             }
         });
         pastradiobuttons.forEach(function(button) {
             if (button.id === pastbuttonid) {
-                button.parentNode.classList.add('active');
                 button.checked = true;
                 button.dispatchEvent(new Event('change'));
-                alltimebutton.forEach(function(alltimebutton) {
-                    alltimebutton.checked = false;
-                    alltimebutton.parentNode.classList.remove('active');
-                });
             }
         });
     } else {
         // If the time span is set to all time, activate the all time button.
         alltimebutton.forEach(function(button) {
-            button.parentNode.classList.add('active');
             button.checked = true;
             button.dispatchEvent(new Event('change'));
+        });
+        futureradiobuttons.forEach(function(button) {
+            button.checked = false;
+        });
+        pastradiobuttons.forEach(function(button) {
+            button.checked = false;
         });
     }
 
     // Second step: set the letter filter settings.
     // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
     checkboxes.forEach(function(checkbox) {
-        let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb['basicletter'] === "0";
-        let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb['completionletter'] === "0";
-        let postlettercheck = checkbox.id === 'postletter' && settingsfromdb['postletter'] === "0";
+        let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb.basicletter === "0";
+        let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb.completionletter === "0";
+        let postlettercheck = checkbox.id === 'postletter' && settingsfromdb.postletter === "0";
 
         if (basiclettercheck || completionlettercheck || postlettercheck) {
             checkbox.click();
@@ -168,13 +166,13 @@ function collectletterfiltersettings() {
         if (checkbox.checked) {
             switch(checkbox.id) {
                 case "basicletter":
-                    settings['basicletter'] = 1;
+                    settings.basicletter = 1;
                     break;
                 case "completionletter":
-                    settings['completionletter'] = 1;
+                    settings.completionletter = 1;
                     break;
                 case "postletter":
-                    settings['postletter'] = 1;
+                    settings.postletter = 1;
                     break;
 
             }
@@ -189,16 +187,16 @@ function collectletterfiltersettings() {
  * @returns {{timepast: number, timefuture: number}}
  */
 function collecttimefiltersettings() {
-    let settings = { timepast: 0, timefuture: 0};
+    let settings = {timepast: 0, timefuture: 0};
     let settingsset = false;
 
     // Get the relevant time spans of the time filter.
     // Check if the alltimebutton is set.
     alltimebutton.forEach(function(button) {
-        if (button.parentNode.classList.contains('active')) {
+        if (button.checked) {
             // Get the timespan.
-            settings['timepast'] = convertidtotime(button.id);
-            settings['timefuture'] = convertidtotime(button.id);
+            settings.timepast = convertidtotime(button.id);
+            settings.timefuture = convertidtotime(button.id);
             settingsset = true;
         }
     });
@@ -209,16 +207,16 @@ function collecttimefiltersettings() {
 
     // If the alltimebutton is not set, check which of the future/past buttons is set.
     futureradiobuttons.forEach(function(button) {
-        if (button.parentNode.classList.contains('active')) {
+        if (button.checked) {
             // Get the timespan.
-            settings['timefuture'] = convertidtotime(button.id);
+            settings.timefuture = convertidtotime(button.id);
         }
     });
 
     pastradiobuttons.forEach(function(button) {
-        if (button.parentNode.classList.contains('active')) {
+        if (button.checked) {
             // Get the timespan.
-            settings['timepast'] = convertidtotime(button.id);
+            settings.timepast = convertidtotime(button.id);
         }
     });
     return settings;
@@ -232,7 +230,7 @@ function collecttimefiltersettings() {
  */
 function convertidtotime(id) {
     // TODO: Please use global functions if possible.
-    switch(id) {
+    switch (id) {
         case "ts_time_all":
             return 15778463;
         case "ts_time_next_twodays":
