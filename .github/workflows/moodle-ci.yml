@@ -125,7 +125,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.1', '8.2', '8.3' ]
+        php: [ '8.1', '8.2', '8.3' ]
         moodle-branch: [ 'MOODLE_401_STABLE', 'MOODLE_404_STABLE', 'MOODLE_405_STABLE', 'MOODLE_500_STABLE' ]
         database: [ 'mariadb', 'pgsql' ]
         exclude:
@@ -155,7 +155,6 @@ jobs:
             moodle-branch: 'MOODLE_500_STABLE'
             database: 'mariadb'
 
-
     steps:
       - name: Start MariaDB
         if: matrix.database == 'mariadb'
@@ -180,6 +179,7 @@ jobs:
       - name: Get composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
       - name: Composer cache
         uses: actions/cache@v3
         with:
@@ -187,6 +187,7 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+
       - name: npm cache
         uses: actions/cache@v3
         with:
@@ -202,6 +203,12 @@ jobs:
           echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
           sudo locale-gen en_AU.UTF-8
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
+
+      - name: Set BEHAT_BROWSER if Playwright is available
+        run: |
+          if [[ "${{ matrix.moodle-branch }}" =~ MOODLE_40[3-9]_STABLE || "${{ matrix.moodle-branch }}" =~ MOODLE_5[0-9]_STABLE ]]; then
+            echo "BEHAT_BROWSER=chrome" >> $GITHUB_ENV
+          fi
 
       - name: Install moodle-plugin-ci
         run: |
