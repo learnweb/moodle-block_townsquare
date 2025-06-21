@@ -72,5 +72,3 @@ Feature: In the townsquare block user can reset their filter settings
     Then "All notifications" "text" should exist
     And the following fields match these values:
       | All notifications | 1 |
-
-
