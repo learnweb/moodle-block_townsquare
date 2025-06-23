@@ -32,14 +32,14 @@ Feature: The townsquare block allows users to see notifications from different c
     Then I should see "Test assign 1" in the "Town Square" "block"
     And I should see "Test assign 2" in the "Town Square" "block"
     And I should see "Test assign 3" in the "Town Square" "block"
-    When I click on "Course 1" "checkbox"
+    When I click on "C1" "checkbox"
     Then I should not see "Test assign 1" in the "Town Square" "block"
     And I should see "Test assign 2" in the "Town Square" "block"
     And I should see "Test assign 3" in the "Town Square" "block"
-    When I click on "Course 2" "checkbox"
+    When I click on "C2" "checkbox"
     Then I should not see "Test assign 2" in the "Town Square" "block"
     And  I should see "Test assign 3" in the "Town Square" "block"
-    When I click on "Course 3" "checkbox"
+    When I click on "C3" "checkbox"
     Then I should not see "Test assign 3" in the "Town Square" "block"
 
   Scenario: Test the time filter

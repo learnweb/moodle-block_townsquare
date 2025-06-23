@@ -99,7 +99,7 @@ class letter {
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
         $this->cmid = $cmid;
-        $this->coursename = get_course($courseid)->fullname;
+        $this->coursename = get_course($courseid)->shortname;
         $this->modulename = $modulename;
         $this->instancename = $instancename;
         $this->content = $content;
