@@ -119,12 +119,14 @@ function executeusersettings(settingsfromdb) {
         futureradiobuttons.forEach(function(button) {
             if (button.id === futurebuttonid) {
                 button.checked = true;
+                button.parentNode.classList.add('active');
                 button.dispatchEvent(new Event('change'));
             }
         });
         pastradiobuttons.forEach(function(button) {
             if (button.id === pastbuttonid) {
                 button.checked = true;
+                button.parentNode.classList.add('active');
                 button.dispatchEvent(new Event('change'));
             }
         });
@@ -132,6 +134,7 @@ function executeusersettings(settingsfromdb) {
         // If the time span is set to all time, activate the all time button.
         alltimebutton.forEach(function(button) {
             button.checked = true;
+            button.parentNode.classList.add('active');
             button.dispatchEvent(new Event('change'));
         });
         futureradiobuttons.forEach(function(button) {
@@ -193,7 +196,7 @@ function collecttimefiltersettings() {
     // Get the relevant time spans of the time filter.
     // Check if the alltimebutton is set.
     alltimebutton.forEach(function(button) {
-        if (button.checked) {
+        if (button.checked || button.parentNode.classList.contains('active')) {
             // Get the timespan.
             settings.timepast = convertidtotime(button.id);
             settings.timefuture = convertidtotime(button.id);
@@ -207,14 +210,14 @@ function collecttimefiltersettings() {
 
     // If the alltimebutton is not set, check which of the future/past buttons is set.
     futureradiobuttons.forEach(function(button) {
-        if (button.checked) {
+        if (button.checked || button.parentNode.classList.contains('active')) {
             // Get the timespan.
             settings.timefuture = convertidtotime(button.id);
         }
     });
 
     pastradiobuttons.forEach(function(button) {
-        if (button.checked) {
+        if (button.checked || button.parentNode.classList.contains('active')) {
             // Get the timespan.
             settings.timepast = convertidtotime(button.id);
         }
