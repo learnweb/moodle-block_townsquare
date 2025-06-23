@@ -40,7 +40,7 @@ class block_townsquare extends block_base {
      * @return object|null The block HTML.
      */
     public function get_content(): object {
-        global $OUTPUT, $DB, $USER;
+        global $OUTPUT, $DB, $USER, $CFG;
 
         if ($this->content !== null) {
             return $this->content;
@@ -52,6 +52,7 @@ class block_townsquare extends block_base {
         $mustachedata->courses = $controller->courses;
         $mustachedata->savehelpicon = ['text' => get_string('savehelpicontext', 'block_townsquare')];
         $mustachedata->resethelpicon = ['text' => get_string('resethelpicontext', 'block_townsquare')];
+        $mustachedata->newsidepanel = $CFG->branch >= 500;
         $this->content = new stdClass();
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
 

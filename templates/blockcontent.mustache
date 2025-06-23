@@ -76,7 +76,13 @@
     <div class="row townsquare_main">
 
         <div class="col-md-3 townsquare_sidepanel">
-            {{> block_townsquare/sidepanel}}
+            {{#newsidepanel}}
+                {{> block_townsquare/sidepanel}}
+            {{/newsidepanel}}
+            {{^newsidepanel}}
+                {{> block_townsquare/sidepanel_old}}
+            {{/newsidepanel}}
+
         </div>
 
         <div class=" col-md-9 townsquare_content">

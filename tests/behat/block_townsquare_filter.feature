@@ -66,6 +66,7 @@ Feature: The townsquare block allows users to see notifications from different c
     And I should see "Test assign 2" in the "Town Square" "block"
     And I should not see "Test assign 3" in the "Town Square" "block"
     And I should not see "Choice description" in the "Town Square" "block"
+    And I pause
     When I click on "Next week" "text"
     Then I should see "Test assign 1" in the "Town Square" "block"
     And I should see "Test assign 2" in the "Town Square" "block"
