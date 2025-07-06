@@ -21,6 +21,7 @@
 
 .ts_usersettings_button {
     display: flex;
+    margin: 0.5em;
 }
 
 .ts_usersettings_message {

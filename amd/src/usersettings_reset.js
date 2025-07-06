@@ -67,8 +67,8 @@ export function init(userid) {
         });
 
         alltimebutton.forEach(function(button) {
-            button.parentNode.classList.add('active');
             button.checked = true;
+            button.parentNode.classList.add('active');
             button.dispatchEvent(new Event('change'));
         });
 

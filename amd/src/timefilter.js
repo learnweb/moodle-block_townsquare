@@ -97,11 +97,10 @@ function alltimeaddEventListener() {
             pastradiobuttons.forEach(function(pastradiobutton) {
                 pastradiobutton.checked = false;
                 pastradiobutton.parentNode.classList.remove("active");
-
             });
 
             // Execute the filter function.
-            executefilter(timestart, timeend, addstarttime,addendtime, button.checked);
+            executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
         });
     });
 }
@@ -126,7 +125,7 @@ function futuretimeaddEventListener() {
             addstarttime = 0;
             addendtime = 0;
             pastradiobuttons.forEach(function(pastradiobutton) {
-                if (pastradiobutton.parentNode.classList.contains('active')) {
+                if (pastradiobutton.checked || pastradiobutton.parentNode.classList.contains('active')) {
                     addstarttime = currenttime - convertidtotime(pastradiobutton.id);
                     addendtime = currenttime;
                 }
@@ -147,7 +146,6 @@ function pasttimeaddEventListener() {
             // Disable the all_time button.
             alltimebutton.forEach(function(alltimebutton) {
                 alltimebutton.checked = false;
-                alltimebutton.parentNode.classList.remove('active');
             });
 
             // Set the time span based on the radiobutton id.
@@ -158,7 +156,7 @@ function pasttimeaddEventListener() {
             addstarttime = 0;
             addendtime = 0;
             futureradiobuttons.forEach(function(futureradiobutton) {
-                if (futureradiobutton.parentNode.classList.contains('active')) {
+                if (futureradiobutton.checked || futureradiobutton.parentNode.classList.contains('active')) {
                     addstarttime = currenttime;
                     addendtime = currenttime + convertidtotime(futureradiobutton.id);
                 }
@@ -176,7 +174,7 @@ function pasttimeaddEventListener() {
  * @returns {number}
  */
 function convertidtotime(id) {
-    switch(id) {
+    switch (id) {
         case "ts_time_all":
             return 15778463;
         case "ts_time_next_twodays":

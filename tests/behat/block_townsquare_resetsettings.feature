@@ -43,8 +43,8 @@ Feature: In the townsquare block user can reset their filter settings
   Scenario: Test the Reset button
     Given I add a townsquare completion event to "C1"
     And I log in as "student1"
-    And I click on "Course 1" "checkbox"
-    And I click on "Course 3" "checkbox"
+    And I click on "C1" "checkbox"
+    And I click on "C3" "checkbox"
     And I click on "Time filter" "text"
     And I click on "Next week" "text"
     And I click on "Last five days" "text"
@@ -53,13 +53,13 @@ Feature: In the townsquare block user can reset their filter settings
     And I click on "postletter" "checkbox"
     When I click on "Reset Settings" "button"
     And I click on "Course filter" "text"
-    Then "Course 1" "checkbox" should exist
-    And "Course 2" "checkbox" should exist
-    And "Course 3" "checkbox" should exist
+    Then "C1" "checkbox" should exist
+    And "C2" "checkbox" should exist
+    And "C3" "checkbox" should exist
     And the following fields match these values:
-      | Course 1 | 1 |
-      | Course 2 | 1 |
-      | Course 3 | 1 |
+      | C1 | 1 |
+      | C2 | 1 |
+      | C3 | 1 |
     When I click on "Letter filter" "text"
     Then "basicletter" "checkbox" should exist
     And "completionletter" "checkbox" should exist
@@ -72,5 +72,3 @@ Feature: In the townsquare block user can reset their filter settings
     Then "All notifications" "text" should exist
     And the following fields match these values:
       | All notifications | 1 |
-
-
