@@ -48,7 +48,7 @@ export function init() {
     contentElements.forEach(
         (element) => {
             // Check if the div is too long.
-            if (element.clientHeight >= 85) {
+            if (element.clientHeight >= 90) {
                 // If the text is too long, show the showmore button.
                 buttons[element.id].setAttribute('showmore', 'true');
             } else {
