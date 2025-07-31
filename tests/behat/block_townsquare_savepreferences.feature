@@ -23,6 +23,7 @@ Feature: In the townsquare block user can save their settings in a database.
     And the following "blocks" exist:
     | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
     | townsquare | System       | 1         | my-index        | content       |
+    And I deactivate unnecessary dashboard blocks
 
   Scenario: Test saving the time filter
     Given I log in as "student1"

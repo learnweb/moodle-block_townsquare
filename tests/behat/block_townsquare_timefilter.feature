@@ -41,6 +41,7 @@ Feature: Extra feature file to test the time filter
     And the following "blocks" exist:
       | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
       | townsquare | System       | 1         | my-index        | content       |
+    And I deactivate unnecessary dashboard blocks
     And I log in as "student1"
     And I click on "Time filter" "text"
     # Random clicks on different time filters

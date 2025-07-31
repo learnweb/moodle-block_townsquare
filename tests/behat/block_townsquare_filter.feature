@@ -26,6 +26,7 @@ Feature: The townsquare block allows users to see notifications from different c
     And the following "blocks" exist:
       | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
       | townsquare | System       | 1         | my-index        | content       |
+    And I deactivate unnecessary dashboard blocks
 
   Scenario: Test the course filter
     Given I log in as "student1"

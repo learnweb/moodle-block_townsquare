@@ -61,4 +61,24 @@ class behat_block_townsquare extends behat_base {
         ];
         $generator->create_module('assign', $assignrecord, $options);
     }
+
+    /**
+     * Deactivates unnecessary dashboard blocks for testing.
+     * @Given /^I deactivate unnecessary dashboard blocks$/
+     *
+     * @return void
+     * @throws dml_exception
+     */
+    public function i_deactivate_unnecessary_dashboard_blocks() {
+        global $DB;
+
+        // Deactivate the timeline and calendar blocks.
+        $blocks = ['timeline', 'calendar_month'];
+        foreach ($blocks as $blockname) {
+            if ($block = $DB->get_record('block', ['name' => $blockname])) {
+                $block->visible = 0;
+                $DB->update_record('block', $block);
+            }
+        }
+    }
 }
