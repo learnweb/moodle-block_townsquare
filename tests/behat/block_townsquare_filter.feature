@@ -55,6 +55,7 @@ Feature: The townsquare block allows users to see notifications from different c
       | choice   | C2     | 18        | Test choice 1   | Choice description    | ##now -8 days##  | ##now -8 days##   |
       | choice   | C2     | 19        | Test choice 2   | Choice description    | ##now -2 months##| ##now -2 months## |
     And I log in as "student1"
+    And I change window size to "large"
     And I click on "Time filter" "text"
     # Test the time filter for the future
     When I click on "Next two days" "text"
