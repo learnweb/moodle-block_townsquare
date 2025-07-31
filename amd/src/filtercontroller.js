@@ -14,10 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript to show/hide letters based on all filters
- *
- * This file implements 1 functionality:
- * - If the "save settings" button is pressed, store the settings in the database.
+ * JavaScript to show/hide letters based on all filters
  *
  * @module     block_townsquare/filtercontroller
  * @copyright  2024 Tamaro Walter
@@ -28,7 +25,7 @@
 const letters = document.querySelectorAll('.townsquare_letter');
 
 /**
- * Init function
+ * Init function. Controls the visibility of letters based on the approval of all filters.
  */
 export function init() {
     // First step: activate every letter by adding the filter classes.

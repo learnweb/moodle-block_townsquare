@@ -17,10 +17,7 @@ import {getString} from "core/str";
 import {prefetchStrings} from 'core/prefetch';
 
 /**
- * Javascript for the post letter
- *
- * This file implements following functionality:
- * - cuts posts that have many characters and shows a "see more" Button to see the whole text.
+ * JavaScript for the post letter
  *
  * @module     block_townsquare/postletter
  * @copyright  2023 Tamaro Walter
@@ -37,9 +34,8 @@ const Selectors = {
 };
 
 /**
- * Init function
- *
- * The function can cut the text or extract paragraphs of a post.
+ * Init function. It limits the height of posts that are too long and adds a "show more" button to them if the user wants to see
+ * the full text.
  */
 export function init() {
     // Get the strings for the show more/show less button.

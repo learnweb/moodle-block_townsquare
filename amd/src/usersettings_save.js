@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript to save the user settings in the database.
+ * JavaScript to save the user settings in the database.
  *
  * This file implements 1 functionality:
  * - If the "save settings" button is pressed, store the settings in the database.
@@ -38,7 +38,8 @@ const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
 
 /**
- * Init function
+ * Init function. This functions adapts the filter settings to the user settings from the database. If the user changes settings
+ * and clicks the save button, the settings are stored in the database.
  *
  * @param {number} userid           The id of the current user.
  * @param {object} settingsfromdb   The settings from the database, if there are any.

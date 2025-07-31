@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript to reset the user settings..
+ * JavaScript to reset the user settings.
  *
  * This file implements 1 functionality:
  * - If the "reset settings" button is pressed, reset all settings and delete the users database record.
@@ -30,7 +30,7 @@ import Ajax from 'core/ajax';
 const resetbutton = document.getElementById('ts_usersettings_resetbutton');
 
 /**
- * Init function
+ * Init function. This functions resets the user settings from the database.
  * @param {number} userid The id of the current user.
  */
 export function init(userid) {

@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript for the time filter
+ * JavaScript for the time filter
  *
  * This file implements 1 functionality:
  * - Checks, which of the radio buttons is pressed and filters the content based on the time.
@@ -43,7 +43,7 @@ export function init() {
     // Set the current time.
     currenttime = new Date().getTime() / 1000;
 
-    // Add event listeners to the all kind of buttons.
+    // Add event listeners to the all kinds of buttons.
     alltimeaddEventListener();
     futuretimeaddEventListener();
     pasttimeaddEventListener();

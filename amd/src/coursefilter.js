@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript for the course filter
+ * JavaScript for the course filter
  *
  * This file implements 1 functionality:
  * - Checks the checkboxes of the course filter and hides content from courses if the checkbox is not checked.
@@ -28,7 +28,8 @@
 const checkboxes = document.querySelectorAll('.ts_course_checkbox');
 
 /**
- * Init function
+ * Init function. Adds an event listener to the course filter checkboxes. This is part of the content filtering functionality.
+ * Every checkbox represents one course that shows content in Town square.
  */
 export function init() {
     checkboxes.forEach(function(checkbox) {
