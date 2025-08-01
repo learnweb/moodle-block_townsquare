@@ -70,6 +70,7 @@
 
 .townsquare_showmore {
     cursor: pointer;
+    background-color: #6a737b;
 }
 
 /* Styles for individual letters */
@@ -83,7 +84,7 @@
 }
 
 .postletter_message {
-    max-height: 85px;
+    max-height: 90px; /*4 lines with font-size 15px and line-height 1.5*/
     overflow: hidden;
     display: block;
 }

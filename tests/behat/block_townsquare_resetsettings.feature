@@ -39,6 +39,7 @@ Feature: In the townsquare block user can reset their filter settings
     And the following "blocks" exist:
       | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
       | townsquare | System       | 1         | my-index        | content       |
+    And I deactivate unnecessary dashboard blocks
 
   Scenario: Test the Reset button
     Given I add a townsquare completion event to "C1"

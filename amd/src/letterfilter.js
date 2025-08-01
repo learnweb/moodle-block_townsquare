@@ -14,10 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Javascript for the letter filter
- *
- * This file implements 1 functionality:
- * - Checks the checkboxes of the letter filter and hides content from courses if the checkbox is not checked.
+ * JavaScript for the letter filter
  *
  * @module     block_townsquare/letterfilter
  * @copyright  2024 Tamaro Walter
@@ -28,7 +25,8 @@
 const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
 
 /**
- * Init function
+ * Init function. Adds an event listener to the letter filter checkboxes. This is part of the content filtering functionality.
+ * Every checkbox represents a kind of letter (posts, activity completions, basic notifications) that shows content in Town square.
  */
 export function init() {
     checkboxes.forEach(function(checkbox) {

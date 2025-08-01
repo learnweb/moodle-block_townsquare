@@ -52,6 +52,7 @@ class block_townsquare extends block_base {
         $mustachedata->courses = $controller->courses;
         $mustachedata->savehelpicon = ['text' => get_string('savehelpicontext', 'block_townsquare')];
         $mustachedata->resethelpicon = ['text' => get_string('resethelpicontext', 'block_townsquare')];
+        // Learnweb-Todo: If versions <M.5.0 are not supported anymore, delete this check and the old sidepanel template.
         $mustachedata->newsidepanel = $CFG->branch >= 500;
         $this->content = new stdClass();
         $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
