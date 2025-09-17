@@ -38,7 +38,6 @@ use stdClass;
  * @covers \block_townsquare\townsquareevents::get_postevents()
  */
 final class postevents_test extends \advanced_testcase {
-
     // Attributes.
 
     /** @var stdClass The data that will be used for testing.
@@ -184,7 +183,8 @@ final class postevents_test extends \advanced_testcase {
         $this->create_forum_posts();
 
         // Test case 1: Post for the teacher.
-        $posts = $this->get_postevents_from_user($this->testdata->teacher);;
+        $posts = $this->get_postevents_from_user($this->testdata->teacher);
+        ;
 
         // Check if the teacher sees only posts of his courses.
         $result = $this->check_postcourses($posts, enrol_get_all_users_courses($this->testdata->teacher->id, true));

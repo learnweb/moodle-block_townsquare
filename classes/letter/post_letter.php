@@ -39,7 +39,6 @@ use stdClass;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_letter extends letter {
-
     // Attributes.
 
     /** @var object information about the post author. The object contains:
@@ -79,8 +78,15 @@ class post_letter extends letter {
      * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
      */
     public function __construct($contentid, $postevent) {
-        parent::__construct($contentid, $postevent->courseid, $postevent->modulename, $postevent->instancename,
-                            $postevent->content, $postevent->timestart, $postevent->coursemoduleid);
+        parent::__construct(
+            $contentid,
+            $postevent->courseid,
+            $postevent->modulename,
+            $postevent->instancename,
+            $postevent->content,
+            $postevent->timestart,
+            $postevent->coursemoduleid
+        );
 
         $this->author = new stdClass();
         $this->post = new stdClass();
@@ -154,8 +160,12 @@ class post_letter extends letter {
         }
         $user = new stdClass();
         $picturefields = fields::get_picture_fields();
-        $user = username_load_fields_from_object($user, $DB->get_record('user', ['id' => $this->author->id]),
-            null, $picturefields);
+        $user = username_load_fields_from_object(
+            $user,
+            $DB->get_record('user', ['id' => $this->author->id]),
+            null,
+            $picturefields
+        );
         $user->id = $this->author->id;
         $this->author->picture = $OUTPUT->user_picture($user, ['courseid' => $this->courseid, 'link' => false]);
     }
@@ -201,12 +211,18 @@ class post_letter extends letter {
      */
     private function format_post($postevent) {
         $context = context_module::instance($postevent->coursemoduleid);
-        $message = file_rewrite_pluginfile_urls($postevent->content, 'pluginfile.php', $context->id,
-                                    'mod_'. $postevent->modulename, 'post', $postevent->postid, ['includetoken' => true]);
+        $message = file_rewrite_pluginfile_urls(
+            $postevent->content,
+            'pluginfile.php',
+            $context->id,
+            'mod_' . $postevent->modulename,
+            'post',
+            $postevent->postid,
+            ['includetoken' => true]
+        );
         $options = new stdClass();
         $options->para = true;
         $options->context = $context;
         return format_text($message, $postevent->postmessageformat, $options);
     }
-
 }

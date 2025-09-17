@@ -143,8 +143,12 @@ function townsquare_filter_availability($event): bool {
  */
 function townsquare_filter_activitycompletions($coreevent): bool {
     global $DB, $USER;
-    if ($completionstatus = $DB->get_record('course_modules_completion',
-        ['coursemoduleid' => $coreevent->coursemoduleid, 'userid' => $USER->id])) {
+    if (
+        $completionstatus = $DB->get_record(
+            'course_modules_completion',
+            ['coursemoduleid' => $coreevent->coursemoduleid, 'userid' => $USER->id]
+        )
+    ) {
         if ($completionstatus->completionstate != 0) {
             return true;
         }

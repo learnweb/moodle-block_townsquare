@@ -39,7 +39,6 @@ require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class letter {
-
     // Attributes.
 
     /** @var int an ID to identify every content in townsquare */

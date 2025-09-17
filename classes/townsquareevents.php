@@ -44,7 +44,6 @@ require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class townsquareevents {
-
     /** @var int timestamp of the current time */
     public int $timenow;
 
@@ -105,9 +104,11 @@ class townsquareevents {
         // Filter the events and add the instancename.
         foreach ($coreevents as $coreevent) {
             // Filter out events that are not relevant for the user.
-            if (townsquare_filter_availability($coreevent) ||
+            if (
+                townsquare_filter_availability($coreevent) ||
                 ($coreevent->modulename == "assign" && $this->filter_assignment($coreevent)) ||
-                ($coreevent->eventtype == "expectcompletionon" && townsquare_filter_activitycompletions($coreevent))) {
+                ($coreevent->eventtype == "expectcompletionon" && townsquare_filter_activitycompletions($coreevent))
+            ) {
                 unset($coreevents[$coreevent->id]);
                 continue;
             }
@@ -138,8 +139,11 @@ class townsquareevents {
             }
 
             // Add a links and the authors picture.
-            $post->linktopost = new moodle_url('/mod/forum/discuss.php',
-                                ['d' => $post->postdiscussion], 'p' . $post->postid);
+            $post->linktopost = new moodle_url(
+                '/mod/forum/discuss.php',
+                ['d' => $post->postdiscussion],
+                'p' . $post->postid
+            );
             $post->linktoauthor = new moodle_url('/user/view.php', ['id' => $post->postuserid]);
         }
 
@@ -162,7 +166,7 @@ class townsquareevents {
         if ($courses == []) {
             return [];
         }
-        list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
+        [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
         $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
 
         $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
@@ -225,8 +229,8 @@ class townsquareevents {
                     'wiki', 'workshop', ];
 
         // Prepare params for sql statement.
-        list($insqlcourses, $inparamscourses) = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
-        list($insqlmodules, $inparamsmodules) = $DB->get_in_or_equal($modules, SQL_PARAMS_NAMED);
+        [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
+        [$insqlmodules, $inparamsmodules] = $DB->get_in_or_equal($modules, SQL_PARAMS_NAMED);
         $params = ['timestart' => $timestart, 'timeduration' => $timestart,
                    'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses + $inparamsmodules;
 
@@ -241,7 +245,7 @@ class townsquareevents {
                       AND e.courseid $insqlcourses
                       AND e.modulename $insqlmodules
                       AND m.visible = 1
-                      AND (e.name NOT LIKE '" .'0'. "' AND e.eventtype NOT LIKE '" .'0'. "' )
+                      AND (e.name NOT LIKE '" . '0' . "' AND e.eventtype NOT LIKE '" . '0' . "' )
                       AND (e.instance <> 0 AND e.visible = 1)
                 ORDER BY e.timestart DESC";
 
@@ -263,8 +267,10 @@ class townsquareevents {
         $overduecheck = ($type == "due" || $type == "gradingdue") && ($this->timenow >= ($coreevent->timestart + 604800));
 
         // Check if the user is someone without grading capability.
-        $cannotgradecheck = $coreevent->eventtype == "gradingdue" && !has_capability('mod/assign:grade',
-                                                                        context_module::instance($coreevent->coursemoduleid));
+        $cannotgradecheck = $coreevent->eventtype == "gradingdue" && !has_capability(
+            'mod/assign:grade',
+            context_module::instance($coreevent->coursemoduleid)
+        );
         // Check if the assignment is not open yet.
         $stillclosedcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
 
@@ -299,5 +305,4 @@ class townsquareevents {
 
         return false;
     }
-
 }

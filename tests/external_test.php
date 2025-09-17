@@ -42,7 +42,6 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @runTestsInSeparateProcesses
  */
 final class external_test extends \advanced_testcase {
-
     /** @var object That that is used for testing
      * It contains an instance of the townsquare external class.
      *
@@ -78,10 +77,14 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals(false, $record);
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = $this->testdata->external->record_usersettings($usersetting->userid,
-                                                                  $usersetting->timefilterpast,
-                                                                  $usersetting->timefilterfuture, $usersetting->basicletter,
-                                                                  $usersetting->completionletter, $usersetting->postletter);
+        $result = $this->testdata->external->record_usersettings(
+            $usersetting->userid,
+            $usersetting->timefilterpast,
+            $usersetting->timefilterfuture,
+            $usersetting->basicletter,
+            $usersetting->completionletter,
+            $usersetting->postletter
+        );
 
         $this->assertEquals(true, $result);
         $record = $DB->get_record('block_townsquare_preferences', ['userid' => $usersetting->userid]);
@@ -101,9 +104,14 @@ final class external_test extends \advanced_testcase {
         $usersetting->postletter = 0;
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = $this->testdata->external->record_usersettings($usersetting->userid, $usersetting->timefilterpast,
-                                                                  $usersetting->timefilterfuture, $usersetting->basicletter,
-                                                                  $usersetting->completionletter, $usersetting->postletter);
+        $result = $this->testdata->external->record_usersettings(
+            $usersetting->userid,
+            $usersetting->timefilterpast,
+            $usersetting->timefilterfuture,
+            $usersetting->basicletter,
+            $usersetting->completionletter,
+            $usersetting->postletter
+        );
 
         $this->assertEquals(true, $result);
         $record = $DB->get_record('block_townsquare_preferences', ['userid' => $usersetting->userid]);

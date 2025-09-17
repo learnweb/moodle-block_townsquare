@@ -42,7 +42,6 @@ require_once("$CFG->libdir/externallib.php");
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class external extends external_api {
-
     /**
      * Returns description of method parameters
      * @return external_function_parameters
@@ -129,8 +128,14 @@ class external extends external_api {
      * @param int $postletter           If post letters should be shown
      * @return bool
      */
-    public static function record_usersettings($userid, $timefilterpast, $timefilterfuture,
-                                               $basicletter, $completionletter, $postletter): bool {
+    public static function record_usersettings(
+        $userid,
+        $timefilterpast,
+        $timefilterfuture,
+        $basicletter,
+        $completionletter,
+        $postletter
+    ): bool {
         global $DB;
         // Parameter validation.
         $params = self::validate_parameters(self::record_usersettings_parameters(), [

@@ -34,30 +34,43 @@ if ($ADMIN->fulltree) {
     $options[TOWNSQUARE_TIME_THREEMONTHS] = get_string('timethreemonths', 'block_townsquare');
     $options[TOWNSQUARE_TIME_SIXMONTHS] = get_string('timesixmonths', 'block_townsquare');
 
-    $settings->add(new admin_setting_configselect('block_townsquare/timespan', get_string('timespan', 'block_townsquare'),
-        get_string('configtimespan', 'block_townsquare'), TOWNSQUARE_TIME_THREEMONTHS, $options));
+    $settings->add(new admin_setting_configselect(
+        'block_townsquare/timespan',
+        get_string('timespan', 'block_townsquare'),
+        get_string('configtimespan', 'block_townsquare'),
+        TOWNSQUARE_TIME_THREEMONTHS,
+        $options
+    ));
 
     // Color setting for the color that will be used on basic letters.
-    $settings->add(new admin_setting_configcolourpicker('block_townsquare/basiclettercolor',
-                                                        get_string('basiclettercolor', 'block_townsquare'),
-                                                        get_string('configbasiclettercolor', 'block_townsquare'),
-                                        TOWNSQUARE_BASICLETTER_DEFAULTCOLOR));
+    $settings->add(new admin_setting_configcolourpicker(
+        'block_townsquare/basiclettercolor',
+        get_string('basiclettercolor', 'block_townsquare'),
+        get_string('configbasiclettercolor', 'block_townsquare'),
+        TOWNSQUARE_BASICLETTER_DEFAULTCOLOR
+    ));
 
     // Color setting for the color that will be used on post letters.
-    $settings->add(new admin_setting_configcolourpicker('block_townsquare/postlettercolor',
-                                                        get_string('postlettercolor', 'block_townsquare'),
-                                                        get_string('configpostlettercolor', 'block_townsquare'),
-                                        TOWNSQUARE_POSTLETTER_DEFAULTCOLOR));
+    $settings->add(new admin_setting_configcolourpicker(
+        'block_townsquare/postlettercolor',
+        get_string('postlettercolor', 'block_townsquare'),
+        get_string('configpostlettercolor', 'block_townsquare'),
+        TOWNSQUARE_POSTLETTER_DEFAULTCOLOR
+    ));
 
     // Color setting for the color that will be used on completion letters.
-    $settings->add(new admin_setting_configcolourpicker('block_townsquare/completionlettercolor',
-                                                        get_string('completionlettercolor', 'block_townsquare'),
-                                                        get_string('configcompletionlettercolor', 'block_townsquare'),
-                                        TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR));
+    $settings->add(new admin_setting_configcolourpicker(
+        'block_townsquare/completionlettercolor',
+        get_string('completionlettercolor', 'block_townsquare'),
+        get_string('configcompletionlettercolor', 'block_townsquare'),
+        TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR
+    ));
 
     // Color setting for the orientation marker.
-    $settings->add(new admin_setting_configcolourpicker('block_townsquare/orientationmarkercolor',
-                                                        get_string('orientationmarkercolor', 'block_townsquare'),
-                                                        get_string('configorientationmarkercolor', 'block_townsquare'),
-                                        TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR));
+    $settings->add(new admin_setting_configcolourpicker(
+        'block_townsquare/orientationmarkercolor',
+        get_string('orientationmarkercolor', 'block_townsquare'),
+        get_string('configorientationmarkercolor', 'block_townsquare'),
+        TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR
+    ));
 }
