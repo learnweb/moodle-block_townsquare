@@ -40,10 +40,9 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
+    core_userlist_provider,
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    core_userlist_provider {
-
+    \core_privacy\local\request\plugin\provider {
     /**
      * Function that describes the type of data that is stored.
      * @param collection $collection
@@ -137,8 +136,10 @@ class provider implements
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
         $context = $userlist->get_context();
-        if ($context instanceof \context_user &&
-            in_array($context->instanceid, $userlist->get_userids())) {
+        if (
+            $context instanceof \context_user &&
+            in_array($context->instanceid, $userlist->get_userids())
+        ) {
             $DB->delete_records('block_townsquare_preferences', ['userid' => $context->instanceid]);
         }
     }
@@ -170,5 +171,4 @@ class provider implements
             }
         }
     }
-
 }

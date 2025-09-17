@@ -37,7 +37,6 @@ require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class orientation_marker {
-
     // Attributes.
 
     /** @var int an ID to identify every content in townsquare */
@@ -79,5 +78,4 @@ class orientation_marker {
             'orientationmarkercolor' => townsquare_get_colorsetting('orientationmarker'),
         ];
     }
-
 }

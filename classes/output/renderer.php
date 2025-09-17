@@ -33,7 +33,6 @@ use plugin_renderer_base;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Return the main content for the block townsquare.
      *
@@ -43,5 +42,4 @@ class renderer extends plugin_renderer_base {
     public function render_main($data): string {
         return $this->render_from_template('block_townsquare/blockcontent', $data);
     }
-
 }

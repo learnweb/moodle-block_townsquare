@@ -24,7 +24,7 @@
  */
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
-use Behat\Gherkin\Node\TableNode as TableNode;
+use Behat\Gherkin\Node\TableNode;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\ExpectationException;
 
@@ -37,7 +37,6 @@ use Behat\Mink\Exception\ExpectationException;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_block_townsquare extends behat_base {
-
     /**
      * Adds an activity completion event.
      * @Given /^I add a townsquare completion event to "(?P<course>(?:[^"]|\\")*)"$/

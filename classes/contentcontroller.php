@@ -33,7 +33,6 @@ namespace block_townsquare;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class contentcontroller {
-
     /** @var object Class to retrieve events */
     public object $townsquareevents;
 
@@ -83,8 +82,15 @@ class contentcontroller {
             } else if ($event->eventtype == 'expectcompletionon') {
                 $templetter = new letter\activitycompletion_letter($index, $event);
             } else {
-                $templetter = new letter\letter($index, $event->courseid, $event->modulename, $event->instancename,
-                                                        $event->content, $event->timestart, $event->coursemoduleid);
+                $templetter = new letter\letter(
+                    $index,
+                    $event->courseid,
+                    $event->modulename,
+                    $event->instancename,
+                    $event->content,
+                    $event->timestart,
+                    $event->coursemoduleid
+                );
             }
 
             $this->content[$index] = $templetter->export_letter();

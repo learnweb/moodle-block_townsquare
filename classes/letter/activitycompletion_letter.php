@@ -32,7 +32,6 @@ namespace block_townsquare\letter;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class activitycompletion_letter extends letter {
-
     // Attributes.
 
     /** @var bool variable for the mustache template */
@@ -47,8 +46,15 @@ class activitycompletion_letter extends letter {
      * @param object $coreevent a calendar event with information, for more see classes/townsquareevents.php
      */
     public function __construct($contentid, $coreevent) {
-        parent::__construct($contentid, $coreevent->courseid, $coreevent->modulename, $coreevent->instancename,
-                                        $coreevent->content, $coreevent->timestart, $coreevent->coursemoduleid);
+        parent::__construct(
+            $contentid,
+            $coreevent->courseid,
+            $coreevent->modulename,
+            $coreevent->instancename,
+            $coreevent->content,
+            $coreevent->timestart,
+            $coreevent->coursemoduleid
+        );
         $this->lettertype = 'activitycompletion';
         $this->lettercolor = townsquare_get_colorsetting('completionletter');
     }
@@ -75,5 +81,4 @@ class activitycompletion_letter extends letter {
             'completionlettercolor' => $this->lettercolor,
         ];
     }
-
 }

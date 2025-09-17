@@ -42,7 +42,6 @@ use stdClass;
  * @covers \block_townsquare\townsquareevents::get_coreevents()
  */
 final class coreevents_test extends \advanced_testcase {
-
     // Attributes.
 
     /** @var object The data that will be used for testing.
@@ -145,8 +144,13 @@ final class coreevents_test extends \advanced_testcase {
     public function test_assignfilter(): void {
         // Test case 1: An Assignment is over a week due.
         $time = time();
-        $pastassignment = $this->create_assignment($this->testdata->course1->id, $time - 1814400,
-                                                   $time - 907200, $time - 907200, false);
+        $pastassignment = $this->create_assignment(
+            $this->testdata->course1->id,
+            $time - 1814400,
+            $time - 907200,
+            $time - 907200,
+            false
+        );
 
         // Get the current calendar events.
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
@@ -182,8 +186,13 @@ final class coreevents_test extends \advanced_testcase {
         $this->assertEquals(true, $result);
 
         // Test case 3: Assignments that are not open should not be seen.
-        $notopenassignment = $this->create_assignment($this->testdata->course1->id, $time + 3600,
-                                            $time + 604800 , $time + 604800 , false);
+        $notopenassignment = $this->create_assignment(
+            $this->testdata->course1->id,
+            $time + 3600,
+            $time + 604800,
+            $time + 604800,
+            false
+        );
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
         $result = true;
         foreach ($coreevents as $event) {
@@ -255,13 +264,22 @@ final class coreevents_test extends \advanced_testcase {
         // Create an assign module with an activity completion.
         // Make an assignment that is due in 1 week and will be graded in 2 weeks.
         $time = time();
-        $this->testdata->assignment1 = $this->create_assignment($this->testdata->course1->id, $time - 3600,
-                                                     $time + 1209600, $time + 1209600, true);
+        $this->testdata->assignment1 = $this->create_assignment(
+            $this->testdata->course1->id,
+            $time - 3600,
+            $time + 1209600,
+            $time + 1209600,
+            true
+        );
 
         // Create a second assignment for the second course.
-        $this->testdata->assignment2 = $this->create_assignment($this->testdata->course2->id, $time - 3600,
-            $time + 1209600, $time + 1209600, false);
-
+        $this->testdata->assignment2 = $this->create_assignment(
+            $this->testdata->course2->id,
+            $time - 3600,
+            $time + 1209600,
+            $time + 1209600,
+            false
+        );
     }
 
     /**

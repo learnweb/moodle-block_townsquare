@@ -36,7 +36,6 @@ use stdClass;
  * @covers \block_townsquare\contentcontroller
  */
 final class contentcontroller_test extends \advanced_testcase {
-
     // Attributes.
 
     /** @var object The data that will be used for testing
@@ -95,8 +94,12 @@ final class contentcontroller_test extends \advanced_testcase {
 
             // Declare the three types of letter checks.
             $postcheck = $this->check_two_params(current($events)->eventtype, 'post', current($content)['lettertype'], 'post');
-            $completioncheck = $this->check_two_params(current($events)->eventtype, 'expectcompletionon',
-                                                       current($content)['lettertype'], 'activitycompletion');
+            $completioncheck = $this->check_two_params(
+                current($events)->eventtype,
+                'expectcompletionon',
+                current($content)['lettertype'],
+                'activitycompletion'
+            );
 
             $basiccheck = (current($events)->eventtype != 'post' && current($events)->eventtype != 'expectcompletionon') &&
                            current($content)['lettertype'] == 'basic';
@@ -142,15 +145,20 @@ final class contentcontroller_test extends \advanced_testcase {
         $this->testdata->fdiscussion = (object)$forumgenerator->create_discussion($record);
 
         // Check if mod_moodleoverflow and the townsquare support plugin are installed.
-        if ($DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1]) &&
-            array_key_exists('moodleoverflow', \core_plugin_manager::instance()->get_plugins_of_type('townsquareexpansion'))) {
-
+        if (
+            $DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1]) &&
+            array_key_exists('moodleoverflow', \core_plugin_manager::instance()->get_plugins_of_type('townsquareexpansion'))
+        ) {
             $this->modoverflowinstalled = true;
             $modoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
-            $this->testdata->moodleoverflow = $datagenerator->create_module('moodleoverflow',
-                                                                             ['course' => $this->testdata->course->id]);
-            $this->testdata->mdiscussion = $modoverflowgenerator->post_to_forum($this->testdata->moodleoverflow,
-                                                                                   $this->testdata->teacher);
+            $this->testdata->moodleoverflow = $datagenerator->create_module(
+                'moodleoverflow',
+                ['course' => $this->testdata->course->id]
+            );
+            $this->testdata->mdiscussion = $modoverflowgenerator->post_to_forum(
+                $this->testdata->moodleoverflow,
+                $this->testdata->teacher
+            );
         } else {
             $this->modoverflowinstalled = false;
         }

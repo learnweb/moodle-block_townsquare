@@ -59,7 +59,7 @@ function townsquare_check_coreevent(&$event): void {
     $time = date('H:i', $event->timestart);
 
     // Most modules only have open and closing events.
-    $opencloseevents = ['choice' , 'data', 'feedback', 'lesson', 'quiz', 'scorm'];
+    $opencloseevents = ['choice', 'data', 'feedback', 'lesson', 'quiz', 'scorm'];
     if (in_array($event->modulename, $opencloseevents)) {
         $event->name = townsquare_get_open_close_message($event, $time);
     }
