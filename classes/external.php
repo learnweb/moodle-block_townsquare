@@ -22,11 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_townsquare;
+use core_external\restricted_context_exception;
 use external_function_parameters;
 use Exception;
 use external_api;
 use external_value;
 use stdClass;
+use context_user;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -67,12 +69,14 @@ class external extends external_api {
      * @throws \invalid_parameter_exception
      */
     public static function reset_usersettings($userid) {
-        global $DB;
+        global $DB, $USER;
 
         // Parameter validation.
         if (!self::validate_parameters(self::reset_usersettings_parameters(), ['userid' => $userid])) {
             return false;
         }
+
+        self::validate_context(context_user::instance($userid));
 
         $transaction = $DB->start_delegated_transaction();
 
@@ -136,12 +140,18 @@ class external extends external_api {
         $completionletter,
         $postletter
     ): bool {
-        global $DB;
+        global $DB, $USER;
         // Parameter validation.
         $params = self::validate_parameters(self::record_usersettings_parameters(), [
             'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
             'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
         ]);
+
+        if (!$params) {
+            return false;
+        }
+
+        self::validate_context(context_user::instance($userid));
 
         // Check if the user already has a record in the database.
         if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {

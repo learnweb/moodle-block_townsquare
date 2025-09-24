@@ -61,9 +61,11 @@ final class external_test extends \advanced_testcase {
      */
     public function test_record_usersettings(): void {
         global $DB;
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         $usersetting = new stdClass();
-        $usersetting->userid = 1;
+        $usersetting->userid = $user->id;
         $usersetting->timefilterpast = 432000;
         $usersetting->timefilterfuture = 2592000;
         $usersetting->basicletter = 0;
@@ -130,29 +132,32 @@ final class external_test extends \advanced_testcase {
      */
     public function test_reset_usersettings(): void {
         global $DB;
+        $user = $this->getDataGenerator()->create_user();
+        $user2 = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
 
         // Load a usersetting in the database.
-        $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
+        $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
                             'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
-        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
         // Test case 1: Wrong parameters.
-        $this->testdata->external->reset_usersettings(2);
-        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+        $this->testdata->external->reset_usersettings($user2->id);
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
         // Test case 2: For some reason, many records from the same user exist.
-        $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
+        $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
             'timefilterfuture' => 2592000, 'basicletter' => 1, 'completionletter' => 0, 'postletter' => 0, ]);
-        $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+        $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
-        $this->testdata->external->reset_usersettings(1);
-        $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+        $this->testdata->external->reset_usersettings($user->id);
+        $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
         // Test case 3: normal case.
-        $DB->insert_record('block_townsquare_preferences', ['userid' => 1, 'timefilterpast' => 432000,
+        $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
             'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
-        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
-        $this->testdata->external->reset_usersettings(1);
-        $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => 1])));
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
+        $this->testdata->external->reset_usersettings($user->id);
+        $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
     }
 }
