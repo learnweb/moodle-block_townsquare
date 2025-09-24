@@ -21,7 +21,7 @@
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace block_townsquare\letter;
+namespace block_townsquare\local\letter;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die;
@@ -105,7 +105,7 @@ class letter {
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
         $this->linktoactivity = new moodle_url('/mod/' . $modulename . '/view.php', ['id' => $cmid]);
-        $this->lettercolor = townsquare_get_colorsetting('basicletter');
+        $this->lettercolor = block_townsquare_get_colorsetting('basicletter');
     }
 
     // Functions.

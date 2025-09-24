@@ -62,9 +62,9 @@ class townsquareevents {
      */
     public function __construct() {
         $this->timenow = time();
-        $this->timestart = townsquare_get_timestart();
-        $this->timeend = townsquare_get_timeend();
-        $this->courses = townsquare_get_courses();
+        $this->timestart = block_townsquare_get_timestart();
+        $this->timeend = block_townsquare_get_timeend();
+        $this->courses = block_townsquare_get_courses();
     }
 
     /**
@@ -86,7 +86,7 @@ class townsquareevents {
 
         // Return the events in a sorted order.
         $events = array_merge($coreevents, $postevents, $subpluginevents);
-        return townsquare_mergesort($events);
+        return block_townsquare_mergesort($events);
     }
 
     /**
@@ -117,7 +117,7 @@ class townsquareevents {
             $coreevent->instancename = $DB->get_field($coreevent->modulename, 'name', ['id' => $coreevent->instance]);
 
             // Modify the content of the event if needed.
-            townsquare_check_coreevent($coreevent);
+            block_townsquare_check_coreevent($coreevent);
         }
 
         return $coreevents;
