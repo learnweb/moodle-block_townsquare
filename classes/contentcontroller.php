@@ -78,11 +78,11 @@ class contentcontroller {
                 $index++;
             }
             if ($event->eventtype == 'post') {
-                $templetter = new letter\post_letter($index, $event);
+                $templetter = new local\letter\post_letter($index, $event);
             } else if ($event->eventtype == 'expectcompletionon') {
-                $templetter = new letter\activitycompletion_letter($index, $event);
+                $templetter = new local\letter\activitycompletion_letter($index, $event);
             } else {
-                $templetter = new letter\letter(
+                $templetter = new local\letter\letter(
                     $index,
                     $event->courseid,
                     $event->modulename,

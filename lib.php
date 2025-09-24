@@ -23,21 +23,21 @@
  */
 
 // Time constants.
-define('TOWNSQUARE_TIME_TWOMONTHS', 5259486); // 60.87 days
-define('TOWNSQUARE_TIME_THREEMONTHS', 7889229); // 91.31 days
-define('TOWNSQUARE_TIME_SIXMONTHS', 15778463); // 182,62 days
+define('BLOCK_TOWNSQUARE_TIME_TWOMONTHS', 5259486); // 60.87 days
+define('BLOCK_TOWNSQUARE_TIME_THREEMONTHS', 7889229); // 91.31 days
+define('BLOCK_TOWNSQUARE_TIME_SIXMONTHS', 15778463); // 182,62 days
 
 // Color constants from bootstrap.
-define('TOWNSQUARE_BASICLETTER_DEFAULTCOLOR', '#0f6cbf');
-define('TOWNSQUARE_POSTLETTER_DEFAULTCOLOR', '#f7634d');
-define('TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR', '#ca3120');
-define('TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR', '#6a737b');
+define('BLOCK_TOWNSQUARE_BASICLETTER_DEFAULTCOLOR', '#0f6cbf');
+define('BLOCK_TOWNSQUARE_POSTLETTER_DEFAULTCOLOR', '#f7634d');
+define('BLOCK_TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR', '#ca3120');
+define('BLOCK_TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR', '#6a737b');
 
 /**
  * Gets the id of all courses where the current user is enrolled
  * @return array
  */
-function townsquare_get_courses(): array {
+function block_townsquare_get_courses(): array {
     global $USER;
 
     $enrolledcourses = enrol_get_all_users_courses($USER->id, true);
@@ -53,7 +53,7 @@ function townsquare_get_courses(): array {
  * Function for subplugins to get the start time of the search.
  * @return int
  */
-function townsquare_get_timestart(): int {
+function block_townsquare_get_timestart(): int {
     return time() - get_config('block_townsquare', 'timespan');
 }
 
@@ -61,7 +61,7 @@ function townsquare_get_timestart(): int {
  * Function for subplugins to get the end time of the search.
  * @return int
  */
-function townsquare_get_timeend(): int {
+function block_townsquare_get_timeend(): int {
     return time() + get_config('block_townsquare', 'timespan');
 }
 
@@ -70,15 +70,15 @@ function townsquare_get_timeend(): int {
  * @param array $events
  * @return array
  */
-function townsquare_mergesort($events): array {
+function block_townsquare_mergesort($events): array {
     $length = count($events);
     if ($length <= 1) {
         return $events;
     }
     $mid = (int) ($length / 2);
-    $left = townsquare_mergesort(array_slice($events, 0, $mid));
-    $right = townsquare_mergesort(array_slice($events, $mid));
-    return townsquare_merge($left, $right);
+    $left = block_townsquare_mergesort(array_slice($events, 0, $mid));
+    $right = block_townsquare_mergesort(array_slice($events, $mid));
+    return block_townsquare_merge($left, $right);
 }
 
 /**
@@ -87,7 +87,7 @@ function townsquare_mergesort($events): array {
  * @param array $right
  * @return array
  */
-function townsquare_merge(array $left, array $right): array {
+function block_townsquare_merge(array $left, array $right): array {
     $result = [];
     reset($left);
     reset($right);

@@ -21,7 +21,7 @@
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace block_townsquare\letter;
+namespace block_townsquare\local\letter;
 
 /**
  * Class that represents an activity completion reminder.
@@ -56,7 +56,7 @@ class activitycompletion_letter extends letter {
             $coreevent->coursemoduleid
         );
         $this->lettertype = 'activitycompletion';
-        $this->lettercolor = townsquare_get_colorsetting('completionletter');
+        $this->lettercolor = block_townsquare_get_colorsetting('completionletter');
     }
 
     // Functions.

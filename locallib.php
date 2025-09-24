@@ -25,11 +25,12 @@
 /**
  * Function to get the color of a letter.
  *
- * @param string $lettertype        The type of the letter that wants to retrieve its color setting.
- * @return false|string              The color of the letter.
+ * @param string $lettertype The type of the letter that wants to retrieve its color setting.
+ * @return string The color of the letter.
+ * @throws dml_exception
  * @throws moodle_exception
  */
-function townsquare_get_colorsetting($lettertype): string {
+function block_townsquare_get_colorsetting($lettertype): string {
     switch ($lettertype) {
         case 'basicletter':
             return get_config('block_townsquare', 'basiclettercolor');
@@ -50,7 +51,7 @@ function townsquare_get_colorsetting($lettertype): string {
  * @param object $event  The event, that is being checked.
  * @return void
  */
-function townsquare_check_coreevent(&$event): void {
+function block_townsquare_check_coreevent(&$event): void {
     // Activity completion event have a own message handling (as it always has the same structure).
     if ($event->eventtype == 'expectcompletionon') {
         return;
@@ -61,7 +62,7 @@ function townsquare_check_coreevent(&$event): void {
     // Most modules only have open and closing events.
     $opencloseevents = ['choice', 'data', 'feedback', 'lesson', 'quiz', 'scorm'];
     if (in_array($event->modulename, $opencloseevents)) {
-        $event->name = townsquare_get_open_close_message($event, $time);
+        $event->name = block_townsquare_get_open_close_message($event, $time);
     }
 
     // Other core plugins have extra/other event types.
@@ -88,7 +89,7 @@ function townsquare_check_coreevent(&$event): void {
  * @param int $time
  * @return string
  */
-function townsquare_get_open_close_message($event, $time) {
+function block_townsquare_get_open_close_message($event, $time) {
     if ($event->eventtype == 'open') {
         return get_string($event->modulename . 'openmessage', 'block_townsquare', ['time' => $time]);
     } else if ($event->eventtype == 'close') {

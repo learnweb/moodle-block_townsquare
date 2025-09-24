@@ -75,7 +75,7 @@ class orientation_marker {
             'contentid' => $this->contentid,
             'date' => $date,
             'isorientationmarker' => $this->isorientationmarker,
-            'orientationmarkercolor' => townsquare_get_colorsetting('orientationmarker'),
+            'orientationmarkercolor' => block_townsquare_get_colorsetting('orientationmarker'),
         ];
     }
 }

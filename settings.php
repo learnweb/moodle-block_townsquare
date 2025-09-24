@@ -30,15 +30,15 @@ if ($ADMIN->fulltree) {
 
     // Time setting for the search span.
     $options = [];
-    $options[TOWNSQUARE_TIME_TWOMONTHS] = get_string('timetwomonths', 'block_townsquare');
-    $options[TOWNSQUARE_TIME_THREEMONTHS] = get_string('timethreemonths', 'block_townsquare');
-    $options[TOWNSQUARE_TIME_SIXMONTHS] = get_string('timesixmonths', 'block_townsquare');
+    $options[BLOCK_TOWNSQUARE_TIME_TWOMONTHS] = get_string('timetwomonths', 'block_townsquare');
+    $options[BLOCK_TOWNSQUARE_TIME_THREEMONTHS] = get_string('timethreemonths', 'block_townsquare');
+    $options[BLOCK_TOWNSQUARE_TIME_SIXMONTHS] = get_string('timesixmonths', 'block_townsquare');
 
     $settings->add(new admin_setting_configselect(
         'block_townsquare/timespan',
         get_string('timespan', 'block_townsquare'),
         get_string('configtimespan', 'block_townsquare'),
-        TOWNSQUARE_TIME_THREEMONTHS,
+        BLOCK_TOWNSQUARE_TIME_THREEMONTHS,
         $options
     ));
 
@@ -47,7 +47,7 @@ if ($ADMIN->fulltree) {
         'block_townsquare/basiclettercolor',
         get_string('basiclettercolor', 'block_townsquare'),
         get_string('configbasiclettercolor', 'block_townsquare'),
-        TOWNSQUARE_BASICLETTER_DEFAULTCOLOR
+        BLOCK_TOWNSQUARE_BASICLETTER_DEFAULTCOLOR
     ));
 
     // Color setting for the color that will be used on post letters.
@@ -55,7 +55,7 @@ if ($ADMIN->fulltree) {
         'block_townsquare/postlettercolor',
         get_string('postlettercolor', 'block_townsquare'),
         get_string('configpostlettercolor', 'block_townsquare'),
-        TOWNSQUARE_POSTLETTER_DEFAULTCOLOR
+        BLOCK_TOWNSQUARE_POSTLETTER_DEFAULTCOLOR
     ));
 
     // Color setting for the color that will be used on completion letters.
@@ -63,7 +63,7 @@ if ($ADMIN->fulltree) {
         'block_townsquare/completionlettercolor',
         get_string('completionlettercolor', 'block_townsquare'),
         get_string('configcompletionlettercolor', 'block_townsquare'),
-        TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR
+        BLOCK_TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR
     ));
 
     // Color setting for the orientation marker.
@@ -71,6 +71,6 @@ if ($ADMIN->fulltree) {
         'block_townsquare/orientationmarkercolor',
         get_string('orientationmarkercolor', 'block_townsquare'),
         get_string('configorientationmarkercolor', 'block_townsquare'),
-        TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR
+        BLOCK_TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR
     ));
 }
