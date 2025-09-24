@@ -29,4 +29,4 @@ $plugin->requires = 2022112819; // Require Moodle 4.1.
 $plugin->supported = [401, 500];
 $plugin->component = 'block_townsquare';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v5.0-r1';
+$plugin->release = 'v5.0-r2';
