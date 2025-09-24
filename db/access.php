@@ -33,7 +33,7 @@ $capabilities = [
         'clonepermissionsfrom' => 'moodle/my:manageblocks',
     ],
 
-    'block/towwnsquare:addinstance' => [
+    'block/townsquare:addinstance' => [
         'riskbitmask' => RISK_SPAM | RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
