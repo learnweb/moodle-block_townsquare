@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v5.0-r2 (2025-09-24)
+------------------
+- Implement changes needed to publish townsquare on moodle.org
+
 
 v5.0-r1 (2025-07-31)
 ------------------
