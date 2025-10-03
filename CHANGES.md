@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v5.0-r3 (2025-10-03)
+------------------
+- Change function call of the local support plugin
+
 v5.0-r2 (2025-09-24)
 ------------------
 - Implement changes needed to publish townsquare on moodle.org
