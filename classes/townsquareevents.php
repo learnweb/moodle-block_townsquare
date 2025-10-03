@@ -29,7 +29,7 @@ use context_module;
 use core_component;
 use dml_exception;
 use moodle_url;
-use function local_townsquaresupport\townsquaresupport_get_subplugin_events;
+use function local_townsquaresupport\local_townsquaresupport_get_subplugin_events;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
@@ -81,7 +81,7 @@ class townsquareevents {
         $subpluginevents = [];
         if (array_key_exists('townsquaresupport', $localplugins)) {
             require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
-            $subpluginevents = townsquaresupport_get_subplugin_events();
+            $subpluginevents = local_townsquaresupport_get_subplugin_events();
         }
 
         // Return the events in a sorted order.
