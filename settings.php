@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * File for the settings of moodleoverflow.
+ * File for the settings of townsquare.
  *
  * @package   block_townsquare
  * @copyright 2024 Tamaro Walter
