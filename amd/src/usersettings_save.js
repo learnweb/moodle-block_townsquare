@@ -35,7 +35,10 @@ const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
 const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 
 // Get the checkboxes from the letter filter.
-const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
+const letter_checkboxes = document.querySelectorAll('.ts_letter_checkbox');
+
+// Get the checkboxes from the course filter.
+const course_checkboxes = document.querySelectorAll('.ts_course_checkbox');
 
 /**
  * Init function. This functions adapts the filter settings to the user settings from the database. If the user changes settings
@@ -57,10 +60,11 @@ export function init(userid, settingsfromdb) {
         // Get the relevant time spans of the time filter and the setting of the letter filter checkboxes.
         let timespans = collecttimefiltersettings();
         let letterfilter = collectletterfiltersettings();
+        let courses = collectcoursesettings(settingsfromdb.courses);
 
         // Second step: store the usersettings in the database.
         await saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter['basicletter'],
-            letterfilter['completionletter'], letterfilter['postletter']);
+            letterfilter['completionletter'], letterfilter['postletter'], courses);
     });
 }
 
@@ -72,9 +76,10 @@ export function init(userid, settingsfromdb) {
  * @param {number} basicletter
  * @param {number} completionletter
  * @param {number} postletter
+ * @param {string} courses
  * @returns {Promise<*>}
  */
-function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter) {
+function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter, courses) {
     let result;
 
     const data = {
@@ -86,6 +91,7 @@ function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter,
             basicletter: basicletter,
             completionletter: completionletter,
             postletter: postletter,
+            courses: courses,
         },
     };
     result = Ajax.call([data]);
@@ -148,13 +154,26 @@ function executeusersettings(settingsfromdb) {
 
     // Second step: set the letter filter settings.
     // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
-    checkboxes.forEach(function(checkbox) {
+    letter_checkboxes.forEach(function(checkbox) {
         let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb.basicletter === "0";
         let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb.completionletter === "0";
         let postlettercheck = checkbox.id === 'postletter' && settingsfromdb.postletter === "0";
 
         if (basiclettercheck || completionlettercheck || postlettercheck) {
             checkbox.click();
+        }
+    });
+
+    // Third step: set the course filter settings.
+    let coursessettings = JSON.parse(settingsfromdb.courses);
+
+    course_checkboxes.forEach(function(checkbox) {
+        let courseid = Number(checkbox.dataset.courseid);
+        if (coursessettings.hasOwnProperty(courseid)) {
+            // If the setting is false, uncheck the checkbox.
+            if (!coursessettings[courseid] && checkbox.checked) {
+                checkbox.click();
+            }
         }
     });
 }
@@ -166,7 +185,7 @@ function executeusersettings(settingsfromdb) {
 function collectletterfiltersettings() {
     let settings = {'basicletter': 0, 'completionletter': 0, 'postletter': 0 };
 
-    checkboxes.forEach(function(checkbox) {
+    letter_checkboxes.forEach(function(checkbox) {
         if (checkbox.checked) {
             switch(checkbox.id) {
                 case "basicletter":
@@ -177,13 +196,31 @@ function collectletterfiltersettings() {
                     break;
                 case "postletter":
                     settings.postletter = 1;
-                    break;
-
             }
         }
     });
     // Calculate the setting number. It is a number between 0 and 7, and each letter represents a bit.
     return settings;
+}
+
+/**
+ * Collects and updates the course filter settings.
+ * Ensures previous settings are retained even if a course does not show notifications temporarily..
+ *
+ * @param {?string} coursesettingsfromdb
+ * @returns {string}
+ */
+function collectcoursesettings(coursesettingsfromdb) {
+    // Check if the course settings have been set in the past.
+    let settings = coursesettingsfromdb ? JSON.parse(coursesettingsfromdb) : {};
+
+    // Build a JSON in the format courseid => coursename.
+    course_checkboxes.forEach(function(checkbox) {
+        settings[Number(checkbox.dataset.courseid)] = checkbox.checked;
+    });
+
+    // Return a string version of the settings.
+    return JSON.stringify(settings);
 }
 
 /**

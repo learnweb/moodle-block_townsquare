@@ -60,7 +60,7 @@
 <div class="townsquare_letter postletter card mb-3" id="content-nr-{{contentid}}" style="border-color: {{postlettercolor}}">
     <div class="townsquareletter_header postletter_header card-header" style="background-color: {{postlettercolor}}">
         <div class = "townsquareletter_top postletter_top">
-            <div class = "townsquareletter_course postletter_course" id="{{courseid}}">
+            <div class = "townsquareletter_course postletter_course" data-courseid="{{courseid}}" id="ts_letter_course_{{courseid}}">
                 {{#str}} coursetitle, moodle, {
                     "course": {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a>
                               {{/quote}} }

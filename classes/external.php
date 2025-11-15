@@ -109,6 +109,7 @@ class external extends external_api {
                 'basicletter' => new external_value(PARAM_INT, 'Setting of the letter filter for basic letters'),
                 'completionletter' => new external_value(PARAM_INT, 'Setting of the letter filter for completion letters'),
                 'postletter' => new external_value(PARAM_INT, 'Setting of the letter filter for post letters'),
+                'courses' => new external_value(PARAM_TEXT, 'courses the user wants to see letters from'),
             ]
         );
     }
@@ -130,21 +131,24 @@ class external extends external_api {
      * @param int $basicletter          If basic letters should be shown
      * @param int $completionletter     If completion letters should be shown
      * @param int $postletter           If post letters should be shown
+     * @param string $courses           The setting for the course filter
      * @return bool
      */
     public static function record_usersettings(
-        $userid,
-        $timefilterpast,
-        $timefilterfuture,
-        $basicletter,
-        $completionletter,
-        $postletter
+        int $userid,
+        int $timefilterpast,
+        int $timefilterfuture,
+        int $basicletter,
+        int $completionletter,
+        int $postletter,
+        string $courses
     ): bool {
         global $DB, $USER;
         // Parameter validation.
         $params = self::validate_parameters(self::record_usersettings_parameters(), [
             'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
             'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
+            'courses' => $courses,
         ]);
 
         if (!$params) {
@@ -164,6 +168,7 @@ class external extends external_api {
                 $record->basicletter = $params['basicletter'];
                 $record->completionletter = $params['completionletter'];
                 $record->postletter = $params['postletter'];
+                $record->courses = $params['courses'];
 
                 $DB->update_record('block_townsquare_preferences', $record);
                 return true;
@@ -183,6 +188,7 @@ class external extends external_api {
         $record->basicletter = $params['basicletter'];
         $record->completionletter = $params['completionletter'];
         $record->postletter = $params['postletter'];
+        $record->courses = $params['courses'];
         $DB->insert_record('block_townsquare_preferences', $record);
         return true;
     }
