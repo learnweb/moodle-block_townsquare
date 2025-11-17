@@ -5,24 +5,9 @@ Feature: Extra feature file to test the time filter
   I can add the townsquare block to my dashboard
 
   Scenario: Test wild time filter combinations
-    Given the following "users" exist:
-      | username | firstname | lastname | email                | idnumber |
-      | student1 | Tamaro    | Walter   | student1@example.com | S1       |
-    And the following "courses" exist:
-      | fullname | shortname | category | startdate     | enddate           | enablecompletion | showcompletionconditions |
-      | Course 1 | C1        | 0        | ##yesterday## | ##now +6 months## | 1                | 1                        |
-      | Course 2 | C2        | 0        | ##yesterday## | ##now +6 months## | 1                | 1                        |
-      | Course 3 | C3        | 0        | ##yesterday## | ##now +6 months## | 1                | 1                        |
-    And the following "course enrolments" exist:
-      | user     | course | role    |
-      | student1 | C1     | student |
-      | student1 | C2     | student |
-      | student1 | C3     | student |
+    Given I prepare a townsquare feature background
     Given the following "activities" exist:
       | activity | course | idnumber  | name          | intro                  | timeopen          | duedate           |
-      | assign   | C1     | 10        | Test assign 1 | Assign description     | ##now -2 days##   | ##now +1 days##   |
-      | assign   | C2     | 11        | Test assign 2 | Assign description     | ##now -2 days##   | ##now +4 days##   |
-      | assign   | C3     | 12        | Test assign 3 | Assign description     | ##now -2 days##   | ##now +6 days##   |
       | assign   | C1     | 13        | Test assign 4 | Assign description     | ##now -2 days##   | ##now +8 days##   |
       | assign   | C1     | 14        | Test assign 5 | Assign description     | ##now -2 days##   | ##now +2 months## |
       | assign   | C1     | 15        | Test assign 6 | Assign description     | ##now -2 days##   | ##now -1 days##   |
@@ -38,67 +23,37 @@ Feature: Extra feature file to test the time filter
       | choice   | C1     | 35        | Test choice 6   | Choice description    | ##now -1 months##| ##now -1 months## |
       | choice   | C2     | 36        | Test choice 7   | Choice description    | ##now -4 days##  | ##now -4 days##   |
       | choice   | C3     | 37        | Test choice 8   | Choice description    | ##now -2 days##  | ##now -2 days##   |
-    And the following "blocks" exist:
-      | blockname  | contextlevel | reference | pagetypepattern | defaultregion |
-      | townsquare | System       | 1         | my-index        | content       |
-    And I deactivate unnecessary dashboard blocks
     And I log in as "student1"
-    And I click on "Time filter" "text"
     # Random clicks on different time filters
-    When I click on "Last week" "text"
-    And I click on "Next month" "text"
-    And I click on "Last two days" "text"
-    And I click on "Next week" "text"
-    Then I should see "Test assign 1" in the "Town Square" "block"
-    And I should not see "Test assign 4" in the "Town Square" "block"
-    And I should not see "Test assign 5" in the "Town Square" "block"
-    And I should see "Test assign 6" in the "Town Square" "block"
-    And I should not see "Test assign 8" in the "Town Square" "block"
-    And I should not see "Test choice 1" in the "Town Square" "block"
-    And I should not see "Test choice 2" in the "Town Square" "block"
-    When I click on "Next two days" "text"
-    And I click on "Last month" "text"
-    And I click on "Last five days" "text"
-    And I click on "Next month" "text"
-    Then I should see "Test assign 1" in the "Town Square" "block"
-    And I should see "Test assign 3" in the "Town Square" "block"
-    And I should see "Test assign 6" in the "Town Square" "block"
-    And I should not see "Test assign 8" in the "Town Square" "block"
-    And I should not see "Test assign 5" in the "Town Square" "block"
-    And I should not see "Test choice 1" in the "Town Square" "block"
-    And I should see "Test choice 7" in the "Town Square" "block"
-    When I click on "Next five days" "text"
-    And I click on "Last week" "text"
-    And I click on "All notifications" "text"
-    Then I should see "Test assign 4" in the "Town Square" "block"
-    And I should see "Test assign 6" in the "Town Square" "block"
-    And I should see "Test choice 3" in the "Town Square" "block"
-    And I should see "Test choice 5" in the "Town Square" "block"
-    And I should see "Test assign 7" in the "Town Square" "block"
-    And I should see "Test choice 4" in the "Town Square" "block"
-    When I click on "Last month" "text"
-    And I click on "Next week" "text"
-    And I click on "Next month" "text"
-    And I click on "Last two days" "text"
-    Then I should see "Test assign 6" in the "Town Square" "block"
-    And I should not see "Test assign 8" in the "Town Square" "block"
-    And I should see "Test assign 1" in the "Town Square" "block"
-    And I should see "Test assign 4" in the "Town Square" "block"
-    And I should not see "Test assign 5" in the "Town Square" "block"
-    And I should not see "Test choice 7" in the "Town Square" "block"
-    When I click on "Next week" "text"
-    And I click on "Last week" "text"
-    And I click on "Last five days" "text"
-    Then I should see "Test assign 6" in the "Town Square" "block"
-    And I should see "Test assign 7" in the "Town Square" "block"
-    And I should not see "Test assign 4" in the "Town Square" "block"
-    And I should see "Test assign 1" in the "Town Square" "block"
-    And I should not see "Test assign 8" in the "Town Square" "block"
-    When I click on "Next five days" "text"
-    And I click on "All notifications" "text"
-    Then I should see "Test assign 1" in the "Town Square" "block"
-    And I should see "Test assign 3" in the "Town Square" "block"
-    And I should see "Test assign 6" in the "Town Square" "block"
-    And I should see "Test assign 7" in the "Town Square" "block"
-    And I should see "Test assign 4" in the "Town Square" "block"
-    And I should see "Test choice 1" in the "Town Square" "block"
+    And I click in townsquare on "text" type:
+      | Time filter | Last week | Next month | Last two days | Next week |
+    Then I should "" see in townsquare the elements:
+      | Test assign 1 | Test assign 6 |
+    And I should "not" see in townsquare the elements:
+      | Test assign 4 | Test assign 5 | Test assign 8 | Test choice 1 | Test choice 2 |
+    When I click in townsquare on "text" type:
+      | Next two days | Last month | Last five days | Next month |
+    Then I should "" see in townsquare the elements:
+      | Test assign 1 | Test assign 3 | Test assign 6 | Test assign 7 |
+    And I should "not" see in townsquare the elements:
+      | Test choice 1 | Test assign 5 | Test assign 8 |
+    When I click in townsquare on "text" type:
+      | Next five days | Last week | All notifications |
+    Then I should "" see in townsquare the elements:
+      | Test assign 4 | Test assign 6 | Test choice 3 | Test choice 4 | Test choice 5 | Test assign 7 |
+    When I click in townsquare on "text" type:
+      | Last month | Next week | Next month | Last two days |
+    Then I should "" see in townsquare the elements:
+      | Test assign 1 | Test assign 4 | Test assign 6 |
+    And I should "not" see in townsquare the elements:
+      | Test assign 5 | Test assign 8 | Test choice 7 |
+    When I click in townsquare on "text" type:
+      | Next week | Last week | Last five days |
+    Then I should "" see in townsquare the elements:
+      | Test assign 1 | Test assign 6 | Test assign 7 |
+    And I should "not" see in townsquare the elements:
+      | Test assign 4 | Test assign 8 |
+    When I click in townsquare on "text" type:
+      | Next five days | All notifications |
+    Then I should "" see in townsquare the elements:
+      | Test assign 1 | Test assign 3 | Test assign 4 | Test assign 6 | Test assign 7 | Test choice 1 |
