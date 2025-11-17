@@ -71,6 +71,7 @@ final class external_test extends \advanced_testcase {
         $usersetting->basicletter = 0;
         $usersetting->completionletter = 1;
         $usersetting->postletter = 1;
+        $usersetting->courses = json_encode((object) ["2" => true, "4" => false]);
 
         // Test Case 1: The User sets the setting for the first time.
 
@@ -85,7 +86,8 @@ final class external_test extends \advanced_testcase {
             $usersetting->timefilterfuture,
             $usersetting->basicletter,
             $usersetting->completionletter,
-            $usersetting->postletter
+            $usersetting->postletter,
+            $usersetting->courses
         );
 
         $this->assertEquals(true, $result);
@@ -97,6 +99,7 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals($usersetting->basicletter, $record->basicletter);
         $this->assertEquals($usersetting->completionletter, $record->completionletter);
         $this->assertEquals($usersetting->postletter, $record->postletter);
+        $this->assertEquals($usersetting->courses, $record->courses);
 
         // Test Case 2: The User updates the settings.
         $usersetting->timefilterpast = 2592000;
@@ -104,6 +107,7 @@ final class external_test extends \advanced_testcase {
         $usersetting->basicletter = 1;
         $usersetting->completionletter = 0;
         $usersetting->postletter = 0;
+        $usersetting->courses = json_encode((object) ["4" => false]);
 
         // Call the function to record the user settings and check, if the record is created.
         $result = $this->testdata->external->record_usersettings(
@@ -112,7 +116,8 @@ final class external_test extends \advanced_testcase {
             $usersetting->timefilterfuture,
             $usersetting->basicletter,
             $usersetting->completionletter,
-            $usersetting->postletter
+            $usersetting->postletter,
+            $usersetting->courses
         );
 
         $this->assertEquals(true, $result);
@@ -124,6 +129,7 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals($usersetting->basicletter, $record->basicletter);
         $this->assertEquals($usersetting->completionletter, $record->completionletter);
         $this->assertEquals($usersetting->postletter, $record->postletter);
+        $this->assertEquals($usersetting->courses, $record->courses);
     }
 
     /**
