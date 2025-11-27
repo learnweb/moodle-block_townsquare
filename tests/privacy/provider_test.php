@@ -119,13 +119,14 @@ final class provider_test extends provider_testcase {
         $privacyfields = $table->get_privacy_fields();
 
         $this->assertEquals('block_townsquare', $table->get_name());
-        $this->assertEquals(6, count($privacyfields));
+        $this->assertEquals(7, count($privacyfields));
         $this->assertArrayHasKey('userid', $privacyfields);
         $this->assertArrayHasKey('timefilterpast', $privacyfields);
         $this->assertArrayHasKey('timefilterfuture', $privacyfields);
         $this->assertArrayHasKey('basicletter', $privacyfields);
         $this->assertArrayHasKey('completionletter', $privacyfields);
         $this->assertArrayHasKey('postletter', $privacyfields);
+        $this->assertArrayHasKey('courses', $privacyfields);
     }
 
     /**
@@ -254,6 +255,7 @@ final class provider_test extends provider_testcase {
         $this->testdata->setting->basicletter = 1;
         $this->testdata->setting->completionletter = 1;
         $this->testdata->setting->postletter = 0;
+        $this->testdata->setting->courses = json_encode((object) ["2" => true, "3" => false]);
         $DB->insert_record('block_townsquare_preferences', $this->testdata->setting);
     }
 }

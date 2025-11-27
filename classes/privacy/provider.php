@@ -56,6 +56,7 @@ class provider implements
             'basicletter' => 'privacy:metadata:block_townsquare_preferences:basicletter',
             'completionletter' => 'privacy:metadata:block_townsquare_preferences:completionletter',
             'postletter' => 'privacy:metadata:block_townsquare_preferences:postletter',
+            'courses' => 'privacy:metadata:block_townsquare_preferences:courses',
             ], 'privacy:metadata:block_townsquare_preferences');
         return $collection;
     }
@@ -120,6 +121,7 @@ class provider implements
             $data->basicletter = $result->basicletter;
             $data->completionletter = $result->completionletter;
             $data->postletter = $result->postletter;
+            $data->courses = $result->courses;
 
             $townsquaredata[] = $data;
         }
