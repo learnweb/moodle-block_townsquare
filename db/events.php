@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - https://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -12,21 +12,22 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Townsquare event handler definition.
  *
- * @package     block_townsquare
- * @copyright   2023 Tamaro Walter
- * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   block_townsquare
+ * @copyright 2025 Tamaro Walter
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025112700;
-$plugin->requires = 2022112819; // Require Moodle 4.1.
-$plugin->supported = [401, 500];
-$plugin->component = 'block_townsquare';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v5.0-r3';
+// List of observers.
+$observers = [
+    [
+        'eventname'   => 'core\event\course_deleted',
+        'callback'    => '\block_townsquare\observer::course_deleted',
+    ],
+];

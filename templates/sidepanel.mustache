@@ -49,8 +49,8 @@
             <div class="accordion-body townsquare_sidepanel">
                 {{#courses}}
                     <div class="form-check">
-                        <input class="ts_course_checkbox form-check-input" name="ts_course_checkbox" type="checkbox" value="" id="{{courseid}}" checked>
-                        <label class="form-check-label" for="{{courseid}}">
+                        <input class="ts_course_checkbox form-check-input" name="ts_course_checkbox" type="checkbox" value="" data-courseid="{{courseid}}" data-coursename="{{coursename}}" id="ts_course_{{courseid}}" checked>
+                        <label class="form-check-label" for="ts_course_{{courseid}}">
                             {{coursename}}
                         </label>
                     </div>

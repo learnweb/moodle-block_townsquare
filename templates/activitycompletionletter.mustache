@@ -48,7 +48,7 @@
      style="border-color: {{completionlettercolor}}">
     <div class="townsquareletter_header completionletter_header card-header" style="background-color: {{completionlettercolor}}">
         <div class = "townsquareletter_top completionletter_top">
-            <div class = "townsquareletter_course completionletter_course" id="{{courseid}}">
+            <div class = "townsquareletter_course completionletter_course" data-courseid="{{courseid}}" id="ts_letter_course_{{courseid}}">
                 {{#str}} coursetitle, moodle, {"course":
                     {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}} </a> {{/quote}} }
                 {{/str}}

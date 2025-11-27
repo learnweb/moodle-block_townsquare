@@ -35,14 +35,14 @@ export function init() {
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function() {
             // Get the courseid associated with the checkbox.
-            const courseid = checkbox.id;
+            const courseid = Number(checkbox.dataset.courseid);
 
             // Get all letters.
             const letters = document.querySelectorAll('.townsquare_letter');
 
             // Loop through each letter and mark it as "approved" or not based on checkbox state and the letter id.
             letters.forEach(function(letter) {
-                let letterCourseId = letter.querySelector('.townsquareletter_course').id;
+                let letterCourseId = Number(letter.querySelector('.townsquareletter_course').dataset.courseid);
 
                 if (courseid === letterCourseId) {
                     if (checkbox.checked) {

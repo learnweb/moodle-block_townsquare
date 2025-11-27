@@ -13,6 +13,7 @@
                 <FIELD NAME="basicletter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the letter filter for basic letters. Always 1 or 0 (on/off)"/>
                 <FIELD NAME="completionletter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the letter filter for completion letters."/>
                 <FIELD NAME="postletter" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Setting of the letter filter for post letters."/>
+                <FIELD NAME="courses" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Setting of the course filter for the users enrolled courses."/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

@@ -59,8 +59,22 @@ function xmldb_block_townsquare_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // Moodleoverflow savepoint reached.
+        // Townsquare savepoint reached.
         upgrade_block_savepoint(true, 2024032201, 'townsquare');
+    }
+
+    if ($oldversion < 2025073103) {
+        // Add a field for the course filter setting.
+        $table = new xmldb_table('block_townsquare_preferences');
+        $field = new xmldb_field('courses', XMLDB_TYPE_TEXT, null, null, null, null, null, 'postletter');
+
+        // Conditionally launch add field courses.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Townsquare savepoint reached.
+        upgrade_block_savepoint(true, 2025073103, 'townsquare');
     }
 
     return true;
