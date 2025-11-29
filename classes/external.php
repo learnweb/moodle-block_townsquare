@@ -69,7 +69,7 @@ class external extends external_api {
      * @throws \invalid_parameter_exception
      */
     public static function reset_usersettings($userid) {
-        global $DB, $USER;
+        global $DB;
 
         // Parameter validation.
         if (!self::validate_parameters(self::reset_usersettings_parameters(), ['userid' => $userid])) {
@@ -143,7 +143,7 @@ class external extends external_api {
         int $postletter,
         string $courses
     ): bool {
-        global $DB, $USER;
+        global $DB;
         // Parameter validation.
         $params = self::validate_parameters(self::record_usersettings_parameters(), [
             'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
