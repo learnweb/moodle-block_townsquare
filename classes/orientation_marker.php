@@ -56,7 +56,7 @@ class orientation_marker {
      * @param int $contentid The ID to identify the orientation marker
      * @param int $time      A Timestamp of the time that the orientation marker is created
      */
-    public function __construct($contentid, $time) {
+    public function __construct(int $contentid, int $time) {
         $this->contentid = $contentid;
         $this->today = $time;
     }

@@ -26,8 +26,10 @@ class block_townsquare_edit_form extends block_edit_form {
      * Extends the configuration form for block_townsquare.
      *
      * @param MoodleQuickForm $mform The form being built.
+     * @return void
+     * @throws coding_exception
      */
-    protected function specific_definition($mform) {
+    protected function specific_definition($mform): void {
         // Section header title.
         $mform->addElement('header', 'configheader', get_string('blocksettings', 'block'));
     }

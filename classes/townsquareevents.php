@@ -25,8 +25,9 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
 use context_module;
-use core_component;
+use core\exception\moodle_exception;
 use dml_exception;
 use moodle_url;
 use function local_townsquaresupport\local_townsquaresupport_get_subplugin_events;
@@ -94,6 +95,7 @@ class townsquareevents {
      *
      * The events are sorted in descending order by time created (newest event first)
      * @return array
+     * @throws dml_exception
      */
     public function get_coreevents(): array {
         global $DB;
@@ -128,6 +130,7 @@ class townsquareevents {
      *
      * The events are sorted in descending order by time created (newest event first)
      * @return array;
+     * @throws moodle_exception
      */
     public function get_postevents(): array {
         // Get all post from the database.
@@ -156,11 +159,12 @@ class townsquareevents {
      * Searches for posts in the forum or moodleoverflow module.
      * The sql query makes sure that the modules are installed and available..
      * This is a helper function for get_postevents().
-     * @param array  $courses     The ids of the courses where the posts should be searched.
-     * @param int    $timestart   The timestamp from where the posts should be searched.
+     * @param array $courses The ids of the courses where the posts should be searched.
+     * @param int $timestart The timestamp from where the posts should be searched.
      * @return array
+     * @throws dml_exception
      */
-    private function get_forumposts_from_db($courses, $timestart): array {
+    private function get_forumposts_from_db(array $courses, int $timestart): array {
         global $DB;
         // Prepare params for sql statement.
         if ($courses == []) {
@@ -210,12 +214,13 @@ class townsquareevents {
      * Searches for events in the events table, that are relevant to the timeline.
      * This is a helper function for get_coreevents().
      * @param int $timestart The time from where the events should be searched. Not equal to timestart in the database events table.
-     * @param int $timeend   The time until where the events should be searched.
+     * @param int $timeend The time until where the events should be searched.
      * @param array $courses The ids of the courses where the events should be searched.
      * @return array
      * @throws dml_exception
+     * @throws coding_exception
      */
-    private function get_events_from_db($timestart, $timeend, $courses): array {
+    private function get_events_from_db(int $timestart, int $timeend, array $courses): array {
         global $DB;
 
         // As there are no events without courses, return an empty array.
@@ -258,8 +263,10 @@ class townsquareevents {
      * Applies to assignment events.
      * @param object $coreevent coreevent that is checked
      * @return bool true if the event needs to filtered out, false if not.
+     * @throws dml_exception
+     * @throws coding_exception
      */
-    private function filter_assignment($coreevent): bool {
+    private function filter_assignment(object $coreevent): bool {
         global $DB;
         $assignment = $DB->get_record('assign', ['id' => $coreevent->instance]);
         $type = $coreevent->eventtype;
@@ -287,7 +294,7 @@ class townsquareevents {
      * @param object $forumpost The post that is checked.
      * @return bool true if the posts needs to be filtered out, false if not.
      */
-    private function filter_forum_privatepost(&$forumpost): bool {
+    private function filter_forum_privatepost(object &$forumpost): bool {
         global $USER;
         // Check if the postuserid or the userid from the private attribute is the current user.
         $isprivatemessage = $forumpost->postprivatereplyto != 0;

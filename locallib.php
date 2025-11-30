@@ -48,10 +48,11 @@ function block_townsquare_get_colorsetting($lettertype): string {
 /**
  * General Support function for core events.
  * Can be used to modify the event content, as in some cases, core events don't have a good text in the events-datatable.
- * @param object $event  The event, that is being checked.
+ * @param object $event The event, that is being checked.
  * @return void
+ * @throws coding_exception
  */
-function block_townsquare_check_coreevent(&$event): void {
+function block_townsquare_check_coreevent(object &$event): void {
     // Activity completion event have a own message handling (as it always has the same structure).
     if ($event->eventtype == 'expectcompletionon') {
         return;
@@ -86,8 +87,9 @@ function block_townsquare_check_coreevent(&$event): void {
 /**
  * Helper function for the check function. Helps to reduce repetitive checks
  * @param object $event
- * @param int $time
+ * @param string $time
  * @return string
+ * @throws coding_exception
  */
 function block_townsquare_get_open_close_message($event, $time) {
     if ($event->eventtype == 'open') {

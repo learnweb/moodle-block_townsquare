@@ -23,11 +23,12 @@
  */
 namespace block_townsquare;
 use core_external\restricted_context_exception;
+use dml_exception;
 use external_function_parameters;
 use Exception;
 use external_api;
 use external_value;
-use stdClass;
+use invalid_parameter_exception;
 use context_user;
 
 defined('MOODLE_INTERNAL') || die();
@@ -48,7 +49,7 @@ class external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function reset_usersettings_parameters() {
+    public static function reset_usersettings_parameters(): external_function_parameters {
         return new external_function_parameters(['userid' => new external_value(PARAM_INT, 'the user id')]);
     }
 
@@ -65,10 +66,10 @@ class external extends external_api {
      *
      * @param int $userid
      * @return bool
-     * @throws \dml_exception
-     * @throws \invalid_parameter_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception|restricted_context_exception
      */
-    public static function reset_usersettings($userid) {
+    public static function reset_usersettings(int $userid): bool {
         global $DB;
 
         // Parameter validation.
@@ -100,7 +101,7 @@ class external extends external_api {
      * Returns description of method parameters
      * @return external_function_parameters
      */
-    public static function record_usersettings_parameters() {
+    public static function record_usersettings_parameters(): external_function_parameters {
         return new external_function_parameters(
             [
                 'userid' => new external_value(PARAM_INT, 'the user id'),
@@ -125,14 +126,17 @@ class external extends external_api {
     /**
      * Record the user settings
      *
-     * @param int $userid               The user id
-     * @param int $timefilterpast       Time span for filtering the past
-     * @param int $timefilterfuture     Time span for filtering the future
-     * @param int $basicletter          If basic letters should be shown
-     * @param int $completionletter     If completion letters should be shown
-     * @param int $postletter           If post letters should be shown
-     * @param string $courses           The setting for the course filter
+     * @param int $userid The user id
+     * @param int $timefilterpast Time span for filtering the past
+     * @param int $timefilterfuture Time span for filtering the future
+     * @param int $basicletter If basic letters should be shown
+     * @param int $completionletter If completion letters should be shown
+     * @param int $postletter If post letters should be shown
+     * @param string $courses The setting for the course filter
      * @return bool
+     * @throws invalid_parameter_exception
+     * @throws restricted_context_exception
+     * @throws dml_exception
      */
     public static function record_usersettings(
         int $userid,
