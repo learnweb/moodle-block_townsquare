@@ -25,6 +25,7 @@
 namespace block_townsquare\local\letter;
 use context_module;
 use core_user\fields;
+use dml_exception;
 use stdClass;
 
 /**
@@ -148,8 +149,9 @@ class post_letter extends letter {
     /**
      * Method to retrieve the profile picture of the author.
      * @return void
+     * @throws dml_exception
      */
-    private function retrieve_profilepicture() {
+    private function retrieve_profilepicture(): void {
         global $DB, $OUTPUT;
 
         // Profile picture is only retrieved if the author is visible.
@@ -174,7 +176,7 @@ class post_letter extends letter {
      * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
      * @return void
      */
-    private function add_anonymousattribute($postevent): void {
+    private function add_anonymousattribute(object $postevent): void {
         if ($postevent->modulename != 'moodleoverflow') {
             $this->post->anonymous = false;
             return;
@@ -187,7 +189,7 @@ class post_letter extends letter {
      * @param object $postevent
      * @return void
      */
-    private function add_privatereplyattribute($postevent): void {
+    private function add_privatereplyattribute(object $postevent): void {
         if ($postevent->modulename == 'forum') {
             // Check if the private author is the same private recipient.
             if ($postevent->privatereplyto && $postevent->privatereplyfrom) {
@@ -207,8 +209,9 @@ class post_letter extends letter {
      * Function to format the post message before exporting it to the mustache template.
      * @param object $postevent
      * @return string
+     * @throws \coding_exception
      */
-    private function format_post($postevent) {
+    private function format_post(object $postevent): string {
         $context = context_module::instance($postevent->coursemoduleid);
         $message = file_rewrite_pluginfile_urls(
             $postevent->content,

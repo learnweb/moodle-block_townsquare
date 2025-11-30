@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v5.1-r1 (2025-11-29)
+------------------
+- Course filter settings can be saved for future use ([#25](https://github.com/learnweb/moodle-block_townsquare/pull/25))
+
 v5.0-r3 (2025-10-03)
 ------------------
 - Change function call of the local support plugin

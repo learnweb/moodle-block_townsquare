@@ -24,6 +24,7 @@
 namespace block_townsquare;
 
 use core\event\course_deleted;
+use dml_exception;
 
 /**
  * This class listens to certain events triggered in Moodle and apply them to townsquare.
@@ -37,8 +38,10 @@ class observer {
      * Handle course deleted event.
      *
      * @param course_deleted $event The event object.
+     * @return void
+     * @throws dml_exception
      */
-    public static function course_deleted(course_deleted $event) {
+    public static function course_deleted(course_deleted $event): void {
         global $DB;
         $records = $DB->get_records('block_townsquare_preferences');
 

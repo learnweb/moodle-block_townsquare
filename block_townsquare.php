@@ -36,9 +36,11 @@ class block_townsquare extends block_base {
     /**
      * Gets the block contents.
      *
-     * @return object|null The block HTML.
+     * @return stdClass The block HTML.
+     * @throws dml_exception
+     * @throws \core\exception\moodle_exception
      */
-    public function get_content(): object {
+    public function get_content(): stdClass {
         global $OUTPUT, $DB, $USER, $CFG;
 
         if ($this->content !== null) {
@@ -90,7 +92,7 @@ class block_townsquare extends block_base {
      *
      * @return bool
      */
-    public function has_config() {
+    public function has_config(): bool {
         return true;
     }
 }

@@ -22,6 +22,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace block_townsquare\local\letter;
+use dml_exception;
+use moodle_exception;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die;
@@ -85,13 +87,15 @@ class letter {
     /**
      * Constructor for a letter
      *
-     * @param int $contentid        internal ID in the townsquare block.
-     * @param int $courseid         Course ID from where the content comes from.
-     * @param string $modulename    Name of the module/activity.
-     * @param string $instancename  Name of the instance.
-     * @param string $content        The content that will be showed in the letter.
-     * @param int $created          Timestamp of creation.
-     * @param int $cmid             Course module id of the content module.
+     * @param int $contentid internal ID in the townsquare block.
+     * @param int $courseid Course ID from where the content comes from.
+     * @param string $modulename Name of the module/activity.
+     * @param string $instancename Name of the instance.
+     * @param string $content The content that will be showed in the letter.
+     * @param int $created Timestamp of creation.
+     * @param int $cmid Course module id of the content module.
+     * @throws dml_exception
+     * @throws moodle_exception
      */
     public function __construct($contentid, $courseid, $modulename, $instancename, $content, $created, $cmid) {
         $this->contentid = $contentid;

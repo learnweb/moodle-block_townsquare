@@ -36,6 +36,7 @@ define('BLOCK_TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR', '#6a737b');
 /**
  * Gets the id of all courses where the current user is enrolled
  * @return array
+ * @throws coding_exception
  */
 function block_townsquare_get_courses(): array {
     global $USER;
@@ -52,6 +53,7 @@ function block_townsquare_get_courses(): array {
 /**
  * Function for subplugins to get the start time of the search.
  * @return int
+ * @throws dml_exception
  */
 function block_townsquare_get_timestart(): int {
     return time() - get_config('block_townsquare', 'timespan');
@@ -60,6 +62,7 @@ function block_townsquare_get_timestart(): int {
 /**
  * Function for subplugins to get the end time of the search.
  * @return int
+ * @throws dml_exception
  */
 function block_townsquare_get_timeend(): int {
     return time() + get_config('block_townsquare', 'timespan');
@@ -70,7 +73,7 @@ function block_townsquare_get_timeend(): int {
  * @param array $events
  * @return array
  */
-function block_townsquare_mergesort($events): array {
+function block_townsquare_mergesort(array $events): array {
     $length = count($events);
     if ($length <= 1) {
         return $events;
@@ -118,8 +121,9 @@ function block_townsquare_merge(array $left, array $right): array {
  * Filter that checks if the event needs to be filtered out for the current user because it is not available.
  * @param object $event event that is checked
  * @return bool true if the event needs to filtered out, false if not.
+ * @throws \core\exception\moodle_exception
  */
-function townsquare_filter_availability($event): bool {
+function townsquare_filter_availability(object $event): bool {
     // If there is no restriction defined, the event is available.
     if ($event->availability == null) {
         return false;
