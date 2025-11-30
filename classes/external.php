@@ -167,13 +167,10 @@ class external extends external_api {
             if (count($records) <= 1) {
                 // Upgrade the existing record.
                 $record = reset($records);
-                $record->timefilterpast = $params['timefilterpast'];
-                $record->timefilterfuture = $params['timefilterfuture'];
-                $record->basicletter = $params['basicletter'];
-                $record->completionletter = $params['completionletter'];
-                $record->postletter = $params['postletter'];
-                $record->courses = $params['courses'];
-
+                $fields = ['timefilterpast', 'timefilterfuture', 'basicletter', 'completionletter', 'postletter', 'courses'];
+                foreach ($fields as $field) {
+                    $record->$field = $params[$field];
+                }
                 $DB->update_record('block_townsquare_preferences', $record);
                 return true;
             }
@@ -185,15 +182,7 @@ class external extends external_api {
                 return false;
             }
         }
-        $record = new stdClass();
-        $record->userid = $params['userid'];
-        $record->timefilterpast = $params['timefilterpast'];
-        $record->timefilterfuture = $params['timefilterfuture'];
-        $record->basicletter = $params['basicletter'];
-        $record->completionletter = $params['completionletter'];
-        $record->postletter = $params['postletter'];
-        $record->courses = $params['courses'];
-        $DB->insert_record('block_townsquare_preferences', $record);
+        $DB->insert_record('block_townsquare_preferences', (object) $params);
         return true;
     }
 }
