@@ -30,19 +30,14 @@
  * @throws dml_exception
  * @throws moodle_exception
  */
-function block_townsquare_get_colorsetting($lettertype): string {
-    switch ($lettertype) {
-        case 'basicletter':
-            return get_config('block_townsquare', 'basiclettercolor');
-        case 'postletter':
-            return get_config('block_townsquare', 'postlettercolor');
-        case 'completionletter':
-            return get_config('block_townsquare', 'completionlettercolor');
-        case 'orientationmarker':
-            return get_config('block_townsquare', 'orientationmarkercolor');
-        default:
-            throw new moodle_exception('invalidlettertype', 'block_townsquare');
-    }
+function block_townsquare_get_colorsetting(string $lettertype): string {
+    return match ($lettertype) {
+        'basicletter' => get_config('block_townsquare', 'basiclettercolor'),
+        'postletter' => get_config('block_townsquare', 'postlettercolor'),
+        'completionletter' => get_config('block_townsquare', 'completionlettercolor'),
+        'orientationmarker' => get_config('block_townsquare', 'orientationmarkercolor'),
+        default => throw new moodle_exception('invalidlettertype', 'block_townsquare'),
+    };
 }
 
 /**
@@ -91,11 +86,10 @@ function block_townsquare_check_coreevent(object &$event): void {
  * @return string
  * @throws coding_exception
  */
-function block_townsquare_get_open_close_message($event, $time) {
-    if ($event->eventtype == 'open') {
-        return get_string($event->modulename . 'openmessage', 'block_townsquare', ['time' => $time]);
-    } else if ($event->eventtype == 'close') {
-        return get_string($event->modulename . 'closemessage', 'block_townsquare', ['time' => $time]);
-    }
-    return '';
+function block_townsquare_get_open_close_message(object $event, string $time): string {
+    return match ($event->eventtype) {
+        'open' => get_string($event->modulename . 'openmessage', 'block_townsquare', ['time' => $time]),
+        'close' => get_string($event->modulename . 'closemessage', 'block_townsquare', ['time' => $time]),
+        default => '',
+    };
 }
