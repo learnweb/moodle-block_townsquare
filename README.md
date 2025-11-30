@@ -1,12 +1,11 @@
-[![Moodle Plugin CI](https://github.com/learnweb/moodle-block_townsquare/workflows/Moodle%20Plugin%20CI/badge.svg?branch=main)](https://github.com/learnweb/moodle-block_townsquare/actions?query=workflow%3A%22Moodle+Plugin+CI%22+branch%3Amain)
 # Town Square #
 
-A moodle block for the dashboard. This Plugin shows current events and forum posts in courses the user is enrolled.
+A moodle block for the dashboard to show current events and forum posts in courses the user is enrolled.
 
 ## Description ##
 
 This plugin shows different notifications (e.g. deadlines), activity completion and forum posts
-from all courses an user is enrolled. Additionally, the user is able to filter the notifications by different parameters.
+from all courses an user is enrolled to. Additionally, the user is able to filter the notifications by different parameters.
 Goal is to provide a easy way to get an overview of all current events and deadlines, without the need to visit every course.
 
 A typical townsquare site looks like this:
