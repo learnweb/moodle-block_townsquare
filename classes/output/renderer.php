@@ -23,6 +23,7 @@
  */
 namespace block_townsquare\output;
 
+use block_townsquare\contentcontroller;
 use core\exception\moodle_exception;
 use plugin_renderer_base;
 
@@ -37,11 +38,19 @@ class renderer extends plugin_renderer_base {
     /**
      * Return the main content for the block townsquare.
      *
-     * @param array $data Data to render the townsquare templates
      * @return string HTML string
      * @throws moodle_exception
      */
-    public function render_main(array $data): string {
-        return $this->render_from_template('block_townsquare/blockcontent', $data);
+    public function render_main(): string {
+        global $CFG;
+        $controller = new contentcontroller();
+        $mustachedata = (object) [
+            'content' => $controller->get_content(),
+            'courses' => $controller->courses,
+            'savehelpicon' => ['text' => get_string('savehelpicontext', 'block_townsquare')],
+            'resethelpicon' => ['text' => get_string('resethelpicontext', 'block_townsquare')],
+            'newsidepanel' => $CFG->branch >= 500,
+        ];
+        return $this->render_from_template('block_townsquare/blockcontent', $mustachedata);
     }
 }

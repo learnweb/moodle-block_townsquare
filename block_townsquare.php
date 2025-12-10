@@ -14,10 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-use block_townsquare\contentcontroller;
-
 /**
- * Plugin strings are defined here.
+ * Townsquare block class.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -41,22 +39,14 @@ class block_townsquare extends block_base {
      * @throws \core\exception\moodle_exception
      */
     public function get_content(): stdClass {
-        global $OUTPUT, $DB, $USER, $CFG;
+        global $DB, $USER;
 
         if ($this->content !== null) {
             return $this->content;
         }
 
-        $controller = new contentcontroller();
-        $mustachedata = new stdClass();
-        $mustachedata->content = $controller->get_content();
-        $mustachedata->courses = $controller->courses;
-        $mustachedata->savehelpicon = ['text' => get_string('savehelpicontext', 'block_townsquare')];
-        $mustachedata->resethelpicon = ['text' => get_string('resethelpicontext', 'block_townsquare')];
-        // Learnweb-Todo: If versions <M.5.0 are not supported anymore, delete this check and the old sidepanel template.
-        $mustachedata->newsidepanel = $CFG->branch >= 500;
         $this->content = new stdClass();
-        $this->content->text = $OUTPUT->render_from_template('block_townsquare/blockcontent', $mustachedata);
+        $this->content->text = $this->page->get_renderer('block_townsquare')->render_main();
 
         // Get the user settings if available.
         $usersettings = $DB->get_record('block_townsquare_preferences', ['userid' => $USER->id]);
