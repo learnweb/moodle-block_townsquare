@@ -64,20 +64,10 @@ class contentcontroller {
         $this->content = [];
         $this->events = $this->townsquareevents->get_all_events_sorted();
 
-        $orientationmarkerset = false;
         $index = 0;
-        $time = time();
         $appearedcourses = [];
         // Build a letter for each event.
         foreach ($this->events as $event) {
-            // Display a orientation marker on the current date between the other events.
-            if (!$orientationmarkerset && (($event->timestart <= $time))) {
-                $orientationmarkerset = true;
-                $tempcontent = new orientation_marker($index, $time);
-                $this->content[$index] = $tempcontent->export_data();
-                $index++;
-            }
-
             match ($event->eventtype) {
                 'post' => $templetter = new local\letter\post_letter($index, $event),
                 'expectcompletionon' => $templetter = new local\letter\activitycompletion_letter($index, $event),
@@ -91,8 +81,8 @@ class contentcontroller {
                     $event->coursemoduleid
                 ),
             };
-
-            $this->content[$index] = $templetter->export_letter();
+            $templetter = $templetter->export_letter();
+            $this->content[$index] = $templetter;
 
             // Collect the courses shown in the townsquare to be able to filter them afterwards.
             if (!array_key_exists($this->content[$index]['courseid'], $appearedcourses)) {
