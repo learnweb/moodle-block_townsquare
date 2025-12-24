@@ -31,8 +31,10 @@
         "orientationmarkercolor": "#6a737b"
     }
 }}
-<div class="orientationmarker card mb-3" id="content-nr-{{contentid}}"
-     style="border-color: {{orientationmarkercolor}}; background-color: {{orientationmarkercolor}};">
-    <div class="orientationmarker_body card-body">
+<div class="orientationmarker" id="day-group-{{day}}">
+    <div class="orientationmarker_body">
+        <span class="orientationmarker_date">{{day}}</span>
+        <span class="orientationmarker_line" aria-hidden="true"></span>
+        <i class="orientationmarker_arrow fa fa-chevron-down ml-3 mr-2"></i>
     </div>
 </div>

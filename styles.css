@@ -97,7 +97,20 @@
 
 /* Style for the orientation marker */
 
-.orientationmarker_body.card-body {
-    padding-top: 0.6rem;
+.orientationmarker_body {
+    padding-top: 0.3rem;
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.orientationmarker_date {
+    margin-right: 0.75rem;
+}
+
+.orientationmarker_line {
+    flex: 1;
+    height: 1px;
+    background-color: #0e0e0e;
 }
 /*# sourceMappingURL=styles.css.map */

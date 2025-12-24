@@ -35,7 +35,6 @@ function block_townsquare_get_colorsetting(string $lettertype): string {
         'basicletter' => get_config('block_townsquare', 'basiclettercolor'),
         'postletter' => get_config('block_townsquare', 'postlettercolor'),
         'completionletter' => get_config('block_townsquare', 'completionlettercolor'),
-        'orientationmarker' => get_config('block_townsquare', 'orientationmarkercolor'),
         default => throw new moodle_exception('invalidlettertype', 'block_townsquare'),
     };
 }

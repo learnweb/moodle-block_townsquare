@@ -83,41 +83,34 @@ final class contentcontroller_test extends \advanced_testcase {
 
         // Check the lettertype for each letter.
         $result = true;
-        $length = count($content); // The content is one object larger than the townsquareevents (because of the orientationmarker).
+        $contentlength = 0;
 
-        for ($i = 0; $i < $length; $i++) {
-            // The content has an orientation marker.
-            if (isset(current($content)['isorientationmarker'])) {
-                next($content);
-                continue;
+        foreach ($content as $lettergroup) {
+            foreach ($lettergroup->letters as $letter) {
+                $eventtype = current($events)->eventtype;
+                $postcheck = $this->check_two_params($eventtype, 'post', $letter['lettertype'], 'post');
+                $completioncheck = $this->check_two_params(
+                    $eventtype,
+                    'expectcompletionon',
+                    $letter['lettertype'],
+                    'activitycompletion'
+                );
+                $basiccheck = ($eventtype != 'post' && $eventtype != 'expectcompletionon') && $letter['lettertype'] == 'basic';
+
+                // If one of the checks fails there is a problem while creating the letters.
+                if (!$postcheck && !$completioncheck && !$basiccheck) {
+                    $result = false;
+                    break;
+                }
+                $contentlength++;
+                next($events);
             }
-
-            // Declare the three types of letter checks.
-            $postcheck = $this->check_two_params(current($events)->eventtype, 'post', current($content)['lettertype'], 'post');
-            $completioncheck = $this->check_two_params(
-                current($events)->eventtype,
-                'expectcompletionon',
-                current($content)['lettertype'],
-                'activitycompletion'
-            );
-
-            $basiccheck = (current($events)->eventtype != 'post' && current($events)->eventtype != 'expectcompletionon') &&
-                           current($content)['lettertype'] == 'basic';
-
-            // If one of the checks fails there is a problem while creating the letters.
-            if (!$postcheck && !$completioncheck && !$basiccheck) {
-                $result = false;
-                break;
-            }
-
-            next($content);
-            next($events);
         }
 
         if ($this->modoverflowinstalled) {
-            $this->assertEquals(6, count($content));
+            $this->assertEquals(5, $contentlength);
         } else {
-            $this->assertEquals(5, count($content));
+            $this->assertEquals(4, $contentlength);
         }
         $this->assertEquals(true, $result);
     }

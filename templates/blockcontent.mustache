@@ -88,9 +88,8 @@
         <div class=" col-md-9 townsquare_content">
             <div class="townsquare_letters">
                 {{#content}}
-                        {{#isorientationmarker}}
-                            {{> block_townsquare/orientationmarker}}
-                        {{/isorientationmarker}}
+                    {{> block_townsquare/orientationmarker}}
+                    {{#letters}}
                         {{#isbasic}}
                             {{> block_townsquare/basicletter}}
                         {{/isbasic}}
@@ -100,6 +99,7 @@
                         {{#ispost}}
                             {{> block_townsquare/postletter}}
                         {{/ispost}}
+                    {{/letters}}
                 {{/content}}
             </div>
         </div>

@@ -65,12 +65,4 @@ if ($ADMIN->fulltree) {
         get_string('configcompletionlettercolor', 'block_townsquare'),
         BLOCK_TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR
     ));
-
-    // Color setting for the orientation marker.
-    $settings->add(new admin_setting_configcolourpicker(
-        'block_townsquare/orientationmarkercolor',
-        get_string('orientationmarkercolor', 'block_townsquare'),
-        get_string('configorientationmarkercolor', 'block_townsquare'),
-        BLOCK_TOWNSQUARE_ORIENTATIONMARKER_DEFAULTCOLOR
-    ));
 }

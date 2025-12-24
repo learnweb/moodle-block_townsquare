@@ -39,7 +39,15 @@ class contentcontroller {
     /** @var array events that are relevant for the townsquare */
     public array $events;
 
-    /** @var array letters and other content that will be shown to the user */
+    /** @var array stores the letters in objects with the day the letters are from.
+     * The content is structured in a way that mustache can parse it easily:
+     *
+     * ['Y-m-d'] => {
+     *     string $day: 'Y-m-d;
+     *     array $letters: key => $letterobject
+     * }
+     * At the end, the array is normalized with array_values so mustache can iterate over it.
+     */
     public array $content;
 
     /** @var array courses that show content in townsquare (not the same as enrolled courses) */
@@ -66,13 +74,14 @@ class contentcontroller {
 
         $index = 0;
         $appearedcourses = [];
+
         // Build a letter for each event.
         foreach ($this->events as $event) {
             match ($event->eventtype) {
-                'post' => $templetter = new local\letter\post_letter($index, $event),
-                'expectcompletionon' => $templetter = new local\letter\activitycompletion_letter($index, $event),
+                'post' => $templetter = new local\letter\post_letter($index++, $event),
+                'expectcompletionon' => $templetter = new local\letter\activitycompletion_letter($index++, $event),
                 default => $templetter = new local\letter\letter(
-                    $index,
+                    $index++,
                     $event->courseid,
                     $event->modulename,
                     $event->instancename,
@@ -82,17 +91,27 @@ class contentcontroller {
                 ),
             };
             $templetter = $templetter->export_letter();
-            $this->content[$index] = $templetter;
+
+            // Group the letters by its day.
+            $day = date('d.m.Y', $templetter['createdtimestamp']);
+            if (!isset($this->content[$day])) {
+                $this->content[$day] = (object) [
+                    'day' => $day,
+                    'letters' => [],
+                ];
+            }
+            $this->content[$day]->letters[] = $templetter;
 
             // Collect the courses shown in the townsquare to be able to filter them afterwards.
-            if (!array_key_exists($this->content[$index]['courseid'], $appearedcourses)) {
-                $this->courses[] = ['courseid' => $this->content[$index]['courseid'],
-                                    'coursename' => $this->content[$index]['coursename'], ];
+            if (!array_key_exists($templetter['courseid'], $appearedcourses)) {
+                $this->courses[] = [
+                    'courseid' => $templetter['courseid'],
+                    'coursename' => $templetter['coursename'],
+                ];
                 $appearedcourses[$event->courseid] = true;
             }
-            $index++;
         }
-        return $this->content;
+        return array_values($this->content);
     }
 
     // Getter.

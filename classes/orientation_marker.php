@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Class to show information to the user
+ * Class to show information to the user.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -30,7 +30,7 @@ global $CFG;
 require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
- * Class that represent a orientation marker.
+ * Class that represent an orientation marker.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -42,8 +42,8 @@ class orientation_marker {
     /** @var int an ID to identify every content in townsquare */
     private int $contentid;
 
-    /** @var int The timestamp of the current day. */
-    private int $today;
+    /** @var string The day of the letters group  */
+    private string $date;
 
     /** @var bool variable for the mustache template */
     public bool $isorientationmarker = true;
@@ -54,11 +54,11 @@ class orientation_marker {
      * Constructor for a letter
      *
      * @param int $contentid The ID to identify the orientation marker
-     * @param int $time      A Timestamp of the time that the orientation marker is created
+     * @param string $time      A Timestamp of the time that the orientation marker is created
      */
-    public function __construct(int $contentid, int $time) {
+    public function __construct(int $contentid, string $time) {
         $this->contentid = $contentid;
-        $this->today = $time;
+        $this->date = $time;
     }
 
     // Functions.
@@ -68,14 +68,10 @@ class orientation_marker {
      * @return array
      */
     public function export_data(): array {
-        // Change the timestamp to a date.
-        $date = date('d.m.Y', $this->today);
-
         return [
             'contentid' => $this->contentid,
-            'date' => $date,
+            'date' => $this->date,
             'isorientationmarker' => $this->isorientationmarker,
-            'orientationmarkercolor' => block_townsquare_get_colorsetting('orientationmarker'),
         ];
     }
 }
