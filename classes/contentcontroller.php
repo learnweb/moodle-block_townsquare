@@ -77,12 +77,11 @@ class contentcontroller {
                 $this->content[$index] = $tempcontent->export_data();
                 $index++;
             }
-            if ($event->eventtype == 'post') {
-                $templetter = new local\letter\post_letter($index, $event);
-            } else if ($event->eventtype == 'expectcompletionon') {
-                $templetter = new local\letter\activitycompletion_letter($index, $event);
-            } else {
-                $templetter = new local\letter\letter(
+
+            match ($event->eventtype) {
+                'post' => $templetter = new local\letter\post_letter($index, $event),
+                'expectcompletionon' => $templetter = new local\letter\activitycompletion_letter($index, $event),
+                default => $templetter = new local\letter\letter(
                     $index,
                     $event->courseid,
                     $event->modulename,
@@ -90,8 +89,8 @@ class contentcontroller {
                     $event->content,
                     $event->timestart,
                     $event->coursemoduleid
-                );
-            }
+                ),
+            };
 
             $this->content[$index] = $templetter->export_letter();
 
