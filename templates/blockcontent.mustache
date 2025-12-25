@@ -92,9 +92,11 @@
                         <div class="orientationmarker">
                             <span class="orientationmarker_date">{{day}}</span>
                             <span class="orientationmarker_line" aria-hidden="true"></span>
-                            <i class="orientationmarker_arrow fa fa-chevron-down ml-3 mr-2"></i>
+                            <span class="orientationmarker-collapse" data-action="block_townsquare/collapse_group" data-groupid="{{day}}">
+                                <i class="fa fa-chevron-down ml-3 mr-2"></i>
+                            </span>
                         </div>
-                        <div class="ts-letter-box" id="ts-letters-{{day}}">
+                        <div class="ts-letter-box" data-groupid="{{day}}">
                             {{#letters}}
                                 {{#isbasic}}
                                     {{> block_townsquare/basicletter}}

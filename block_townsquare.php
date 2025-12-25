@@ -57,6 +57,7 @@ class block_townsquare extends block_base {
         $this->page->requires->js_call_amd('block_townsquare/timefilter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/letterfilter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/filtercontroller', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/lettergroup', 'init');
         $this->page->requires->js_call_amd('block_townsquare/usersettings_save', 'init', [$USER->id, $usersettings]);
         $this->page->requires->js_call_amd('block_townsquare/usersettings_reset', 'init', [$USER->id]);
         return $this->content;

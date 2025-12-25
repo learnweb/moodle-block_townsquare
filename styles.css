@@ -113,4 +113,13 @@
     height: 1px;
     background-color: #0e0e0e;
 }
+
+.orientationmarker-collapse {
+    cursor: pointer;
+}
+
+.ts-letter-box {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
 /*# sourceMappingURL=styles.css.map */
