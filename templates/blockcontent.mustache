@@ -88,18 +88,26 @@
         <div class=" col-md-9 townsquare_content">
             <div class="townsquare_letters">
                 {{#content}}
-                    {{> block_townsquare/orientationmarker}}
-                    {{#letters}}
-                        {{#isbasic}}
-                            {{> block_townsquare/basicletter}}
-                        {{/isbasic}}
-                        {{#isactivitycompletion}}
-                            {{> block_townsquare/activitycompletionletter}}
-                        {{/isactivitycompletion}}
-                        {{#ispost}}
-                            {{> block_townsquare/postletter}}
-                        {{/ispost}}
-                    {{/letters}}
+                    <div class="ts-lettergroup" id="ts-lettergroup-{{day}}">
+                        <div class="orientationmarker">
+                            <span class="orientationmarker_date">{{day}}</span>
+                            <span class="orientationmarker_line" aria-hidden="true"></span>
+                            <i class="orientationmarker_arrow fa fa-chevron-down ml-3 mr-2"></i>
+                        </div>
+                        <div class="ts-letter-box" id="ts-letters-{{day}}">
+                            {{#letters}}
+                                {{#isbasic}}
+                                    {{> block_townsquare/basicletter}}
+                                {{/isbasic}}
+                                {{#isactivitycompletion}}
+                                    {{> block_townsquare/activitycompletionletter}}
+                                {{/isactivitycompletion}}
+                                {{#ispost}}
+                                    {{> block_townsquare/postletter}}
+                                {{/ispost}}
+                            {{/letters}}
+                        </div>
+                    </div>
                 {{/content}}
             </div>
         </div>
