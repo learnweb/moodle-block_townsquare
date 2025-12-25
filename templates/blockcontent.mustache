@@ -88,18 +88,28 @@
         <div class=" col-md-9 townsquare_content">
             <div class="townsquare_letters">
                 {{#content}}
-                        {{#isorientationmarker}}
-                            {{> block_townsquare/orientationmarker}}
-                        {{/isorientationmarker}}
-                        {{#isbasic}}
-                            {{> block_townsquare/basicletter}}
-                        {{/isbasic}}
-                        {{#isactivitycompletion}}
-                            {{> block_townsquare/activitycompletionletter}}
-                        {{/isactivitycompletion}}
-                        {{#ispost}}
-                            {{> block_townsquare/postletter}}
-                        {{/ispost}}
+                    <div class="ts-lettergroup" id="ts-lettergroup-{{day}}">
+                        <div class="orientationmarker">
+                            <span class="orientationmarker_date">{{day}}</span>
+                            <span class="orientationmarker_line" aria-hidden="true"></span>
+                            <span class="orientationmarker-collapse" data-action="block_townsquare/collapse_group" data-groupid="{{day}}">
+                                <i class="fa fa-chevron-down ml-3 mr-2"></i>
+                            </span>
+                        </div>
+                        <div class="ts-letter-box" data-groupid="{{day}}">
+                            {{#letters}}
+                                {{#isbasic}}
+                                    {{> block_townsquare/basicletter}}
+                                {{/isbasic}}
+                                {{#isactivitycompletion}}
+                                    {{> block_townsquare/activitycompletionletter}}
+                                {{/isactivitycompletion}}
+                                {{#ispost}}
+                                    {{> block_townsquare/postletter}}
+                                {{/ispost}}
+                            {{/letters}}
+                        </div>
+                    </div>
                 {{/content}}
             </div>
         </div>

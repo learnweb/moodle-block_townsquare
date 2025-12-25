@@ -46,15 +46,38 @@ export function init() {
                     let letterfilter = letter.classList.contains('ts_letterfilter_approved');
 
                     // If all filters approve the letter, show the letter.
-                    if (coursefilter && timefilter && letterfilter) {
-                        letter.style.display = 'block';
-                    } else {
-                        letter.style.display = 'none';
-                    }
+                    letter.style.display = (coursefilter && timefilter && letterfilter) ? 'block' : 'none';
+
+                    // Check if the letters group should be visible or not.
+                    updatelettergroup(letter);
                 }
             });
         });
 
         observer.observe(letter, {attributes: true});
     });
+}
+
+/**
+ * Helper function that checks if a letter group should still be visible. Is used if a filter is applied
+ * that could change the visibility of one letter and therefore the letters group.
+ * @param {HTMLElement} letter
+ */
+function updatelettergroup(letter) {
+    // Get the letters group.
+    const group = letter.closest('.ts-lettergroup');
+    if (!group) {
+        return;
+    }
+
+    // Check every group letters visibility.
+    const letters = group.querySelectorAll('.ts-letter-box > *');
+    const anyVisible = Array.from(letters).some(el =>
+        el.classList.contains('ts_coursefilter_approved') &&
+        el.classList.contains('ts_timefilter_approved') &&
+        el.classList.contains('ts_letterfilter_approved')
+    );
+
+    // Group only gets shown if at least one element is visible.
+    group.style.display = anyVisible ? 'block' : 'none';
 }
