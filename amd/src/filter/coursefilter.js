@@ -19,7 +19,7 @@
  * This file implements 1 functionality:
  * - Checks the checkboxes of the course filter and hides content from courses if the checkbox is not checked.
  *
- * @module     block_townsquare/coursefilter
+ * @module     block_townsquare/filter/coursefilter
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

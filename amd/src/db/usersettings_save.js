@@ -19,7 +19,7 @@
  * This file implements 1 functionality:
  * - If the "save settings" button is pressed, store the settings in the database.
  *
- * @module     block_townsquare/usersettings_save
+ * @module     block_townsquare/db/usersettings_save
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

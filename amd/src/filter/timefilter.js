@@ -19,7 +19,7 @@
  * This file implements 1 functionality:
  * - Checks, which of the radio buttons is pressed and filters the content based on the time.
  *
- * @module     block_townsquare/timefilter
+ * @module     block_townsquare/filter/timefilter
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
