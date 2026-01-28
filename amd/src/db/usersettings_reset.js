@@ -19,7 +19,7 @@
  * This file implements 1 functionality:
  * - If the "reset settings" button is pressed, reset all settings and delete the users database record.
  *
- * @module     block_townsquare/usersettings_reset
+ * @module     block_townsquare/db/usersettings_reset
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

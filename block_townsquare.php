@@ -52,14 +52,14 @@ class block_townsquare extends block_base {
         $usersettings = $DB->get_record('block_townsquare_preferences', ['userid' => $USER->id]);
 
         // Load all javascripts.
-        $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
-        $this->page->requires->js_call_amd('block_townsquare/coursefilter', 'init');
-        $this->page->requires->js_call_amd('block_townsquare/timefilter', 'init');
-        $this->page->requires->js_call_amd('block_townsquare/letterfilter', 'init');
-        $this->page->requires->js_call_amd('block_townsquare/filtercontroller', 'init');
         $this->page->requires->js_call_amd('block_townsquare/lettergroup', 'init');
-        $this->page->requires->js_call_amd('block_townsquare/usersettings_save', 'init', [$USER->id, $usersettings]);
-        $this->page->requires->js_call_amd('block_townsquare/usersettings_reset', 'init', [$USER->id]);
+        $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/filter/coursefilter', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/filter/filtercontroller', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/filter/letterfilter', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/filter/timefilter', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/db/usersettings_reset', 'init', [$USER->id]);
+        $this->page->requires->js_call_amd('block_townsquare/db/usersettings_save', 'init', [$USER->id, $usersettings]);
         return $this->content;
     }
 

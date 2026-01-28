@@ -16,7 +16,7 @@
 /**
  * JavaScript for the letter filter
  *
- * @module     block_townsquare/letterfilter
+ * @module     block_townsquare/filter/letterfilter
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

@@ -16,7 +16,7 @@
 /**
  * JavaScript to show/hide letters based on all filters
  *
- * @module     block_townsquare/filtercontroller
+ * @module     block_townsquare/filter/filtercontroller
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
