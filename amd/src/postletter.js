@@ -44,7 +44,7 @@ export function init() {
     contentElements.forEach(
         (element) => {
             // Check if the div is too long.
-            if (element.clientHeight >= 90) {
+            if (element.scrollHeight >= 90) {
                 // If the text is too long, show the showmore button.
                 buttons[element.id].setAttribute('showmore', 'true');
             } else {
@@ -76,6 +76,9 @@ const addEventListener = () => {
                             element.classList.remove("expanded");
                             changeButtonString(letterid, true);
                         }
+                        // Upate letter group height.
+                        const group = element.closest('.ts-letter-box');
+                        group.style.maxHeight = `${group.scrollHeight}px`;
                     }
                 }
             );
