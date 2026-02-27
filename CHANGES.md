@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+
+v5.1-r2 (2025-02-27)
+------------------
+- Bugfix: letter group does not expands with "show more" button ([#34](https://github.com/learnweb/moodle-block_townsquare/pull/34))
+
+
 v5.1-r1 (2025-11-29)
 ------------------
 - Course filter settings can be saved for future use ([#25](https://github.com/learnweb/moodle-block_townsquare/pull/25))
