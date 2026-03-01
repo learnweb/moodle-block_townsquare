@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * Class to show content to the user
- *
- * @package     block_townsquare
- * @copyright   2023 Tamaro Walter
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace block_townsquare\local\letter;
 
 /**

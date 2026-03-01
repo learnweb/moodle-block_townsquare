@@ -14,17 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Letter Controller of block_townsquare
- *
- * @package   block_townsquare
- * @copyright 2023 Tamaro Walter
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace block_townsquare;
 
 /**
- * Letter Controller Class.
+ * Letter Controller of block_townsquare
  *
  * This Class controls access to the townsquareevents class. It retrieves all important events and builds the letters.
  *

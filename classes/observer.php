@@ -14,19 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Event observers used in Townsquare.
- *
- * @package   block_townsquare
- * @copyright 2025 Tamaro Walter
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace block_townsquare;
 
 use core\event\course_deleted;
 use dml_exception;
 
 /**
+ * Event observers used in Townsquare.
  * This class listens to certain events triggered in Moodle and apply them to townsquare.
  *
  * @package   block_townsquare
