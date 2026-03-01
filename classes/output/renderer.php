@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Townsquare block renderer.
- *
- * @package    block_townsquare
- * @copyright  2023 Tamaro Walter
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace block_townsquare\output;
 
 use block_townsquare\contentcontroller;
@@ -28,7 +21,7 @@ use core\exception\moodle_exception;
 use plugin_renderer_base;
 
 /**
- * Class to call mustache templates.
+ * Townsquare block renderer.
  *
  * @package    block_townsquare
  * @copyright  2023 Tamaro Walter

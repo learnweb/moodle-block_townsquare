@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class to get relevant events from courses the user is enrolled to..
- *
- * @package     block_townsquare
- * @copyright   2023 Tamaro Walter
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +31,7 @@ require_once($CFG->dirroot . '/blocks/townsquare/lib.php');
 require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
- * Class to get events and posts that will be shown in the townsquare block..
+ * Class to get relevant events from courses the user is enrolled to.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
