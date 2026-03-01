@@ -1,9 +1,12 @@
 CHANGELOG
 =========
-
-v5.1-r2 (2025-02-27)
+v5.1-r3 (2026-03-01)
 ------------------
-- Bugfix: letter group does not expands with "show more" button ([#34](https://github.com/learnweb/moodle-block_townsquare/pull/34))
+- Fixes for moodle.org code prechecks
+
+v5.1-r2 (2026-02-27)
+------------------
+- New: structure letters in group sorted by dates ([#29](https://github.com/learnweb/moodle-block_townsquare/pull/29), [#34](https://github.com/learnweb/moodle-block_townsquare/pull/34))
 
 
 v5.1-r1 (2025-11-29)
