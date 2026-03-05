@@ -52,7 +52,6 @@ final class external_test extends \advanced_testcase {
         parent::setUp();
         $this->resetAfterTest();
         $this->testdata = new stdClass();
-        $this->testdata->external = new external();
     }
 
     /**
@@ -61,6 +60,7 @@ final class external_test extends \advanced_testcase {
      */
     public function test_record_usersettings(): void {
         global $DB;
+        $this->testdata->external = new external\record_usersettings();
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
@@ -80,7 +80,7 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals(false, $record);
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = $this->testdata->external->record_usersettings(
+        $result = $this->testdata->external->execute(
             $usersetting->userid,
             $usersetting->timefilterpast,
             $usersetting->timefilterfuture,
@@ -110,7 +110,7 @@ final class external_test extends \advanced_testcase {
         $usersetting->courses = json_encode((object) ["4" => false]);
 
         // Call the function to record the user settings and check, if the record is created.
-        $result = $this->testdata->external->record_usersettings(
+        $result = $this->testdata->external->execute(
             $usersetting->userid,
             $usersetting->timefilterpast,
             $usersetting->timefilterfuture,
@@ -138,6 +138,7 @@ final class external_test extends \advanced_testcase {
      */
     public function test_reset_usersettings(): void {
         global $DB;
+        $this->testdata->external = new external\reset_usersettings();
         $user = $this->getDataGenerator()->create_user();
         $user2 = $this->getDataGenerator()->create_user();
         $this->setUser($user);
@@ -148,7 +149,7 @@ final class external_test extends \advanced_testcase {
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
         // Test case 1: Wrong parameters.
-        $this->testdata->external->reset_usersettings($user2->id);
+        $this->testdata->external->execute($user2->id);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
         // Test case 2: For some reason, many records from the same user exist.
@@ -156,14 +157,14 @@ final class external_test extends \advanced_testcase {
             'timefilterfuture' => 2592000, 'basicletter' => 1, 'completionletter' => 0, 'postletter' => 0, ]);
         $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
-        $this->testdata->external->reset_usersettings($user->id);
+        $this->testdata->external->execute($user->id);
         $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
         // Test case 3: normal case.
         $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
             'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
-        $this->testdata->external->reset_usersettings($user->id);
+        $this->testdata->external->execute($user->id);
         $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
     }
 }
