@@ -19,24 +19,24 @@
  *
  * @package    block_townsquare
  * @category   external
- * @copyright  2017 Kennet Winter <k_wint10@uni-muenster.de>
+ * @copyright  2026 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die;
 
 $functions = [
     'block_townsquare_record_usersettings' => [
-        'classname' => 'block_townsquare\external',
-        'methodname' => 'record_usersettings',
-        'classpath' => 'blocks/townsquare/classes/external.php',
+        'classname' => 'block_townsquare\external\record_usersettings',
+        'methodname' => 'execute',
+        'classpath' => 'blocks/townsquare/classes/external/record_usersettings.php',
         'description' => 'Records the user settings for the townsquare block',
         'type' => 'write',
         'ajax' => true,
     ],
     'block_townsquare_reset_usersettings' => [
-        'classname' => 'block_townsquare\external',
-        'methodname' => 'reset_usersettings',
-        'classpath' => 'blocks/townsquare/classes/external.php',
+        'classname' => 'block_townsquare\external\reset_usersettings',
+        'methodname' => 'execute',
+        'classpath' => 'blocks/townsquare/classes/external/reset_usersettings.php',
         'description' => 'Resets the user settings for the townsquare block',
         'type' => 'write',
         'ajax' => true,

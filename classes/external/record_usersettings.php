@@ -1,0 +1,131 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace block_townsquare\external;
+
+use core_external\restricted_context_exception;
+use dml_exception;
+use external_function_parameters;
+use Exception;
+use external_api;
+use external_value;
+use invalid_parameter_exception;
+use context_user;
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/lib/externallib.php');
+require_once($CFG->libdir . '/externallib.php');
+
+/**
+ * Class implementing the external API, esp. for AJAX functions.
+ * Saves usersettings in the database.
+ *
+ * @package    block_townsquare
+ * @copyright  2024 Tamaro Walter
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class record_usersettings extends external_api {
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function execute_parameters(): external_function_parameters {
+        return new external_function_parameters(
+            [
+                'userid' => new external_value(PARAM_INT, 'the user id'),
+                'timefilterpast' => new external_value(PARAM_INT, 'time span for filtering the past'),
+                'timefilterfuture' => new external_value(PARAM_INT, 'time span for filtering the future'),
+                'basicletter' => new external_value(PARAM_INT, 'Setting of the letter filter for basic letters'),
+                'completionletter' => new external_value(PARAM_INT, 'Setting of the letter filter for completion letters'),
+                'postletter' => new external_value(PARAM_INT, 'Setting of the letter filter for post letters'),
+                'courses' => new external_value(PARAM_TEXT, 'courses the user wants to see letters from'),
+            ]
+        );
+    }
+
+    /**
+     * Return the result of the record_usersettings function
+     * @return external_value
+     */
+    public static function execute_returns(): external_value {
+        return new external_value(PARAM_BOOL, 'true if successful');
+    }
+
+    /**
+     * Record the user settings
+     *
+     * @param int $userid The user id
+     * @param int $timefilterpast Time span for filtering the past
+     * @param int $timefilterfuture Time span for filtering the future
+     * @param int $basicletter If basic letters should be shown
+     * @param int $completionletter If completion letters should be shown
+     * @param int $postletter If post letters should be shown
+     * @param string $courses The setting for the course filter
+     * @return bool
+     * @throws invalid_parameter_exception
+     * @throws restricted_context_exception
+     * @throws dml_exception
+     */
+    public static function execute(
+        int $userid,
+        int $timefilterpast,
+        int $timefilterfuture,
+        int $basicletter,
+        int $completionletter,
+        int $postletter,
+        string $courses
+    ): bool {
+        global $DB;
+        // Parameter validation.
+        $params = self::validate_parameters(self::execute_parameters(), [
+            'userid' => $userid, 'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
+            'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
+            'courses' => $courses,
+        ]);
+
+        if (!$params) {
+            return false;
+        }
+
+        self::validate_context(context_user::instance($userid));
+
+        // Check if the user already has a record in the database.
+        if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
+            // If there more than a record (it only should be only one), delete all of them and insert the new one.
+            if (count($records) <= 1) {
+                // Upgrade the existing record.
+                $record = reset($records);
+                $fields = ['timefilterpast', 'timefilterfuture', 'basicletter', 'completionletter', 'postletter', 'courses'];
+                foreach ($fields as $field) {
+                    $record->$field = $params[$field];
+                }
+                $DB->update_record('block_townsquare_preferences', $record);
+                return true;
+            }
+            try {
+                foreach ($records as $record) {
+                    $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
+                }
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+        $DB->insert_record('block_townsquare_preferences', (object) $params);
+        return true;
+    }
+}
