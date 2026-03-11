@@ -25,6 +25,8 @@
  */
 
 import Ajax from 'core/ajax';
+import {getString} from "core/str";
+import Notification from 'core/notification';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
@@ -62,49 +64,24 @@ export function init(userid, settingsfromdb) {
         let letterfilter = collectletterfiltersettings();
         let courses = collectcoursesettings(settingsfromdb.courses);
 
-        // Second step: store the usersettings in the database.
-        await saveusersettings(userid, timespans['timepast'], timespans['timefuture'], letterfilter['basicletter'],
-            letterfilter['completionletter'], letterfilter['postletter'], courses);
+        const data = {
+            methodname: 'block_townsquare_record_usersettings',
+            args: {
+                userid: userid,
+                timefilterpast: timespans['timepast'],
+                timefilterfuture: timespans['timefuture'],
+                basicletter: letterfilter['basicletter'],
+                completionletter: letterfilter['completionletter'],
+                postletter: letterfilter['postletter'],
+                courses: courses,
+            },
+        };
+        const result = await Ajax.call([data])[0];
+        if (result) {
+            const message = await getString('save_successmessage', 'block_townsquare');
+            await Notification.addNotification({message: message, type: 'success'});
+        }
     });
-}
-
-/**
- * Function to save the user settings in the database.
- * @param {number} userid
- * @param {number} timefilterpast
- * @param {number} timefilterfuture
- * @param {number} basicletter
- * @param {number} completionletter
- * @param {number} postletter
- * @param {string} courses
- * @returns {Promise<*>}
- */
-function saveusersettings(userid, timefilterpast, timefilterfuture, basicletter, completionletter, postletter, courses) {
-    let result;
-
-    const data = {
-        methodname: 'block_townsquare_record_usersettings',
-        args: {
-            userid: userid,
-            timefilterpast: timefilterpast,
-            timefilterfuture: timefilterfuture,
-            basicletter: basicletter,
-            completionletter: completionletter,
-            postletter: postletter,
-            courses: courses,
-        },
-    };
-    result = Ajax.call([data]);
-
-    // Make the clicked button green by adding a class and remove it afterward.
-    savebutton.classList.add('bg-success', 'text-white', 'ts_button_transition');
-    setTimeout(function() {
-        savebutton.classList.remove('bg-success');
-        savebutton.classList.remove('text-white');
-    }, 1500);
-
-    return result;
-
 }
 
 /**
