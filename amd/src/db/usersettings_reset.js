@@ -25,6 +25,8 @@
  */
 
 import Ajax from 'core/ajax';
+import {getString} from "core/str";
+import Notification from 'core/notification';
 
 // Get the reset button for the user settings.
 const resetbutton = document.getElementById('ts_usersettings_resetbutton');
@@ -46,14 +48,11 @@ export function init(userid) {
             },
         };
         // Call the AJAX function.
-        let result = Ajax.call([data]);
-
-        // Make the clicked button green by adding a class and remove it afterward.
-        resetbutton.classList.add('bg-success', 'text-white', 'ts_button_transition');
-        setTimeout(function() {
-            resetbutton.classList.remove('bg-success');
-            resetbutton.classList.remove('text-white');
-        }, 1500);
+        const result = await Ajax.call([data])[0];
+        if (result) {
+            const message = await getString('reset_successmessage', 'block_townsquare');
+            await Notification.addNotification({message: message, type: 'success'});
+        }
 
         // Second step: reset all active filters.
         const coursecheckboxes = document.querySelectorAll('.ts_course_checkbox');
