@@ -24,8 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import {convertIdToTime} from 'block_townsquare/locallib';
+
 // Get the relevant radio buttons.
-const alltimebutton = document.querySelectorAll('.ts_all_time_button');
+const alltimebutton = document.getElementById('ts_time_all');
 const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
 const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 
@@ -63,7 +65,6 @@ function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate
 
     // Loop through each letter and hide/show based on radiobutton state.
     letters.forEach(function(letter) {
-
         // Get the created time stamp of each letter.
         let lettertime = letter.querySelector('.townsquareletter_date').id;
 
@@ -81,27 +82,23 @@ function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate
  * Function to add event listeners to the all_time button.
  */
 function alltimeaddEventListener() {
-    alltimebutton.forEach(function(button) {
-        button.addEventListener('change', function() {
-            // Set the time span to show all letters.
-            timestart = currenttime - convertidtotime(button.id);
-            timeend = currenttime + convertidtotime(button.id);
-            addstarttime = 0;
-            addendtime = 0;
+    alltimebutton.addEventListener('change', function() {
+        // Set the time span to show all letters.
+        timestart = currenttime - convertIdToTime(alltimebutton.id);
+        timeend = currenttime + convertIdToTime(alltimebutton.id);
 
-            // Disable all other radio buttons that filter more specific times.
-            futureradiobuttons.forEach(function(futureradiobutton) {
-                futureradiobutton.checked = false;
-                futureradiobutton.parentNode.classList.remove("active");
-            });
-            pastradiobuttons.forEach(function(pastradiobutton) {
-                pastradiobutton.checked = false;
-                pastradiobutton.parentNode.classList.remove("active");
-            });
-
-            // Execute the filter function.
-            executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
+        // Disable all other radio buttons that filter more specific times.
+        futureradiobuttons.forEach(function(futureradiobutton) {
+            futureradiobutton.checked = false;
+            futureradiobutton.parentNode.classList.remove("active");
         });
+        pastradiobuttons.forEach(function(pastradiobutton) {
+            pastradiobutton.checked = false;
+            pastradiobutton.parentNode.classList.remove("active");
+        });
+
+        // Execute the filter function.
+        executefilter(timestart, timeend, 0, 0, alltimebutton.checked);
     });
 }
 
@@ -112,21 +109,19 @@ function futuretimeaddEventListener() {
     futureradiobuttons.forEach(function(button) {
         button.addEventListener('change', function() {
             // Disable the all_time button.
-            alltimebutton.forEach(function(alltimebutton) {
-                alltimebutton.checked = false;
-                alltimebutton.parentNode.classList.remove('active');
-            });
+            alltimebutton.checked = false;
+            alltimebutton.parentNode.classList.remove('active');
 
             // Set the time span based on the radiobutton id.
             timestart = currenttime;
-            timeend = currenttime + convertidtotime(button.id);
+            timeend = currenttime + convertIdToTime(button.id);
 
             // Check if one past time button is checked. If yes, set the additional time span based on its id.
             addstarttime = 0;
             addendtime = 0;
             pastradiobuttons.forEach(function(pastradiobutton) {
                 if (pastradiobutton.checked || pastradiobutton.parentNode.classList.contains('active')) {
-                    addstarttime = currenttime - convertidtotime(pastradiobutton.id);
+                    addstarttime = currenttime - convertIdToTime(pastradiobutton.id);
                     addendtime = currenttime;
                 }
             });
@@ -144,12 +139,10 @@ function pasttimeaddEventListener() {
     pastradiobuttons.forEach(function(button) {
         button.addEventListener('change', function() {
             // Disable the all_time button.
-            alltimebutton.forEach(function(alltimebutton) {
-                alltimebutton.checked = false;
-            });
+            alltimebutton.checked = false;
 
             // Set the time span based on the radiobutton id.
-            timestart = currenttime - convertidtotime(button.id);
+            timestart = currenttime - convertIdToTime(button.id);
             timeend = currenttime;
 
             // Check if one future time button is checked. If yes, set the additional time span based on its id.
@@ -158,7 +151,7 @@ function pasttimeaddEventListener() {
             futureradiobuttons.forEach(function(futureradiobutton) {
                 if (futureradiobutton.checked || futureradiobutton.parentNode.classList.contains('active')) {
                     addstarttime = currenttime;
-                    addendtime = currenttime + convertidtotime(futureradiobutton.id);
+                    addendtime = currenttime + convertIdToTime(futureradiobutton.id);
                 }
             });
 
@@ -166,28 +159,4 @@ function pasttimeaddEventListener() {
             executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
         });
     });
-}
-
-/**
- * Function to convert the radio button id to a useable time span.
- * @param {string} id  The id of the radio button
- * @returns {number}
- */
-function convertidtotime(id) {
-    switch (id) {
-        case "ts_time_all":
-            return 15778463;
-        case "ts_time_next_twodays":
-        case "ts_time_last_twodays":
-            return 172800;
-        case "ts_time_next_fivedays":
-        case "ts_time_last_fivedays":
-            return 432000;
-        case "ts_time_next_week":
-        case "ts_time_last_week":
-            return 604800;
-        case "ts_time_next_month":
-        case "ts_time_last_month":
-            return 2592000;
-    }
 }

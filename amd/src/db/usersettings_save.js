@@ -27,12 +27,13 @@
 import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
+import {convertIdToTime, convertTimeToId} from 'block_townsquare/locallib';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
 
 // Get the buttons from the time filter.
-const alltimebutton = document.querySelectorAll('.ts_all_time_button');
+const alltimebutton = document.getElementById('ts_time_all');
 const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
 const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 
@@ -92,14 +93,12 @@ function executeusersettings(settingsfromdb) {
 
     // First step: set the time filter settings.
     // Change the time into the correct radio button id.
-    let futurebuttonid = converttimetoid(settingsfromdb.timefilterfuture, true);
-    let pastbuttonid = converttimetoid(settingsfromdb.timefilterpast, false);
+    let futurebuttonid = convertTimeToId(settingsfromdb.timefilterfuture, true);
+    let pastbuttonid = convertTimeToId(settingsfromdb.timefilterpast, false);
 
     // If the time span is a combination of past and future, go through the two radio buttons and activate the filter.
     if (futurebuttonid !== "ts_time_all") {
-        alltimebutton.forEach(function(alltimebutton) {
-            alltimebutton.checked = false;
-        });
+        alltimebutton.checked = false;
         futureradiobuttons.forEach(function(button) {
             if (button.id === futurebuttonid) {
                 button.checked = true;
@@ -116,17 +115,11 @@ function executeusersettings(settingsfromdb) {
         });
     } else {
         // If the time span is set to all time, activate the all time button.
-        alltimebutton.forEach(function(button) {
-            button.checked = true;
-            button.parentNode.classList.add('active');
-            button.dispatchEvent(new Event('change'));
-        });
-        futureradiobuttons.forEach(function(button) {
-            button.checked = false;
-        });
-        pastradiobuttons.forEach(function(button) {
-            button.checked = false;
-        });
+        alltimebutton.checked = true;
+        alltimebutton.parentNode.classList.add('active');
+        alltimebutton.dispatchEvent(new Event('change'));
+        futureradiobuttons.forEach(button => {button.checked = false;});
+        pastradiobuttons.forEach(button => {button.checked = false;});
     }
 
     // Second step: set the letter filter settings.
@@ -210,14 +203,11 @@ function collecttimefiltersettings() {
 
     // Get the relevant time spans of the time filter.
     // Check if the alltimebutton is set.
-    alltimebutton.forEach(function(button) {
-        if (button.checked || button.parentNode.classList.contains('active')) {
-            // Get the timespan.
-            settings.timepast = convertidtotime(button.id);
-            settings.timefuture = convertidtotime(button.id);
-            settingsset = true;
-        }
-    });
+    if (alltimebutton.checked || alltimebutton.parentNode.classList.contains('active')) {
+        settings.timepast = convertIdToTime(alltimebutton.id);
+        settings.timefuture = convertIdToTime(alltimebutton.id);
+        settingsset = true;
+    }
 
     if (settingsset) {
         return settings;
@@ -226,76 +216,14 @@ function collecttimefiltersettings() {
     // If the alltimebutton is not set, check which of the future/past buttons is set.
     futureradiobuttons.forEach(function(button) {
         if (button.checked || button.parentNode.classList.contains('active')) {
-            // Get the timespan.
-            settings.timefuture = convertidtotime(button.id);
+            settings.timefuture = convertIdToTime(button.id);
         }
     });
 
     pastradiobuttons.forEach(function(button) {
         if (button.checked || button.parentNode.classList.contains('active')) {
-            // Get the timespan.
-            settings.timepast = convertidtotime(button.id);
+            settings.timepast = convertIdToTime(button.id);
         }
     });
     return settings;
-}
-
-
-/**
- * Function to convert the radio button id to a useable time span.
- * @param {string} id  The id of the radio button
- * @returns {number}
- */
-function convertidtotime(id) {
-    // TODO: Please use global functions if possible.
-    switch (id) {
-        case "ts_time_all":
-            return 15778463;
-        case "ts_time_next_twodays":
-        case "ts_time_last_twodays":
-            return 172800;
-        case "ts_time_next_fivedays":
-        case "ts_time_last_fivedays":
-            return 432000;
-        case "ts_time_next_week":
-        case "ts_time_last_week":
-            return 604800;
-        case "ts_time_next_month":
-        case "ts_time_last_month":
-            return 2592000;
-    }
-}
-
-/**
- * Function to convert the time span to a radio button id.
- * @param {string} time
- * @param {boolean} future
- * @returns {string}
- */
-function converttimetoid(time, future) {
-    switch (time) {
-        case "15778463":
-            return "ts_time_all";
-        case "172800":
-            if (future) {
-                return "ts_time_next_twodays";
-            }
-            return "ts_time_past_twodays";
-        case "432000":
-            if (future) {
-                return "ts_time_next_fivedays";
-            }
-            return "ts_time_last_fivedays";
-        case "604800":
-            if (future) {
-                return "ts_time_next_week";
-            }
-            return "ts_time_last_week";
-        case "2592000":
-            if (future) {
-                return "ts_time_next_month";
-
-            }
-            return "ts_time_last_month";
-    }
 }
