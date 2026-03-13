@@ -28,54 +28,30 @@ import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
 
-// Get the reset button for the user settings.
 const resetbutton = document.getElementById('ts_usersettings_resetbutton');
 
 /**
- * Init function. This functions resets the user settings from the database.
+ * Init function. Resets user settings from the database.
  * @param {number} userid The id of the current user.
  */
 export function init(userid) {
-    // First step: delete user settings in database.
-
-    // Add event listener to the reset button.
-    resetbutton.addEventListener('click', async function() {
-        // Set up for AJAX call.
-        const data = {
-            methodname: 'block_townsquare_reset_usersettings',
-            args: {
-                userid: userid,
-            },
-        };
-        // Call the AJAX function.
+    resetbutton.addEventListener('click', async() => {
+        const data = {methodname: 'block_townsquare_reset_usersettings', args: {userid}};
         const result = await Ajax.call([data])[0];
+
         if (result) {
             const message = await getString('reset_successmessage', 'block_townsquare');
-            await Notification.addNotification({message: message, type: 'success'});
+            Notification.addNotification({message, type: 'success'});
         }
 
-        // Second step: reset all active filters.
-        const coursecheckboxes = document.querySelectorAll('.ts_course_checkbox');
-        const lettercheckboxes = document.querySelectorAll('.ts_letter_checkbox');
-        const alltimebutton = document.querySelectorAll('.ts_all_time_button');
-
-        coursecheckboxes.forEach(function(checkbox) {
-            if (!checkbox.checked) {
-                checkbox.click();
-            }
-        });
-
-        alltimebutton.forEach(function(button) {
+        document.querySelectorAll('.ts_course_checkbox:not(:checked)').forEach(checkbox => checkbox.click());
+        document.querySelectorAll('.ts_all_time_button').forEach(button => {
             button.checked = true;
             button.parentNode.classList.add('active');
             button.dispatchEvent(new Event('change'));
         });
+        document.querySelectorAll('.ts_letter_checkbox:not(:checked)').forEach(checkbox => checkbox.click());
 
-        lettercheckboxes.forEach(function(checkbox) {
-            if (!checkbox.checked) {
-                checkbox.click();
-            }
-        });
         return result;
     });
 }
