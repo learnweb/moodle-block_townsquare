@@ -131,16 +131,12 @@ class townsquareevents {
         $forumposts = $this->get_forumposts_from_db($this->courses, $this->timestart);
 
         foreach ($forumposts as $post) {
-            if (townsquare_filter_availability($post) || $this->filter_forum_privatepost($post)) {
+            if (townsquare_filter_availability($post)) {
                 unset($forumposts[$post->row_num]);
             }
 
             // Add a links and the authors picture.
-            $post->linktopost = new moodle_url(
-                '/mod/forum/discuss.php',
-                ['d' => $post->postdiscussion],
-                'p' . $post->postid
-            );
+            $post->linktopost = new moodle_url('/mod/forum/discuss.php', ['d' => $post->postdiscussion], 'p' . $post->postid);
             $post->linktoauthor = new moodle_url('/user/view.php', ['id' => $post->postuserid]);
         }
 
@@ -159,13 +155,14 @@ class townsquareevents {
      * @throws dml_exception
      */
     private function get_forumposts_from_db(array $courses, int $timestart): array {
-        global $DB;
+        global $DB, $USER;
         // Prepare params for sql statement.
         if ($courses == []) {
             return [];
         }
         [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
-        $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
+        $params = ['courses' => $courses, 'timestart' => $timestart, 'userid' => $USER->id, 'userid2' => $USER->id,
+                'userid3' => $USER->id, 'userid4'  => $USER->id, ] + $inparamscourses;
 
         $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
                     'forum' AS modulename,
@@ -186,7 +183,9 @@ class townsquareevents {
                     posts.created AS timestart,
                     posts.message AS content,
                     posts.messageformat AS postmessageformat,
-                    posts.privatereplyto AS postprivatereplyto
+                    posts.privatereplyto AS postprivatereplyto,
+                    (posts.privatereplyto <> 0 AND posts.userid = :userid3) AS privatereplyfrom,
+                    (posts.privatereplyto <> 0 AND posts.privatereplyto = :userid4) AS privatereplyto
                 FROM {forum_posts} posts
                 JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
                 JOIN {forum} module ON module.id = discuss.forum
@@ -198,6 +197,7 @@ class townsquareevents {
                     AND posts.created > :timestart
                     AND cm.visible = 1
                     AND modules.visible = 1
+                    AND ( posts.privatereplyto = 0 OR posts.userid = :userid OR posts.privatereplyto = :userid2)
                 ORDER BY posts.created DESC;";
 
         // Get all posts.
@@ -252,31 +252,5 @@ class townsquareevents {
                   )
                 ORDER BY e.timestart DESC";
         return $DB->get_records_sql($sql, $params);
-    }
-
-    /**
-     * Filter that checks if a forum posts is a private reply that only the author and the receiver can see.
-     * If the post is a private reply but is not filtered out, the functions adds to attributes to the post object.
-     * Applies to forum posts.
-     * @param object $forumpost The post that is checked.
-     * @return bool true if the posts needs to be filtered out, false if not.
-     */
-    private function filter_forum_privatepost(object &$forumpost): bool {
-        global $USER;
-        // Check if the postuserid or the userid from the private attribute is the current user.
-        $isprivatemessage = $forumpost->postprivatereplyto != 0;
-        $isauthor = $forumpost->postuserid == $USER->id;
-        $isreceiver = $forumpost->postprivatereplyto == $USER->id;
-
-        // Filter out the post if the current user is not the author or the receiver.
-        if ($isprivatemessage && !$isauthor && !$isreceiver) {
-            return true;
-        }
-
-        // Add attributes to know if the private reply is from or to the current user.
-        $forumpost->privatereplyfrom = $isprivatemessage && $isauthor;
-        $forumpost->privatereplyto = $isprivatemessage && $isreceiver;
-
-        return false;
     }
 }
