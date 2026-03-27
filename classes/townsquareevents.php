@@ -99,9 +99,10 @@ class townsquareevents {
         // Filter the events and add the instancename.
         foreach ($coreevents as $coreevent) {
             // Filter out events that are not relevant for the user.
+            $gradingcap = has_capability('mod/assign:grade', context_module::instance($coreevent->coursemoduleid));
             if (
                 townsquare_filter_availability($coreevent) ||
-                ($coreevent->modulename == "assign" && $this->filter_assignment($coreevent)) ||
+                ($coreevent->modulename == "assign" && $coreevent->eventtype == "gradingdue" && !$gradingcap) ||
                 ($coreevent->eventtype == "expectcompletionon" && townsquare_filter_activitycompletions($coreevent))
             ) {
                 unset($coreevents[$coreevent->id]);
@@ -229,8 +230,8 @@ class townsquareevents {
         // Prepare params for sql statement.
         [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
         [$insqlmodules, $inparamsmodules] = $DB->get_in_or_equal($modules, SQL_PARAMS_NAMED);
-        $params = ['timestart' => $timestart, 'timeduration' => $timestart,
-                   'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses + $inparamsmodules;
+        $params = ['timestart' => $timestart, 'timeduration' => $timestart, 'timeend' => $timeend, 'timenow' => $this->timenow,
+                'timenow2' => $this->timenow, ] + $inparamscourses + $inparamsmodules;
 
         // Set the sql statement.
         $sql = "SELECT e.id, e.name AS content, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability,
@@ -238,46 +239,19 @@ class townsquareevents {
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
                 JOIN {course_modules} cm ON (cm.course = e.courseid AND cm.module = m.id AND cm.instance = e.instance)
+                LEFT JOIN {assign} assign ON (e.modulename = 'assign' AND assign.id = e.instance)
                 WHERE (e.timestart >= :timestart OR e.timestart+e.timeduration > :timeduration)
-                      AND e.timestart <= :timeend
-                      AND e.courseid $insqlcourses
-                      AND e.modulename $insqlmodules
-                      AND m.visible = 1
-                      AND (e.name NOT LIKE '" . '0' . "' AND e.eventtype NOT LIKE '" . '0' . "' )
-                      AND (e.instance <> 0 AND e.visible = 1)
+                  AND e.timestart <= :timeend
+                  AND e.courseid $insqlcourses
+                  AND e.modulename $insqlmodules
+                  AND m.visible = 1
+                  AND (e.name NOT LIKE '" . '0' . "' AND e.eventtype NOT LIKE '" . '0' . "' )
+                  AND (e.instance <> 0 AND e.visible = 1)
+                  AND (e.modulename != 'assign'
+                    OR (:timenow < (e.timestart + 604800) AND :timenow2 >= assign.allowsubmissionsfromdate )
+                  )
                 ORDER BY e.timestart DESC";
-
-        // Get all events.
         return $DB->get_records_sql($sql, $params);
-    }
-
-    /**
-     * Filter that checks if the event needs to be filtered out for the current user.
-     * Applies to assignment events.
-     * @param object $coreevent coreevent that is checked
-     * @return bool true if the event needs to filtered out, false if not.
-     * @throws dml_exception
-     * @throws coding_exception
-     */
-    private function filter_assignment(object $coreevent): bool {
-        global $DB;
-        $assignment = $DB->get_record('assign', ['id' => $coreevent->instance]);
-        $type = $coreevent->eventtype;
-        // Check if the assign is longer than a week closed.
-        $overduecheck = ($type == "due" || $type == "gradingdue") && ($this->timenow >= ($coreevent->timestart + 604800));
-
-        // Check if the user is someone without grading capability.
-        $cannotgradecheck = $coreevent->eventtype == "gradingdue" && !has_capability(
-            'mod/assign:grade',
-            context_module::instance($coreevent->coursemoduleid)
-        );
-        // Check if the assignment is not open yet.
-        $stillclosedcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
-
-        if ($overduecheck || $cannotgradecheck || $stillclosedcheck) {
-            return true;
-        }
-        return false;
     }
 
     /**
