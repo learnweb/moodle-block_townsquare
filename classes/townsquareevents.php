@@ -18,12 +18,12 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
-use coding_exception;
+use core_plugin_manager;
 use context_module;
-use core\exception\moodle_exception;
-use dml_exception;
 use moodle_url;
-use function local_townsquaresupport\local_townsquaresupport_get_subplugin_events;
+use coding_exception;
+use moodle_exception;
+use dml_exception;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
@@ -53,6 +53,7 @@ class townsquareevents {
     /**
      * Constructor of the townsquareevents class.
      * Events will be searched in the timespan of 6 months in the past and 6 months in the future.
+     * @throws coding_exception|dml_exception
      */
     public function __construct() {
         $this->timenow = time();
@@ -64,6 +65,7 @@ class townsquareevents {
     /**
      * Retrieves calendar, post events, merges and sorts them.
      * @return array
+     * @throws moodle_exception
      */
     public function get_all_events_sorted(): array {
         global $CFG;
@@ -71,11 +73,12 @@ class townsquareevents {
         $postevents = $this->get_postevents();
 
         // Check if the townsquaresupport plugin is installed.
-        $localplugins = \core_plugin_manager::instance()->get_plugins_of_type('local');
+        $localplugins = core_plugin_manager::instance()->get_plugins_of_type('local');
         $subpluginevents = [];
         if (array_key_exists('townsquaresupport', $localplugins)) {
             require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
-            $subpluginevents = local_townsquaresupport_get_subplugin_events();
+            $subpluginevents = \local_townsquaresupport\local_townsquaresupport_get_subplugin_events();
+
         }
 
         // Return the events in a sorted order.
@@ -88,7 +91,7 @@ class townsquareevents {
      *
      * The events are sorted in descending order by time created (newest event first)
      * @return array
-     * @throws dml_exception
+     * @throws dml_exception|coding_exception|moodle_exception
      */
     public function get_coreevents(): array {
         global $DB;
@@ -152,7 +155,7 @@ class townsquareevents {
      * @param array $courses The ids of the courses where the posts should be searched.
      * @param int $timestart The timestamp from where the posts should be searched.
      * @return array
-     * @throws dml_exception
+     * @throws dml_exception|coding_exception
      */
     private function get_forumposts_from_db(array $courses, int $timestart): array {
         global $DB, $USER;
@@ -223,9 +226,8 @@ class townsquareevents {
         }
 
         // Due to compatability reasons, only events from core modules are shown.
-        $modules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
-                    'h5pactivity', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url',
-                    'wiki', 'workshop', ];
+        $modules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary', 'h5pactivity',
+                    'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', ];
 
         // Prepare params for sql statement.
         [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
