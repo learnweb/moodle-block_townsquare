@@ -78,7 +78,6 @@ class townsquareevents {
         if (array_key_exists('townsquaresupport', $localplugins)) {
             require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
             $subpluginevents = \local_townsquaresupport\local_townsquaresupport_get_subplugin_events();
-
         }
 
         // Return the events in a sorted order.
@@ -105,7 +104,7 @@ class townsquareevents {
             $gradingcap = has_capability('mod/assign:grade', context_module::instance($coreevent->coursemoduleid));
             if (
                 townsquare_filter_availability($coreevent) ||
-                ($coreevent->modulename == "assign" && $coreevent->eventtype == "gradingdue" && !$gradingcap) ||
+                ($coreevent->modulename == "assign" && ($coreevent->eventtype == "gradingdue" && !$gradingcap)) ||
                 ($coreevent->eventtype == "expectcompletionon" && townsquare_filter_activitycompletions($coreevent))
             ) {
                 unset($coreevents[$coreevent->id]);
@@ -119,7 +118,13 @@ class townsquareevents {
             block_townsquare_check_coreevent($coreevent);
         }
 
-        return $coreevents;
+        // Filter all assignment events and extract them.
+        $assignevents = array_filter($coreevents, fn ($event) => $event->modulename == 'assign');
+        $coreevents = array_diff_key($coreevents, $assignevents);
+
+        // Merge the assignments back to the events.
+        $assignevents = $this->group_assignments($assignevents);
+        return array_values(array_merge($coreevents, $assignevents));
     }
 
     /**
@@ -150,7 +155,7 @@ class townsquareevents {
 
     /**
      * Searches for posts in the forum or moodleoverflow module.
-     * The sql query makes sure that the modules are installed and available..
+     * The sql query makes sure that the modules are installed and available.
      * This is a helper function for get_postevents().
      * @param array $courses The ids of the courses where the posts should be searched.
      * @param int $timestart The timestamp from where the posts should be searched.
@@ -194,8 +199,7 @@ class townsquareevents {
                 JOIN {forum} module ON module.id = discuss.forum
                 JOIN {modules} modules ON modules.name = 'forum'
                 JOIN {user} u ON u.id = posts.userid
-                JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
-                                                                       AND cm.instance = module.id)
+                JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id AND cm.instance = module.id)
                 WHERE discuss.course $insqlcourses
                     AND posts.created > :timestart
                     AND cm.visible = 1
@@ -254,5 +258,49 @@ class townsquareevents {
                   )
                 ORDER BY e.timestart DESC";
         return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Checks if there are assignment groups. A group exists if many assignemnts from one course have the same due date.
+     * This is often the case when exercises are split up (like: week 1 - exercise 1, week 1 -  exercise. 2,...)
+     * @param array $assignevents
+     * @return array All events
+     */
+    private function group_assignments(array $assignevents): array {
+        global $DB;
+        $groupedevents = [];
+        // Put each event in a group dependent on the course->eventtype->timestart.
+        foreach ($assignevents as $event) {
+            // Create a complex key where only events that should be one event are stored in the same key.
+            $groupedevents["{$event->courseid}-{$event->eventtype}-{$event->timestart}"][] = $event;
+        }
+
+        // Now group together.
+        $assignevents = [];
+        foreach ($groupedevents as $events) {
+            if (count($events) > 1) {
+                // All events should make one. Take the first as reference and update what needs to be updated.
+                $subinstances = [];
+                foreach ($events as $event) {
+                    $link = (new moodle_url("/mod/{$event->modulename}/view.php", ['id' => $event->coursemoduleid]))->out();
+                    $subinstances[] = [
+                        "instancename" => $DB->get_field($event->modulename, 'name', ['id' => $event->instance]),
+                        "linktoactivity" => $link,
+                        "dueevent" => $event->eventtype == "due",
+                    ];
+                }
+                // Sort subinstances by instance name to maintain consistent order.
+                usort($subinstances, function ($a, $b) {
+                    return strcmp($a['instancename'], $b['instancename']);
+                });
+
+                $assignevent = reset($events);
+                $assignevent->subinstances = $subinstances;
+                $assignevents[] = $assignevent;
+            } else {
+                $assignevents[] = reset($events);
+            }
+        }
+        return $assignevents;
     }
 }

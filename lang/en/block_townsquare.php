@@ -26,8 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['allnotifications'] = 'All notifications';
-$string['assignduemessage'] = 'Assignment is due until {$a->time}';
-$string['assigngradingduemessage'] = 'Assignment is due to be graded until {$a->time}';
+$string['assignduemessage'] = '{$a->instancename} is due';
+$string['assigngradingduemessage'] = '{$a->instancename} is due to be graded';
+$string['basicgroupletterorigin'] = "Assignment reminders:";
 $string['basiclettercolor'] = 'Color for basic letters';
 $string['basicletterorigin'] = 'A notification from {$a->instancename}:';
 $string['basicletters'] = 'Notifications and deadlines';
