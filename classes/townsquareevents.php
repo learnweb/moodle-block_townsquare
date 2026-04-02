@@ -18,12 +18,12 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
-use coding_exception;
+use core_plugin_manager;
 use context_module;
-use core\exception\moodle_exception;
-use dml_exception;
 use moodle_url;
-use function local_townsquaresupport\local_townsquaresupport_get_subplugin_events;
+use coding_exception;
+use moodle_exception;
+use dml_exception;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
@@ -53,6 +53,7 @@ class townsquareevents {
     /**
      * Constructor of the townsquareevents class.
      * Events will be searched in the timespan of 6 months in the past and 6 months in the future.
+     * @throws coding_exception|dml_exception
      */
     public function __construct() {
         $this->timenow = time();
@@ -64,6 +65,7 @@ class townsquareevents {
     /**
      * Retrieves calendar, post events, merges and sorts them.
      * @return array
+     * @throws moodle_exception
      */
     public function get_all_events_sorted(): array {
         global $CFG;
@@ -71,11 +73,11 @@ class townsquareevents {
         $postevents = $this->get_postevents();
 
         // Check if the townsquaresupport plugin is installed.
-        $localplugins = \core_plugin_manager::instance()->get_plugins_of_type('local');
+        $localplugins = core_plugin_manager::instance()->get_plugins_of_type('local');
         $subpluginevents = [];
         if (array_key_exists('townsquaresupport', $localplugins)) {
             require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
-            $subpluginevents = local_townsquaresupport_get_subplugin_events();
+            $subpluginevents = \local_townsquaresupport\local_townsquaresupport_get_subplugin_events();
         }
 
         // Return the events in a sorted order.
@@ -88,7 +90,7 @@ class townsquareevents {
      *
      * The events are sorted in descending order by time created (newest event first)
      * @return array
-     * @throws dml_exception
+     * @throws dml_exception|coding_exception|moodle_exception
      */
     public function get_coreevents(): array {
         global $DB;
@@ -99,9 +101,10 @@ class townsquareevents {
         // Filter the events and add the instancename.
         foreach ($coreevents as $coreevent) {
             // Filter out events that are not relevant for the user.
+            $gradingcap = has_capability('mod/assign:grade', context_module::instance($coreevent->coursemoduleid));
             if (
                 townsquare_filter_availability($coreevent) ||
-                ($coreevent->modulename == "assign" && $this->filter_assignment($coreevent)) ||
+                ($coreevent->modulename == "assign" && ($coreevent->eventtype == "gradingdue" && !$gradingcap)) ||
                 ($coreevent->eventtype == "expectcompletionon" && townsquare_filter_activitycompletions($coreevent))
             ) {
                 unset($coreevents[$coreevent->id]);
@@ -115,7 +118,13 @@ class townsquareevents {
             block_townsquare_check_coreevent($coreevent);
         }
 
-        return $coreevents;
+        // Filter all assignment events and extract them.
+        $assignevents = array_filter($coreevents, fn ($event) => $event->modulename == 'assign');
+        $coreevents = array_diff_key($coreevents, $assignevents);
+
+        // Merge the assignments back to the events.
+        $assignevents = $this->group_assignments($assignevents);
+        return array_values(array_merge($coreevents, $assignevents));
     }
 
     /**
@@ -130,16 +139,12 @@ class townsquareevents {
         $forumposts = $this->get_forumposts_from_db($this->courses, $this->timestart);
 
         foreach ($forumposts as $post) {
-            if (townsquare_filter_availability($post) || $this->filter_forum_privatepost($post)) {
+            if (townsquare_filter_availability($post)) {
                 unset($forumposts[$post->row_num]);
             }
 
             // Add a links and the authors picture.
-            $post->linktopost = new moodle_url(
-                '/mod/forum/discuss.php',
-                ['d' => $post->postdiscussion],
-                'p' . $post->postid
-            );
+            $post->linktopost = new moodle_url('/mod/forum/discuss.php', ['d' => $post->postdiscussion], 'p' . $post->postid);
             $post->linktoauthor = new moodle_url('/user/view.php', ['id' => $post->postuserid]);
         }
 
@@ -150,21 +155,22 @@ class townsquareevents {
 
     /**
      * Searches for posts in the forum or moodleoverflow module.
-     * The sql query makes sure that the modules are installed and available..
+     * The sql query makes sure that the modules are installed and available.
      * This is a helper function for get_postevents().
      * @param array $courses The ids of the courses where the posts should be searched.
      * @param int $timestart The timestamp from where the posts should be searched.
      * @return array
-     * @throws dml_exception
+     * @throws dml_exception|coding_exception
      */
     private function get_forumposts_from_db(array $courses, int $timestart): array {
-        global $DB;
+        global $DB, $USER;
         // Prepare params for sql statement.
         if ($courses == []) {
             return [];
         }
         [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
-        $params = ['courses' => $courses, 'timestart' => $timestart] + $inparamscourses;
+        $params = ['courses' => $courses, 'timestart' => $timestart, 'userid' => $USER->id, 'userid2' => $USER->id,
+                'userid3' => $USER->id, 'userid4'  => $USER->id, ] + $inparamscourses;
 
         $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
                     'forum' AS modulename,
@@ -185,18 +191,20 @@ class townsquareevents {
                     posts.created AS timestart,
                     posts.message AS content,
                     posts.messageformat AS postmessageformat,
-                    posts.privatereplyto AS postprivatereplyto
+                    posts.privatereplyto AS postprivatereplyto,
+                    (posts.privatereplyto <> 0 AND posts.userid = :userid3) AS privatereplyfrom,
+                    (posts.privatereplyto <> 0 AND posts.privatereplyto = :userid4) AS privatereplyto
                 FROM {forum_posts} posts
                 JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
                 JOIN {forum} module ON module.id = discuss.forum
                 JOIN {modules} modules ON modules.name = 'forum'
                 JOIN {user} u ON u.id = posts.userid
-                JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id
-                                                                       AND cm.instance = module.id)
+                JOIN {course_modules} cm ON (cm.course = module.course AND cm.module = modules.id AND cm.instance = module.id)
                 WHERE discuss.course $insqlcourses
                     AND posts.created > :timestart
                     AND cm.visible = 1
                     AND modules.visible = 1
+                    AND ( posts.privatereplyto = 0 OR posts.userid = :userid OR posts.privatereplyto = :userid2)
                 ORDER BY posts.created DESC;";
 
         // Get all posts.
@@ -222,15 +230,14 @@ class townsquareevents {
         }
 
         // Due to compatability reasons, only events from core modules are shown.
-        $modules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary',
-                    'h5pactivity', 'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url',
-                    'wiki', 'workshop', ];
+        $modules = ['assign', 'book', 'chat', 'choice', 'data', 'feedback', 'file', 'folder', 'forum', 'glossary', 'h5pactivity',
+                    'imscp', 'label', 'lesson', 'lti', 'page', 'quiz', 'resource', 'scorm', 'survey', 'url', 'wiki', 'workshop', ];
 
         // Prepare params for sql statement.
         [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
         [$insqlmodules, $inparamsmodules] = $DB->get_in_or_equal($modules, SQL_PARAMS_NAMED);
-        $params = ['timestart' => $timestart, 'timeduration' => $timestart,
-                   'timeend' => $timeend, 'courses' => $courses, ] + $inparamscourses + $inparamsmodules;
+        $params = ['timestart' => $timestart, 'timeduration' => $timestart, 'timeend' => $timeend, 'timenow' => $this->timenow,
+                'timenow2' => $this->timenow, ] + $inparamscourses + $inparamsmodules;
 
         // Set the sql statement.
         $sql = "SELECT e.id, e.name AS content, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability,
@@ -238,71 +245,62 @@ class townsquareevents {
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
                 JOIN {course_modules} cm ON (cm.course = e.courseid AND cm.module = m.id AND cm.instance = e.instance)
+                LEFT JOIN {assign} assign ON (e.modulename = 'assign' AND assign.id = e.instance)
                 WHERE (e.timestart >= :timestart OR e.timestart+e.timeduration > :timeduration)
-                      AND e.timestart <= :timeend
-                      AND e.courseid $insqlcourses
-                      AND e.modulename $insqlmodules
-                      AND m.visible = 1
-                      AND (e.name NOT LIKE '" . '0' . "' AND e.eventtype NOT LIKE '" . '0' . "' )
-                      AND (e.instance <> 0 AND e.visible = 1)
+                  AND e.timestart <= :timeend
+                  AND e.courseid $insqlcourses
+                  AND e.modulename $insqlmodules
+                  AND m.visible = 1
+                  AND (e.name NOT LIKE '" . '0' . "' AND e.eventtype NOT LIKE '" . '0' . "' )
+                  AND (e.instance <> 0 AND e.visible = 1)
+                  AND (e.modulename != 'assign'
+                    OR (:timenow < (e.timestart + 604800) AND :timenow2 >= assign.allowsubmissionsfromdate )
+                  )
                 ORDER BY e.timestart DESC";
-
-        // Get all events.
         return $DB->get_records_sql($sql, $params);
     }
 
     /**
-     * Filter that checks if the event needs to be filtered out for the current user.
-     * Applies to assignment events.
-     * @param object $coreevent coreevent that is checked
-     * @return bool true if the event needs to filtered out, false if not.
-     * @throws dml_exception
-     * @throws coding_exception
+     * Checks if there are assignment groups. A group exists if many assignemnts from one course have the same due date.
+     * This is often the case when exercises are split up (like: week 1 - exercise 1, week 1 -  exercise. 2,...)
+     * @param array $assignevents
+     * @return array All events
      */
-    private function filter_assignment(object $coreevent): bool {
+    private function group_assignments(array $assignevents): array {
         global $DB;
-        $assignment = $DB->get_record('assign', ['id' => $coreevent->instance]);
-        $type = $coreevent->eventtype;
-        // Check if the assign is longer than a week closed.
-        $overduecheck = ($type == "due" || $type == "gradingdue") && ($this->timenow >= ($coreevent->timestart + 604800));
-
-        // Check if the user is someone without grading capability.
-        $cannotgradecheck = $coreevent->eventtype == "gradingdue" && !has_capability(
-            'mod/assign:grade',
-            context_module::instance($coreevent->coursemoduleid)
-        );
-        // Check if the assignment is not open yet.
-        $stillclosedcheck = $assignment->allowsubmissionsfromdate >= $this->timenow;
-
-        if ($overduecheck || $cannotgradecheck || $stillclosedcheck) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Filter that checks if a forum posts is a private reply that only the author and the receiver can see.
-     * If the post is a private reply but is not filtered out, the functions adds to attributes to the post object.
-     * Applies to forum posts.
-     * @param object $forumpost The post that is checked.
-     * @return bool true if the posts needs to be filtered out, false if not.
-     */
-    private function filter_forum_privatepost(object &$forumpost): bool {
-        global $USER;
-        // Check if the postuserid or the userid from the private attribute is the current user.
-        $isprivatemessage = $forumpost->postprivatereplyto != 0;
-        $isauthor = $forumpost->postuserid == $USER->id;
-        $isreceiver = $forumpost->postprivatereplyto == $USER->id;
-
-        // Filter out the post if the current user is not the author or the receiver.
-        if ($isprivatemessage && !$isauthor && !$isreceiver) {
-            return true;
+        $groupedevents = [];
+        // Put each event in a group dependent on the course->eventtype->timestart.
+        foreach ($assignevents as $event) {
+            // Create a complex key where only events that should be one event are stored in the same key.
+            $groupedevents["{$event->courseid}-{$event->eventtype}-{$event->timestart}"][] = $event;
         }
 
-        // Add attributes to know if the private reply is from or to the current user.
-        $forumpost->privatereplyfrom = $isprivatemessage && $isauthor;
-        $forumpost->privatereplyto = $isprivatemessage && $isreceiver;
+        // Now group together.
+        $assignevents = [];
+        foreach ($groupedevents as $events) {
+            if (count($events) > 1) {
+                // All events should make one. Take the first as reference and update what needs to be updated.
+                $subinstances = [];
+                foreach ($events as $event) {
+                    $link = (new moodle_url("/mod/{$event->modulename}/view.php", ['id' => $event->coursemoduleid]))->out();
+                    $subinstances[] = [
+                        "instancename" => $DB->get_field($event->modulename, 'name', ['id' => $event->instance]),
+                        "linktoactivity" => $link,
+                        "dueevent" => $event->eventtype == "due",
+                    ];
+                }
+                // Sort subinstances by instance name to maintain consistent order.
+                usort($subinstances, function ($a, $b) {
+                    return strcmp($a['instancename'], $b['instancename']);
+                });
 
-        return false;
+                $assignevent = reset($events);
+                $assignevent->subinstances = $subinstances;
+                $assignevents[] = $assignevent;
+            } else {
+                $assignevents[] = reset($events);
+            }
+        }
+        return $assignevents;
     }
 }

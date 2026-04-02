@@ -80,7 +80,9 @@ class contentcontroller {
                     $event->instancename,
                     $event->content,
                     $event->timestart,
-                    $event->coursemoduleid
+                    $event->coursemoduleid,
+                    $event->subinstances ?? [],
+                    $event->eventtype,
                 ),
             };
             $templetter = $templetter->export_letter();

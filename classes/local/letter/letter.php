@@ -75,6 +75,12 @@ class letter {
     /** @var string color of the letter. Only used by mustache */
     public string $lettercolor;
 
+    /** @var array instances that are grouped in this letter.*/
+    public array $subinstances = [];
+
+    /** @var string type of the event.*/
+    public string $eventtype;
+
     // Constructor.
 
     /**
@@ -87,10 +93,22 @@ class letter {
      * @param string $content The content that will be showed in the letter.
      * @param int $created Timestamp of creation.
      * @param int $cmid Course module id of the content module.
+     * @param array $subinstances For grouped events, scheme: ["instancename" => string, "linktoactivity" => url]
+     * @param string $eventtype The eventtype from townsquareevents
      * @throws dml_exception
      * @throws moodle_exception
      */
-    public function __construct($contentid, $courseid, $modulename, $instancename, $content, $created, $cmid) {
+    public function __construct(
+        int $contentid,
+        int $courseid,
+        string $modulename,
+        string $instancename,
+        string $content,
+        int $created,
+        int $cmid,
+        array $subinstances = [],
+        string $eventtype = ""
+    ) {
         $this->contentid = $contentid;
         $this->lettertype = 'basic';
         $this->courseid = $courseid;
@@ -101,8 +119,10 @@ class letter {
         $this->content = $content;
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
-        $this->linktoactivity = new moodle_url('/mod/' . $modulename . '/view.php', ['id' => $cmid]);
+        $this->linktoactivity = new moodle_url("/mod/{$modulename}/view.php", ['id' => $cmid]);
         $this->lettercolor = block_townsquare_get_colorsetting('basicletter');
+        $this->subinstances = $subinstances;
+        $this->eventtype = $eventtype;
     }
 
     // Functions.
@@ -126,6 +146,9 @@ class letter {
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
             'basiclettercolor' => $this->lettercolor,
+            'subinstances' => $this->subinstances,
+            'hassubinstances' => !empty($this->subinstances),
+            'eventtype' => $this->eventtype,
         ];
     }
 }

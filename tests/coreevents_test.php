@@ -75,19 +75,16 @@ final class coreevents_test extends \advanced_testcase {
      * Test, if calendar events are sorted correctly.
      */
     public function test_sortorder(): void {
-
         // Get the current calendar events from the teacher.
         $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
 
-        // Iterate trough all posts and check if the sort order is correct.
-        $timestamp = 9999999999;
+        // Iterate through all posts and check if the sort order is correct.
         $result = true;
-        foreach ($coreevents as $event) {
-            if ($timestamp < $event->timestart) {
+        for ($i = 0; $i < count($coreevents) - 1; $i++) {
+            if ($coreevents[$i]->timestart < $coreevents[$i + 1]->timestart) {
                 $result = false;
                 break;
             }
-            $timestamp = $event->timestart;
         }
 
         $this->assertEquals(true, $result);
@@ -106,13 +103,7 @@ final class coreevents_test extends \advanced_testcase {
         $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
 
         // There should be no posts from the first course.
-        $result = true;
-        foreach ($coreevents as $event) {
-            if ($event->courseid == $this->testdata->course1->id) {
-                $result = false;
-            }
-        }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->courseid == $this->testdata->course1->id)));
     }
 
     /**
@@ -156,34 +147,15 @@ final class coreevents_test extends \advanced_testcase {
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
 
         // The assignment should not appear.
-        $result = true;
-        foreach ($coreevents as $event) {
-            if ($event->coursemoduleid == $pastassignment->cmid) {
-                $result = false;
-            }
-        }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->coursemoduleid == $pastassignment->cmid)));
 
         // Test case 2: The student should not see the gradingdue event, the teacher should see it.
         // First the events of the student.
-        $result = true;
-        foreach ($coreevents as $event) {
-            if ($event->eventtype == 'gradingdue') {
-                $result = false;
-            }
-        }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->eventtype == 'gradingdue')));
 
         // Then the events of the teacher.
         $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
-
-        $result = false;
-        foreach ($coreevents as $event) {
-            if ($event->eventtype == 'gradingdue') {
-                $result = true;
-            }
-        }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, !empty(array_filter($coreevents, fn($event) => $event->eventtype == 'gradingdue')));
 
         // Test case 3: Assignments that are not open should not be seen.
         $notopenassignment = $this->create_assignment(
@@ -194,13 +166,43 @@ final class coreevents_test extends \advanced_testcase {
             false
         );
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
-        $result = true;
-        foreach ($coreevents as $event) {
-            if ($event->coursemoduleid == $notopenassignment->cmid) {
-                $result = false;
-            }
-        }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($e) => $e->coursemoduleid == $notopenassignment->cmid)));
+    }
+
+    /**
+     * Test if the assignment groups are build correctly.
+     * @return void
+     */
+    public function test_assigngroups(): void {
+        // Create 2 assignemnts two on the same time.
+        $time = time();
+        $cid = $this->testdata->course2->id;
+        $assignone = $this->create_assignment($cid, $time - 1814400, $time + 907200, $time + 1814400, false);
+        $assigntwo = $this->create_assignment($cid, $time - 907200, $time + 907200, $time + 1814400, false);
+
+        // There should be 2 assignemnt events in total for the student (1 grouped and the default from the course set up).
+        $coreevents = $this->get_coreevents_from_user($this->testdata->student2);
+        $groupedevents = array_filter($coreevents, fn($event) => isset($event->subinstances));
+        $this->assertEquals(2, count(array_filter($coreevents, fn($e) => $e->modulename == 'assign' && $e->courseid == $cid)));
+        $this->assertEquals(1, count($groupedevents));
+
+        // Information about the grouped assignments should be stored in the $subinstances array.
+        $subinstances = reset($groupedevents)->subinstances;
+        $this->assertEquals(2, count($subinstances));
+        $namecheck = $subinstances[0]["instancename"] == $assignone->name && $subinstances[1]["instancename"] == $assigntwo->name;
+        $this->assertEquals(true, $namecheck);
+
+        // The Teacher should have one group more with the grouped grading due event.
+        $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
+        $groupedevents = array_filter($coreevents, fn($event) => isset($event->subinstances));
+        $this->assertEquals(4, count(array_filter($coreevents, fn($e) => $e->modulename == 'assign' && $e->courseid == $cid)));
+        $this->assertEquals(2, count($groupedevents));
+
+        // In the subinstances the $isdueevent should be set right.
+        $gradingdue = array_values(array_filter($groupedevents, fn($event) => $event->eventtype == 'gradingdue'))[0];
+        $due = array_values(array_filter($groupedevents, fn($event) => $event->eventtype == 'due'))[0];
+        $this->assertEquals(true, empty(array_filter($gradingdue->subinstances, fn($instance) => $instance["dueevent"] == true)));
+        $this->assertEquals(true, empty(array_filter($due->subinstances, fn($instance) => $instance["dueevent"] == false)));
     }
 
     /**
@@ -225,13 +227,7 @@ final class coreevents_test extends \advanced_testcase {
         core_completion_external::update_activity_completion_status_manually($this->testdata->assignment1->cmid, true);
 
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
-        $result = true;
-        foreach ($coreevents as $event) {
-            if ($event->eventtype == 'expectcompletionon') {
-                $result = false;
-            }
-        }
-        $this->assertEquals(true, $result);
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->eventtype == 'expectcompletionon')));
     }
 
     // Helper functions.
@@ -284,28 +280,23 @@ final class coreevents_test extends \advanced_testcase {
 
     /**
      * Helper function to create an assignment.
-     * @param int $courseid                  id of the course
-     * @param int $allowsubmissionsdate      timestamp
-     * @param int $duedate                   timestamp
-     * @param int $gradingduedate            timestamp
-     * @param bool $activitycompletion
+     * @param int $courseid              id of the course
+     * @param int $allowsubmissions      timestamp
+     * @param int $due                   timestamp
+     * @param int $gradingdue            timestamp
+     * @param bool $completion if an activity completion should be generated
      * @return object
      */
-    private function create_assignment($courseid, $allowsubmissionsdate, $duedate, $gradingduedate, $activitycompletion): object {
+    private function create_assignment(int $courseid, int $allowsubmissions, int $due, int $gradingdue, bool $completion): object {
         // Create an activity completion for the assignment if wanted.
-        $options = [];
-        if ($activitycompletion) {
-            $options = [
-                'completion' => COMPLETION_TRACKING_MANUAL,
-                'completionexpected' => $duedate,
-            ];
-        }
-        $assignrecord = [
+        $options = $completion ? ['completion' => COMPLETION_TRACKING_MANUAL, 'completionexpected' => $due] : [];
+
+        $assignrecord = (object) [
             'course' => $courseid,
             'courseid' => $courseid,
-            'duedate' => $duedate,
-            'allowsubmissionsfromdate' => $allowsubmissionsdate,
-            'gradingduedate' => $gradingduedate,
+            'duedate' => $due,
+            'allowsubmissionsfromdate' => $allowsubmissions,
+            'gradingduedate' => $gradingdue,
         ];
         return $this->getDataGenerator()->create_module('assign', $assignrecord, $options);
     }
@@ -328,19 +319,8 @@ final class coreevents_test extends \advanced_testcase {
      * @param array $enrolledcourses
      * @return bool
      */
-    private function check_eventcourses($events, $enrolledcourses): bool {
-        foreach ($events as $event) {
-            $eventcourseid = $event->courseid;
-
-            $enrolledcoursesid = [];
-            foreach ($enrolledcourses as $enrolledcourse) {
-                $enrolledcoursesid[] = $enrolledcourse->id;
-            }
-
-            if (!in_array($eventcourseid, $enrolledcoursesid)) {
-                return false;
-            }
-        }
-        return true;
+    private function check_eventcourses(array $events, array $enrolledcourses): bool {
+        $enrolledcoursesids = array_map(fn($course) => $course->id, $enrolledcourses);
+        return (empty(array_filter($events, fn($event) => !in_array($event->courseid, $enrolledcoursesids))));
     }
 }

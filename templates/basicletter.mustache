@@ -61,13 +61,33 @@
     <div class="townsquareletter_body basicletter_body card-body">
         <div class="basicletter_origin">
             <b>
-                {{#str}} basicletterorigin, block_townsquare,
-                    { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
-                {{/str}}
+                {{#hassubinstances}}
+                    {{#str}} basicgroupletterorigin, block_townsquare{{/str}}
+                {{/hassubinstances}}
+                {{^hassubinstances}}
+                    {{#str}} basicletterorigin, block_townsquare,
+                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
+                    {{/str}}
+                {{/hassubinstances}}
             </b>
         </div>
         <div class="basicletter_content">
-            {{content}}
+            {{#subinstances}}
+                {{#dueevent}}
+                    {{#str}} assignduemessage, block_townsquare,
+                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
+                    {{/str}}
+                {{/dueevent}}
+                {{^dueevent}}
+                    {{#str}} assigngradingduemessage, block_townsquare,
+                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
+                    {{/str}}
+                {{/dueevent}}
+                <br>
+            {{/subinstances}}
+            {{^subinstances}}
+                {{content}}
+            {{/subinstances}}
         </div>
 
     </div>
