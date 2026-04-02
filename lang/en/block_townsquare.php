@@ -81,6 +81,7 @@ $string['privatereplyfrom'] = 'This is a private reply from you, that only you a
 $string['privatereplyto'] = 'This is a private reply to your post, that only you and the reply author can see';
 $string['quizclosemessage'] = 'The Quiz closes today at {$a->time}';
 $string['quizopenmessage'] = 'The Quiz is open from {$a->time} onwards';
+$string['reload_message'] = 'Last update: {$a}';
 $string['reset_successmessage'] = 'Your Town Square settings have been reset to default.';
 $string['resetbutton'] = 'Reset Settings';
 $string['resethelpicontext'] = 'Resets all filter settings to default';

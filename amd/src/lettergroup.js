@@ -34,13 +34,7 @@ const Selectors = {
  * collapsing a letter group.
  */
 export function init() {
-    letterboxes.forEach(
-        (element) => {
-            element.style.maxHeight = `${element.scrollHeight}px`;
-            element.setAttribute('expanded', 'true');
-        }
-    );
-
+    setup();
     document.addEventListener('click', e => {
         const group = e.target.closest(Selectors.actions.collapsegroup);
         if (group) {
@@ -64,5 +58,15 @@ export function init() {
                 }
             );
         }
+    });
+}
+
+/**
+ * Setup function.
+ */
+export function setup() {
+    letterboxes.forEach((element) => {
+        element.style.maxHeight = `${element.scrollHeight}px`;
+        element.setAttribute('expanded', 'true');
     });
 }

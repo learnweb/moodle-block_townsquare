@@ -38,30 +38,7 @@ const Selectors = {
  * the full text.
  */
 export function init() {
-    // Get the strings for the show more/show less button.
-    prefetchStrings('moodle', ['showmore', 'showless',]);
-
-    contentElements.forEach(
-        (element) => {
-            // Check if the div is too long.
-            if (element.scrollHeight >= 90) {
-                // If the text is too long, show the showmore button.
-                buttons[element.id].setAttribute('showmore', 'true');
-            } else {
-                // If the text is not too long, hide the showmore button.
-                buttons[element.id].style.display = "none";
-            }
-        }
-    );
-
-    // Add event listeners for the show more Button.
-    addEventListener();
-}
-
-/**
- * Event listener for the show more/show less button.
- */
-const addEventListener = () => {
+    setup();
     document.addEventListener('click', e => {
         if (e.target.closest(Selectors.actions.seemorebutton)) {
             // Get the id of the clicked element.
@@ -84,7 +61,21 @@ const addEventListener = () => {
             );
         }
     });
-};
+}
+
+/**
+ * Setup function.
+ */
+export function setup() {
+    prefetchStrings('moodle', ['showmore', 'showless']);
+    contentElements.forEach((element) => {
+        if (element.scrollHeight >= 90) {
+            buttons[element.id].setAttribute('showmore', 'true');
+        } else {
+            buttons[element.id].style.display = "none";
+        }
+    });
+}
 
 /**
  * Changes the button strings.

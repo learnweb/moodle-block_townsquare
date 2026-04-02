@@ -1,4 +1,12 @@
 /* Style for the blockcontent template*/
+.townsquare_header {
+    background-color: #f8f9fa;  /* Bootstrap's gray-100, sehr dezent */
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
 .townsquare_sidepanel.col-md-3 {
     background-color: #eee;
     border-radius: 0.5rem;
@@ -8,10 +16,18 @@
 
 .townsquare_content {
     max-height: 750px;
-    border-radius: 0.5rem;
-    overflow: scroll;
     max-width: 100%;
+    border-radius: 0.5rem;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.townsquare_letters {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    flex: 1;
 }
 
 /* Style for the side panel filter */

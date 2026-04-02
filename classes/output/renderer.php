@@ -17,6 +17,7 @@
 namespace block_townsquare\output;
 
 use block_townsquare\contentcontroller;
+use cache;
 use core\exception\moodle_exception;
 use plugin_renderer_base;
 
@@ -37,13 +38,35 @@ class renderer extends plugin_renderer_base {
     public function render_main(): string {
         global $CFG;
         $controller = new contentcontroller();
+        $letters = $controller->get_content();
+
+        // Get the last update time from the cache.
+        $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('allevents')["lastupdate"];
         $mustachedata = (object) [
-            'content' => $controller->get_content(),
+            'content' => $letters,
             'courses' => $controller->courses,
             'savehelpicon' => ['text' => get_string('savehelpicontext', 'block_townsquare')],
             'resethelpicon' => ['text' => get_string('resethelpicontext', 'block_townsquare')],
             'newsidepanel' => $CFG->branch >= 500,
+            'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i:s', $lastupdate)),
         ];
         return $this->render_from_template('block_townsquare/main', $mustachedata);
+    }
+
+    /**
+     * Renders only the content (the letters). Used for reloads.
+     * @return string
+     */
+    public function render_content(): string {
+        // Get the content first to fill the cache. This should not be moved.
+        $letters = (new contentcontroller())->get_content();
+
+        // Get the last update time from the cache.
+        $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('allevents')["lastupdate"];
+        $mustachedata = (object) [
+            'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i:s', $lastupdate)),
+            'content' => $letters,
+        ];
+        return $this->render_from_template('block_townsquare/content', $mustachedata);
     }
 }
