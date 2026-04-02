@@ -170,6 +170,42 @@ final class coreevents_test extends \advanced_testcase {
     }
 
     /**
+     * Test if the assignment groups are build correctly.
+     * @return void
+     */
+    public function test_assigngroups(): void {
+        // Create 2 assignemnts two on the same time.
+        $time = time();
+        $cid = $this->testdata->course2->id;
+        $assignone = $this->create_assignment($cid, $time - 1814400, $time + 907200, $time + 1814400, false);
+        $assigntwo = $this->create_assignment($cid, $time - 907200, $time + 907200, $time + 1814400, false);
+
+        // There should be 2 assignemnt events in total for the student (1 grouped and the default from the course set up).
+        $coreevents = $this->get_coreevents_from_user($this->testdata->student2);
+        $groupedevents = array_filter($coreevents, fn($event) => isset($event->subinstances));
+        $this->assertEquals(2, count(array_filter($coreevents, fn($e) => $e->modulename == 'assign' && $e->courseid == $cid)));
+        $this->assertEquals(1, count($groupedevents));
+
+        // Information about the grouped assignments should be stored in the $subinstances array.
+        $subinstances = reset($groupedevents)->subinstances;
+        $this->assertEquals(2, count($subinstances));
+        $namecheck = $subinstances[0]["instancename"] == $assignone->name && $subinstances[1]["instancename"] == $assigntwo->name;
+        $this->assertEquals(true, $namecheck);
+
+        // The Teacher should have one group more with the grouped grading due event.
+        $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
+        $groupedevents = array_filter($coreevents, fn($event) => isset($event->subinstances));
+        $this->assertEquals(4, count(array_filter($coreevents, fn($e) => $e->modulename == 'assign' && $e->courseid == $cid)));
+        $this->assertEquals(2, count($groupedevents));
+
+        // In the subinstances the $isdueevent should be set right.
+        $gradingdue = array_values(array_filter($groupedevents, fn($event) => $event->eventtype == 'gradingdue'))[0];
+        $due = array_values(array_filter($groupedevents, fn($event) => $event->eventtype == 'due'))[0];
+        $this->assertEquals(true, empty(array_filter($gradingdue->subinstances, fn($instance) => $instance["dueevent"] == true)));
+        $this->assertEquals(true, empty(array_filter($due->subinstances, fn($instance) => $instance["dueevent"] == false)));
+    }
+
+    /**
      * Test, if a activity completion is displayed correctly.
      * @return void
      */
