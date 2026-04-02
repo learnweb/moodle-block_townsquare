@@ -170,10 +170,7 @@ final class contentcontroller_test extends \advanced_testcase {
      */
     private function create_assignment($allowsubmissionsdate, $duedate, $gradingduedate): object {
         // Create an activity completion for the assignment if wanted.
-        $options = [
-            'completion' => COMPLETION_TRACKING_MANUAL,
-            'completionexpected' => $duedate,
-        ];
+        $options = ['completion' => COMPLETION_TRACKING_MANUAL, 'completionexpected' => $duedate];
 
         $assignrecord = [
             'course' => $this->testdata->course->id,
