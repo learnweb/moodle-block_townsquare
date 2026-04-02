@@ -18,6 +18,7 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
+use cache;
 use core_plugin_manager;
 use context_module;
 use moodle_url;
@@ -69,6 +70,15 @@ class townsquareevents {
      */
     public function get_all_events_sorted(): array {
         global $CFG;
+
+        // Check if the cache already has data and if the data is still considered up to date.
+        $cache = cache::make('block_townsquare', 'townsquareevents');
+        $cached = $cache->get('allevents');
+        if ($cached && $cached["lastupdate"] >= time() - BLOCK_TOWNSQUARE_CACHE_TTL) {
+            return $cached["events"];
+        }
+
+        // Get all events.
         $coreevents = $this->get_coreevents();
         $postevents = $this->get_postevents();
 
@@ -81,8 +91,11 @@ class townsquareevents {
         }
 
         // Return the events in a sorted order.
-        $events = array_merge($coreevents, $postevents, $subpluginevents);
-        return block_townsquare_mergesort($events);
+        $events = block_townsquare_mergesort(array_merge($coreevents, $postevents, $subpluginevents));
+
+        // Set the cache.
+        $cache->set('allevents', ['events' => $events, "lastupdate" => time()]);
+        return $events;
     }
 
     /**
