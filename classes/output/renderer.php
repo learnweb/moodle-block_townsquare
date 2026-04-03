@@ -44,6 +44,6 @@ class renderer extends plugin_renderer_base {
             'resethelpicon' => ['text' => get_string('resethelpicontext', 'block_townsquare')],
             'newsidepanel' => $CFG->branch >= 500,
         ];
-        return $this->render_from_template('block_townsquare/blockcontent', $mustachedata);
+        return $this->render_from_template('block_townsquare/main', $mustachedata);
     }
 }

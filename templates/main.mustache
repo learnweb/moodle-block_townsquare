@@ -15,9 +15,9 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_townsquare/blockcontent
+    @template block_townsquare/main
 
-    This template renders the main content area for the townsquare block.
+    This template renders the main area for the townsquare block.
 
      Variables required for this template:
      * content - Array with content
@@ -74,44 +74,18 @@
 }}
 <div id="townsquare_root" class="townsquare_root container-fluid">
     <div class="row townsquare_main">
-
         <div class="col-md-3 townsquare_sidepanel">
             {{#newsidepanel}}
-                {{> block_townsquare/sidepanel}}
+                {{> block_townsquare/sidepanel/sidepanel}}
             {{/newsidepanel}}
             {{^newsidepanel}}
-                {{> block_townsquare/sidepanel_old}}
+                {{> block_townsquare/sidepanel/sidepanel_old}}
             {{/newsidepanel}}
 
         </div>
 
-        <div class=" col-md-9 townsquare_content">
-            <div class="townsquare_letters">
-                {{#content}}
-                    <div class="ts-lettergroup" id="ts-lettergroup-{{day}}">
-                        <div class="orientationmarker">
-                            <span class="orientationmarker_date">{{day}}</span>
-                            <span class="orientationmarker_line" aria-hidden="true"></span>
-                            <span class="orientationmarker-collapse" data-action="block_townsquare/collapse_group" data-groupid="{{day}}">
-                                <i class="fa fa-chevron-down ms-3 me-2"></i>
-                            </span>
-                        </div>
-                        <div class="ts-letter-box" data-groupid="{{day}}">
-                            {{#letters}}
-                                {{#isbasic}}
-                                    {{> block_townsquare/basicletter}}
-                                {{/isbasic}}
-                                {{#isactivitycompletion}}
-                                    {{> block_townsquare/activitycompletionletter}}
-                                {{/isactivitycompletion}}
-                                {{#ispost}}
-                                    {{> block_townsquare/postletter}}
-                                {{/ispost}}
-                            {{/letters}}
-                        </div>
-                    </div>
-                {{/content}}
-            </div>
+        <div class="col-md-9 townsquare_content">
+            {{> block_townsquare/content}}
         </div>
     </div>
 </div>
