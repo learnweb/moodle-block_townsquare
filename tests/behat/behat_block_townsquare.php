@@ -158,4 +158,16 @@ class behat_block_townsquare extends behat_base {
             $this->execute('behat_general::i_click_on', [$element, $type]);
         }
     }
+
+    /**
+     * Clicks on the reload icon of townsquare and reloads the content.
+     *
+     * @Given /^I reload the townsquare block$/
+     * @return void
+     * @throws DriverException
+     */
+    public function i_reload_townsquare(): void {
+        $element = $this->find('css', '#ts_reload_button');
+        $element->click();
+    }
 }
