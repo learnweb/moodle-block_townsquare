@@ -7,6 +7,29 @@
     border-bottom: 1px solid #dee2e6;
 }
 
+@keyframes ts-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.ts-reloading i {
+    animation: ts-spin 0.6s linear infinite;
+    transform-origin: center center;
+}
+
+#ts_reload_button {
+    outline: none;
+    user-select: none;
+}
+
+#ts_reload_button i {
+    display: inline-block;
+}
+
+#ts_reload_button:active {
+    transform: none;
+}
+
 .townsquare_sidepanel.col-md-3 {
     background-color: #eee;
     border-radius: 0.5rem;
@@ -103,10 +126,7 @@
     max-height: 90px; /*4 lines with font-size 15px and line-height 1.5*/
     overflow: hidden;
     display: block;
-}
-
-.postletter_message.expanded {
-    max-height: none;
+    transition: max-height 0.3s ease;
 }
 
 /* actvitiycompletionletter Style*/

@@ -63,10 +63,22 @@ export function init() {
 
 /**
  * Setup function.
+ * @param {Array<string>} [closedGroups=[]] Array of closed letter groups (as ids) that should get an expanded animation.
+ * @return {void}
  */
-export function setup() {
+export function setup(closedGroups = []) {
     letterboxes.forEach((element) => {
-        element.style.maxHeight = `${element.scrollHeight}px`;
-        element.setAttribute('expanded', 'true');
+        const wasclosed = closedGroups.includes(element.dataset.groupid);
+
+        if (wasclosed) {
+            element.style.maxHeight = '0px';
+            requestAnimationFrame(() => {
+                element.style.maxHeight = `${element.scrollHeight}px`;
+            });
+            element.setAttribute('expanded', 'true');
+        } else {
+            element.style.maxHeight = `${element.scrollHeight}px`;
+            element.setAttribute('expanded', 'true');
+        }
     });
 }

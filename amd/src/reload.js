@@ -25,19 +25,33 @@ import Ajax from 'core/ajax';
 import {setup as lettergroupSetup} from 'block_townsquare/lettergroup';
 import {setup as postletterSetup} from 'block_townsquare/postletter';
 
+let isReloading = false;
+
 /**
  * Init function.
  */
 export function init() {
     document.addEventListener('click', async function(e) {
-        if (e.target.closest('#ts_reload_button')) {
-            document.querySelector('.townsquare_content').innerHTML = await Ajax.call([{
-                methodname: "block_townsquare_reload",
-                args: {},
-            }])[0];
+        const button = e.target.closest('#ts_reload_button');
+        if (button && !isReloading) {
+            isReloading = true;
+            // Save all closed letter groups to enable to expand them afterwards.
+            const groupSelector = '.ts-letter-box[expanded="false"]';
+            const closedLetterGroups = [...document.querySelectorAll(groupSelector)].map(el => el.dataset.groupid);
 
-            lettergroupSetup();
+            // Add animation to the reload icon. Then call the new build and wait at least 600ms for the animation.
+            button.classList.add('ts-reloading');
+            const [result] = await Promise.all([
+                Ajax.call([{ methodname: "block_townsquare_reload", args: {}}])[0],
+                new Promise(resolve => setTimeout(resolve, 600)),
+            ]);
+
+            document.querySelector('.townsquare_content').innerHTML = result;
+
+            lettergroupSetup(closedLetterGroups);
             postletterSetup();
+
+            isReloading = false;
         }
     });
 }

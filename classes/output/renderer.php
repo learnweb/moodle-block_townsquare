@@ -48,7 +48,7 @@ class renderer extends plugin_renderer_base {
             'savehelpicon' => ['text' => get_string('savehelpicontext', 'block_townsquare')],
             'resethelpicon' => ['text' => get_string('resethelpicontext', 'block_townsquare')],
             'newsidepanel' => $CFG->branch >= 500,
-            'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i:s', $lastupdate)),
+            'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i', $lastupdate)),
         ];
         return $this->render_from_template('block_townsquare/main', $mustachedata);
     }
@@ -64,7 +64,7 @@ class renderer extends plugin_renderer_base {
         // Get the last update time from the cache.
         $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('allevents')["lastupdate"];
         $mustachedata = (object) [
-            'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i:s', $lastupdate)),
+            'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i', $lastupdate)),
             'content' => $letters,
         ];
         return $this->render_from_template('block_townsquare/content', $mustachedata);

@@ -43,15 +43,19 @@ export function init() {
             const letterid = Number(button.dataset.parentid);
             const element = document.querySelector(`.postletter_message[data-contentid="${letterid}"]`);
             if (element) {
+                // Get the letter group that gets expanded/shrunken. To synchronize both animations, a delta is needed.
+                const group = element.closest('.ts-letter-box');
+                const delta = element.scrollHeight - 90;
+
                 if (button.getAttribute('showmore') === 'true') {
-                    element.classList.add("expanded");
+                    element.style.maxHeight = `${element.scrollHeight}px`;
+                    group.style.maxHeight = `${group.scrollHeight + delta}px`;
                     changeButtonString(button, false);
                 } else {
-                    element.classList.remove("expanded");
+                    element.style.maxHeight = '90px';
+                    group.style.maxHeight = `${group.scrollHeight - delta}px`;
                     changeButtonString(button, true);
                 }
-                const group = element.closest('.ts-letter-box');
-                group.style.maxHeight = `${group.scrollHeight}px`;
             }
         }
     });
