@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_townsquare/postletter
+    @template block_townsquare/letter/postletter
 
     This template renders a post letter.
 
@@ -92,10 +92,10 @@
             </b>
         </div>
         <div class = "postletter_content">
-                <span class ="postletter_message" id="content-nr-{{contentid}}" >
+                <span class ="postletter_message" id="content-nr-{{contentid}}" data-contentid="{{contentid}}">
                     {{{message}}}
                 </span>
-                <span class="townsquare_showmore badge rounded-pill" id="content-nr-{{contentid}}"
+                <span class="townsquare_showmore badge rounded-pill" data-parentid="{{contentid}}"
                       data-action="block_townsquare/showmore_button">
                     {{#str}} showmore, block_townsquare {{/str}}
                 </span>

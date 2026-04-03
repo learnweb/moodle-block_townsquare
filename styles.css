@@ -1,4 +1,35 @@
 /* Style for the blockcontent template*/
+.townsquare_header {
+    background-color: #f8f9fa;  /* Bootstrap's gray-100, sehr dezent */
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+@keyframes ts-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.ts-reloading i {
+    animation: ts-spin 0.6s linear infinite;
+    transform-origin: center center;
+}
+
+#ts_reload_button {
+    outline: none;
+    user-select: none;
+}
+
+#ts_reload_button i {
+    display: inline-block;
+}
+
+#ts_reload_button:active {
+    transform: none;
+}
+
 .townsquare_sidepanel.col-md-3 {
     background-color: #eee;
     border-radius: 0.5rem;
@@ -8,10 +39,18 @@
 
 .townsquare_content {
     max-height: 750px;
-    border-radius: 0.5rem;
-    overflow: scroll;
     max-width: 100%;
+    border-radius: 0.5rem;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.townsquare_letters {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    flex: 1;
 }
 
 /* Style for the side panel filter */
@@ -87,10 +126,7 @@
     max-height: 90px; /*4 lines with font-size 15px and line-height 1.5*/
     overflow: hidden;
     display: block;
-}
-
-.postletter_message.expanded {
-    max-height: none;
+    transition: max-height 0.3s ease;
 }
 
 /* actvitiycompletionletter Style*/

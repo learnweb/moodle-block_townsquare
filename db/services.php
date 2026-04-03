@@ -41,4 +41,12 @@ $functions = [
         'type' => 'write',
         'ajax' => true,
     ],
+    'block_townsquare_reload' => [
+        'classname' => 'block_townsquare\external\reload',
+        'methodname' => 'execute',
+        'classpath' => 'blocks/townsquare/classes/external/reload.php',
+        'description' => 'Rebuilds the cache',
+        'type' => 'write',
+        'ajax' => true,
+    ],
 ];

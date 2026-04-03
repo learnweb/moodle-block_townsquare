@@ -24,9 +24,6 @@ import {prefetchStrings} from 'core/prefetch';
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const contentElements = document.getElementsByClassName('postletter_message');
-const buttons = document.getElementsByClassName('townsquare_showmore');
-
 const Selectors = {
     actions: {
         seemorebutton: '[data-action="block_townsquare/showmore_button"]',
@@ -38,65 +35,60 @@ const Selectors = {
  * the full text.
  */
 export function init() {
-    // Get the strings for the show more/show less button.
-    prefetchStrings('moodle', ['showmore', 'showless',]);
-
-    contentElements.forEach(
-        (element) => {
-            // Check if the div is too long.
-            if (element.scrollHeight >= 90) {
-                // If the text is too long, show the showmore button.
-                buttons[element.id].setAttribute('showmore', 'true');
-            } else {
-                // If the text is not too long, hide the showmore button.
-                buttons[element.id].style.display = "none";
-            }
-        }
-    );
-
-    // Add event listeners for the show more Button.
-    addEventListener();
-}
-
-/**
- * Event listener for the show more/show less button.
- */
-const addEventListener = () => {
+    setup();
     document.addEventListener('click', e => {
         if (e.target.closest(Selectors.actions.seemorebutton)) {
             // Get the id of the clicked element.
-            let letterid = e.target.id;
-            contentElements.forEach(
-                (element) => {
-                    if (element.id == letterid) {
-                        if (buttons[letterid].getAttribute('showmore') == 'true') {
-                            element.classList.add("expanded");
-                            changeButtonString(letterid, false);
-                        } else {
-                            element.classList.remove("expanded");
-                            changeButtonString(letterid, true);
-                        }
-                        // Upate letter group height.
-                        const group = element.closest('.ts-letter-box');
-                        group.style.maxHeight = `${group.scrollHeight}px`;
-                    }
+            const button = e.target;
+            const letterid = Number(button.dataset.parentid);
+            const element = document.querySelector(`.postletter_message[data-contentid="${letterid}"]`);
+            if (element) {
+                // Get the letter group that gets expanded/shrunken. To synchronize both animations, a delta is needed.
+                const group = element.closest('.ts-letter-box');
+                const delta = element.scrollHeight - 90;
+
+                if (button.getAttribute('showmore') === 'true') {
+                    element.style.maxHeight = `${element.scrollHeight}px`;
+                    group.style.maxHeight = `${group.scrollHeight + delta}px`;
+                    changeButtonString(button, false);
+                } else {
+                    element.style.maxHeight = '90px';
+                    group.style.maxHeight = `${group.scrollHeight - delta}px`;
+                    changeButtonString(button, true);
                 }
-            );
+            }
         }
     });
-};
+}
+
+/**
+ * Setup function.
+ */
+export function setup() {
+    prefetchStrings('moodle', ['showmore', 'showless']);
+    document.getElementsByClassName('postletter_message').forEach((element) => {
+        const button = document.querySelector(`.townsquare_showmore[data-parentid="${element.dataset.contentid}"]`);
+        if (button) {
+            if (element.scrollHeight >= 90) {
+                button.setAttribute('showmore', 'true');
+            } else {
+                button.style.display = "none";
+            }
+        }
+    });
+}
 
 /**
  * Changes the button strings.
- * @param {string} index Which button should be changed
+ * @param {HTMLElement} button The button that will be changed
  * @param {boolean} toshowmore a boolean that indicates if the button should show more or less
  */
-async function changeButtonString(index, toshowmore) {
-    if (toshowmore == true) {
-        buttons[index].textContent = await getString('showmore', 'moodle');
-        buttons[index].setAttribute('showmore', 'true');
+async function changeButtonString(button, toshowmore) {
+    if (toshowmore === true) {
+        button.textContent = await getString('showmore', 'moodle');
+        button.setAttribute('showmore', 'true');
     } else {
-        buttons[index].textContent = await getString('showless', 'moodle');
-        buttons[index].setAttribute('showmore', 'false');
+        button.textContent = await getString('showless', 'moodle');
+        button.setAttribute('showmore', 'false');
     }
 }
