@@ -24,9 +24,6 @@ import {prefetchStrings} from 'core/prefetch';
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const contentElements = document.getElementsByClassName('postletter_message');
-const buttons = document.getElementsByClassName('townsquare_showmore');
-
 const Selectors = {
     actions: {
         seemorebutton: '[data-action="block_townsquare/showmore_button"]',
@@ -42,23 +39,20 @@ export function init() {
     document.addEventListener('click', e => {
         if (e.target.closest(Selectors.actions.seemorebutton)) {
             // Get the id of the clicked element.
-            let letterid = e.target.id;
-            contentElements.forEach(
-                (element) => {
-                    if (element.id == letterid) {
-                        if (buttons[letterid].getAttribute('showmore') == 'true') {
-                            element.classList.add("expanded");
-                            changeButtonString(letterid, false);
-                        } else {
-                            element.classList.remove("expanded");
-                            changeButtonString(letterid, true);
-                        }
-                        // Upate letter group height.
-                        const group = element.closest('.ts-letter-box');
-                        group.style.maxHeight = `${group.scrollHeight}px`;
-                    }
+            const button = e.target;
+            const letterid = Number(button.dataset.parentid);
+            const element = document.querySelector(`.postletter_message[data-contentid="${letterid}"]`);
+            if (element) {
+                if (button.getAttribute('showmore') === 'true') {
+                    element.classList.add("expanded");
+                    changeButtonString(button, false);
+                } else {
+                    element.classList.remove("expanded");
+                    changeButtonString(button, true);
                 }
-            );
+                const group = element.closest('.ts-letter-box');
+                group.style.maxHeight = `${group.scrollHeight}px`;
+            }
         }
     });
 }
@@ -68,26 +62,29 @@ export function init() {
  */
 export function setup() {
     prefetchStrings('moodle', ['showmore', 'showless']);
-    contentElements.forEach((element) => {
-        if (element.scrollHeight >= 90) {
-            buttons[element.id].setAttribute('showmore', 'true');
-        } else {
-            buttons[element.id].style.display = "none";
+    document.getElementsByClassName('postletter_message').forEach((element) => {
+        const button = document.querySelector(`.townsquare_showmore[data-parentid="${element.dataset.contentid}"]`);
+        if (button) {
+            if (element.scrollHeight >= 90) {
+                button.setAttribute('showmore', 'true');
+            } else {
+                button.style.display = "none";
+            }
         }
     });
 }
 
 /**
  * Changes the button strings.
- * @param {string} index Which button should be changed
+ * @param {HTMLElement} button The button that will be changed
  * @param {boolean} toshowmore a boolean that indicates if the button should show more or less
  */
-async function changeButtonString(index, toshowmore) {
-    if (toshowmore == true) {
-        buttons[index].textContent = await getString('showmore', 'moodle');
-        buttons[index].setAttribute('showmore', 'true');
+async function changeButtonString(button, toshowmore) {
+    if (toshowmore === true) {
+        button.textContent = await getString('showmore', 'moodle');
+        button.setAttribute('showmore', 'true');
     } else {
-        buttons[index].textContent = await getString('showless', 'moodle');
-        buttons[index].setAttribute('showmore', 'false');
+        button.textContent = await getString('showless', 'moodle');
+        button.setAttribute('showmore', 'false');
     }
 }
