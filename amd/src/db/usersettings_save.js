@@ -38,10 +38,10 @@ const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
 const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 
 // Get the checkboxes from the letter filter.
-const letter_checkboxes = document.querySelectorAll('.ts_letter_checkbox');
+const letterCheckboxes = document.querySelectorAll('.ts_letter_checkbox');
 
 // Get the checkboxes from the course filter.
-const course_checkboxes = document.querySelectorAll('.ts_course_checkbox');
+const courseCheckboxes = document.querySelectorAll('.ts_course_checkbox');
 
 /**
  * Init function. This functions adapts the filter settings to the user settings from the database. If the user changes settings
@@ -69,11 +69,11 @@ export function init(userid, settingsfromdb) {
             methodname: 'block_townsquare_record_usersettings',
             args: {
                 userid: userid,
-                timefilterpast: timespans['timepast'],
-                timefilterfuture: timespans['timefuture'],
-                basicletter: letterfilter['basicletter'],
-                completionletter: letterfilter['completionletter'],
-                postletter: letterfilter['postletter'],
+                timefilterpast: timespans.timepast,
+                timefilterfuture: timespans.timefuture,
+                basicletter: letterfilter.basicletter,
+                completionletter: letterfilter.completionletter,
+                postletter: letterfilter.postletter,
                 courses: courses,
             },
         };
@@ -118,13 +118,17 @@ function executeusersettings(settingsfromdb) {
         alltimebutton.checked = true;
         alltimebutton.parentNode.classList.add('active');
         alltimebutton.dispatchEvent(new Event('change'));
-        futureradiobuttons.forEach(button => {button.checked = false;});
-        pastradiobuttons.forEach(button => {button.checked = false;});
+        futureradiobuttons.forEach(button => {
+            button.checked = false;
+        });
+        pastradiobuttons.forEach(button => {
+            button.checked = false;
+        });
     }
 
     // Second step: set the letter filter settings.
     // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
-    letter_checkboxes.forEach(function(checkbox) {
+    letterCheckboxes.forEach(function(checkbox) {
         let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb.basicletter === "0";
         let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb.completionletter === "0";
         let postlettercheck = checkbox.id === 'postletter' && settingsfromdb.postletter === "0";
@@ -137,7 +141,7 @@ function executeusersettings(settingsfromdb) {
     // Third step: set the course filter settings.
     let coursessettings = JSON.parse(settingsfromdb.courses);
 
-    course_checkboxes.forEach(function(checkbox) {
+    courseCheckboxes.forEach(function(checkbox) {
         let courseid = Number(checkbox.dataset.courseid);
         if (coursessettings.hasOwnProperty(courseid)) {
             // If the setting is false, uncheck the checkbox.
@@ -153,11 +157,11 @@ function executeusersettings(settingsfromdb) {
  * @returns {{basicletter: number, completionletter: number, postletter: number}}
  */
 function collectletterfiltersettings() {
-    let settings = {'basicletter': 0, 'completionletter': 0, 'postletter': 0 };
+    let settings = {'basicletter': 0, 'completionletter': 0, 'postletter': 0};
 
-    letter_checkboxes.forEach(function(checkbox) {
+    letterCheckboxes.forEach(function(checkbox) {
         if (checkbox.checked) {
-            switch(checkbox.id) {
+            switch (checkbox.id) {
                 case "basicletter":
                     settings.basicletter = 1;
                     break;
@@ -185,7 +189,7 @@ function collectcoursesettings(coursesettingsfromdb) {
     let settings = coursesettingsfromdb ? JSON.parse(coursesettingsfromdb) : {};
 
     // Build a JSON in the format courseid => coursename.
-    course_checkboxes.forEach(function(checkbox) {
+    courseCheckboxes.forEach(function(checkbox) {
         settings[Number(checkbox.dataset.courseid)] = checkbox.checked;
     });
 

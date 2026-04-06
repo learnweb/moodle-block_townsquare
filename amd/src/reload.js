@@ -42,7 +42,7 @@ export function init() {
             // Add animation to the reload icon. Then call the new build and wait at least 600ms for the animation.
             button.classList.add('ts-reloading');
             const [result] = await Promise.all([
-                Ajax.call([{ methodname: "block_townsquare_reload", args: {}}])[0],
+                Ajax.call([{methodname: "block_townsquare_reload", args: {}}])[0],
                 new Promise(resolve => setTimeout(resolve, 600)),
             ]);
 

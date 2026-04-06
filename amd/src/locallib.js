@@ -43,6 +43,7 @@ export function convertIdToTime(id) {
         case "ts_time_last_month":
             return 2592000;
     }
+    return -1;
 }
 
 /**
@@ -59,4 +60,5 @@ export function convertTimeToId(time, future) {
         case "604800": return future ? "ts_time_next_week" : "ts_time_last_week";
         case "2592000": return future ? "ts_time_next_month" : "ts_time_last_month";
     }
+    return "";
 }
