@@ -37,7 +37,7 @@
     * linttoauthor - Link to the user
     * postlettercolor - Color of the letter
 
-    Example (json):
+    Example context (json):
     {
         "contentid": 27,
         "ispost": true,
@@ -47,32 +47,34 @@
         "discussionsubject": "Hour of Exam",
         "anonymous": false,
         "authorname": "Tamaro Walter",
-        "authorpicture": "<img src="http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13" class="userpicture" width="35" height="35" alt="" />",
-        "message": "<div class="text_to_html"><p>When do we write the exam?</p></div>",
+        "authorpicture": "<img src=\"http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13\" class=\"userpicture\" width=\"35\" height=\"35\" alt=\"\">",
+        "message": "<div class=\"text_to_html\"><p>When do we write the exam?</p></div>",
         "created": "03.11.2023",
         "linktocourse": "http://localhost/moodle/course/view.php?id=20",
         "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
         "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
-        "linktoauthor": "http://localhost/moodle/user/view.php?id=2"
+        "linktoauthor": "http://localhost/moodle/user/view.php?id=2",
         "postlettercolor": "#f7634d"
     }
 }}
-<div class="townsquare_letter postletter card mb-3 ms-3" id="content-nr-{{contentid}}" style="border-color: {{postlettercolor}}">
-    <div class="townsquareletter_header postletter_header card-header" style="background-color: {{postlettercolor}}">
-        <div class = "townsquareletter_top postletter_top">
-            <div class = "townsquareletter_course postletter_course" data-courseid="{{courseid}}" id="ts_letter_course_{{courseid}}">
+<div class="townsquare_letter postletter card mb-3 ms-3" id="content-nr-{{contentid}}"
+     style="border-color: {{postlettercolor}}{{^postlettercolor}}#f7634d{{/postlettercolor}}">
+    <div class="townsquareletter_header postletter_header card-header"
+         style="background-color: {{postlettercolor}}{{^postlettercolor}}#f7634d{{/postlettercolor}}">
+        <div class="townsquareletter_top postletter_top">
+            <div class="townsquareletter_course postletter_course" data-courseid="{{courseid}}">
                 {{#str}} coursetitle, moodle, {
                     "course": {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a>
                               {{/quote}} }
                 {{/str}}
             </div>
-            <div class = "townsquareletter_date postletter_date" id="{{createdtimestamp}}">
+            <div class="townsquareletter_date postletter_date" data-created="{{createdtimestamp}}">
                 {{created}}
             </div>
         </div>
     </div>
     <div class="townsquareletter_body postletter_body card-body">
-        <div class = "postletter_origin">
+        <div class="postletter_origin">
             <b>
                 {{#anonymous}}
                     {{#str}} postletterorigin, block_townsquare, {
@@ -91,15 +93,15 @@
                 {{/anonymous}}
             </b>
         </div>
-        <div class = "postletter_content">
-                <span class ="postletter_message" id="content-nr-{{contentid}}" data-contentid="{{contentid}}">
+        <div class="postletter_content">
+                <div class ="postletter_message" data-contentid="{{contentid}}">
                     {{{message}}}
-                </span>
+                </div>
                 <span class="townsquare_showmore badge rounded-pill" data-parentid="{{contentid}}"
                       data-action="block_townsquare/showmore_button">
                     {{#str}} showmore, block_townsquare {{/str}}
                 </span>
-                <span>
+                <div>
                     {{#privatereplyto}}
                         <hr>
                         <i>{{#str}} privatereplyto, block_townsquare {{/str}}</i>
@@ -108,7 +110,7 @@
                         <hr>
                         <i>{{#str}} privatereplyfrom, block_townsquare {{/str}}</i>
                     {{/privatereplyfrom}}
-                </span>
+                </div>
         </div>
     </div>
 </div>

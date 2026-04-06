@@ -30,7 +30,7 @@
     * linktoactivity - Link to the module instance
     * completionlettercolor - Color of the letter
 
-    Example (json):
+    Example context (json):
     {
         "contentid": 28,
         "isactivitycompletion": true,
@@ -40,20 +40,21 @@
         "instancename": "How difficult was the exam?",
         "created": "28.10.2023",
         "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
-        "linktocourse": "http://localhost/moodle/course/view.php?id=3"
+        "linktocourse": "http://localhost/moodle/course/view.php?id=3",
         "completionlettercolor": "#ca3120"
     }
 }}
 <div class="townsquare_letter completionletter card mb-3 ms-3" id="content-nr-{{contentid}}"
-     style="border-color: {{completionlettercolor}}">
-    <div class="townsquareletter_header completionletter_header card-header" style="background-color: {{completionlettercolor}}">
+     style="border-color: {{completionlettercolor}}{{^completionlettercolor}}#ca3120{{/completionlettercolor}}">
+    <div class="townsquareletter_header completionletter_header card-header"
+         style="background-color: {{completionlettercolor}}{{^completionlettercolor}}#ca3120{{/completionlettercolor}}">
         <div class = "townsquareletter_top completionletter_top">
-            <div class = "townsquareletter_course completionletter_course" data-courseid="{{courseid}}" id="ts_letter_course_{{courseid}}">
+            <div class = "townsquareletter_course completionletter_course" data-courseid="{{courseid}}">
                 {{#str}} coursetitle, moodle, {"course":
                     {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}} </a> {{/quote}} }
                 {{/str}}
             </div>
-            <div class = "townsquareletter_date completionletter_date" id="{{createdtimestamp}}">
+            <div class="townsquareletter_date completionletter_date" data-created="{{createdtimestamp}}">
                 {{created}}
             </div>
         </div>
