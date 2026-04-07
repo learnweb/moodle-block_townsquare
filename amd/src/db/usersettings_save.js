@@ -27,7 +27,7 @@
 import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
-import {convertIdToTime, convertTimeToId} from 'block_townsquare/locallib';
+import {convertTimeToId} from 'block_townsquare/locallib';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
@@ -208,8 +208,8 @@ function collecttimefiltersettings() {
     // Get the relevant time spans of the time filter.
     // Check if the alltimebutton is set.
     if (alltimebutton.checked || alltimebutton.parentNode.classList.contains('active')) {
-        settings.timepast = convertIdToTime(alltimebutton.id);
-        settings.timefuture = convertIdToTime(alltimebutton.id);
+        settings.timepast = Number(alltimebutton.dataset.timespan);
+        settings.timefuture = Number(alltimebutton.dataset.timespan);
         settingsset = true;
     }
 
@@ -220,13 +220,13 @@ function collecttimefiltersettings() {
     // If the alltimebutton is not set, check which of the future/past buttons is set.
     futureradiobuttons.forEach(function(button) {
         if (button.checked || button.parentNode.classList.contains('active')) {
-            settings.timefuture = convertIdToTime(button.id);
+            settings.timefuture = Number(button.dataset.timespan);
         }
     });
 
     pastradiobuttons.forEach(function(button) {
         if (button.checked || button.parentNode.classList.contains('active')) {
-            settings.timepast = convertIdToTime(button.id);
+            settings.timepast = Number(button.dataset.timespan);
         }
     });
     return settings;

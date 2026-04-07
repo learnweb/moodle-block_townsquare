@@ -22,31 +22,6 @@
  */
 
 /**
- * Function to convert the radio button id to a useable time span.
- * @param {string} id  The id of the radio button
- * @returns {number}
- */
-export function convertIdToTime(id) {
-    switch (id) {
-        case "ts_time_all":
-            return 15778463;
-        case "ts_time_next_twodays":
-        case "ts_time_last_twodays":
-            return 172800;
-        case "ts_time_next_fivedays":
-        case "ts_time_last_fivedays":
-            return 432000;
-        case "ts_time_next_week":
-        case "ts_time_last_week":
-            return 604800;
-        case "ts_time_next_month":
-        case "ts_time_last_month":
-            return 2592000;
-    }
-    return -1;
-}
-
-/**
  * Function to convert the time span to a radio button id.
  * @param {string} time
  * @param {boolean} future
