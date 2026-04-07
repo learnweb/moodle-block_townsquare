@@ -105,10 +105,7 @@ class post_letter extends letter {
 
     // Functions.
 
-    /**
-     * Export Function for the mustache template.
-     * @return array
-     */
+    #[\Override]
     public function export_letter(): array {
         return [
             'contentid' => $this->contentid,
