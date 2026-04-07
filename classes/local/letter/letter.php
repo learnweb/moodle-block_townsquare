@@ -141,7 +141,7 @@ class letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => date('d.m.Y, G:i', $this->created),
+            'created' => date('G:i', $this->created),
             'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),

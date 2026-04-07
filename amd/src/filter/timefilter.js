@@ -24,8 +24,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {convertIdToTime} from 'block_townsquare/locallib';
-
 // Get the relevant radio buttons.
 const alltimebutton = document.getElementById('ts_time_all');
 const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
@@ -66,7 +64,7 @@ function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate
     // Loop through each letter and hide/show based on radiobutton state.
     letters.forEach(function(letter) {
         // Get the created time stamp of each letter.
-        let lettertime = letter.querySelector('.townsquareletter_date').id;
+        let lettertime = letter.querySelector('.townsquareletter_date').dataset.created;
 
         // If the radio button is checked and the letter is in the time span, activate it.
         if ((buttonstate && (lettertime >= starttime && lettertime <= endtime)) ||
@@ -84,8 +82,8 @@ function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate
 function alltimeaddEventListener() {
     alltimebutton.addEventListener('change', function() {
         // Set the time span to show all letters.
-        timestart = currenttime - convertIdToTime(alltimebutton.id);
-        timeend = currenttime + convertIdToTime(alltimebutton.id);
+        timestart = currenttime - Number(alltimebutton.dataset.timespan);
+        timeend = currenttime + Number(alltimebutton.dataset.timespan);
 
         // Disable all other radio buttons that filter more specific times.
         futureradiobuttons.forEach(function(futureradiobutton) {
@@ -114,14 +112,14 @@ function futuretimeaddEventListener() {
 
             // Set the time span based on the radiobutton id.
             timestart = currenttime;
-            timeend = currenttime + convertIdToTime(button.id);
+            timeend = currenttime + Number(button.dataset.timespan);
 
             // Check if one past time button is checked. If yes, set the additional time span based on its id.
             addstarttime = 0;
             addendtime = 0;
             pastradiobuttons.forEach(function(pastradiobutton) {
                 if (pastradiobutton.checked || pastradiobutton.parentNode.classList.contains('active')) {
-                    addstarttime = currenttime - convertIdToTime(pastradiobutton.id);
+                    addstarttime = currenttime - Number(pastradiobutton.dataset.timespan);
                     addendtime = currenttime;
                 }
             });
@@ -142,7 +140,7 @@ function pasttimeaddEventListener() {
             alltimebutton.checked = false;
 
             // Set the time span based on the radiobutton id.
-            timestart = currenttime - convertIdToTime(button.id);
+            timestart = currenttime - Number(button.dataset.timespan);
             timeend = currenttime;
 
             // Check if one future time button is checked. If yes, set the additional time span based on its id.
@@ -151,7 +149,7 @@ function pasttimeaddEventListener() {
             futureradiobuttons.forEach(function(futureradiobutton) {
                 if (futureradiobutton.checked || futureradiobutton.parentNode.classList.contains('active')) {
                     addstarttime = currenttime;
-                    addendtime = currenttime + convertIdToTime(futureradiobutton.id);
+                    addendtime = currenttime + Number(futureradiobutton.dataset.timespan);
                 }
             });
 

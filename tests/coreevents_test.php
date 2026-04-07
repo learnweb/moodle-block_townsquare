@@ -77,10 +77,11 @@ final class coreevents_test extends \advanced_testcase {
     public function test_sortorder(): void {
         // Get the current calendar events from the teacher.
         $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
+        $count = count($coreevents);
 
         // Iterate through all posts and check if the sort order is correct.
         $result = true;
-        for ($i = 0; $i < count($coreevents) - 1; $i++) {
+        for ($i = 0; $i < $count - 1; $i++) {
             if ($coreevents[$i]->timestart < $coreevents[$i + 1]->timestart) {
                 $result = false;
                 break;

@@ -23,17 +23,17 @@
     * courses - Array of courses that show notifications in townsquare
     * helpicon - Text that the help icon shows
 
-    Example (json):
+    Example context (json):
     {
         "courses" : [
             {
-                "courseid" => 20,
-                "coursename" => "
-            },
+                "courseid": 20,
+                "coursename": "Course1"
+            }
         ],
         "helpicon" : [
             {
-                "text" => "By clicking on the save button ..."
+                "text": "By clicking on the save button ..."
             }
          ]
      }
@@ -68,44 +68,52 @@
         <div id="ts_times" class="accordion-collapse collapse" aria-labelledby="ts_time_filter" data-bs-parent="#ts_filter">
             <div class="accordion-body">
                 <div class="btn-group-vertical w-100 mb-2 ts_time_group" role="group">
-                    <input type="radio" class="btn-check ts_all_time_button" name="ts_time_options" id="ts_time_all" autocomplete="off" checked>
+                    <input type="radio" class="btn-check ts_all_time_button" name="ts_time_options" id="ts_time_all"
+                           data-timespan="15778463" checked>
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_all">
                         {{#str}}allnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
                 <div class="btn-group-vertical w-100 mb-2 ts_time_group" role="group">
-                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_twodays" autocomplete="off">
+                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_twodays"
+                           data-timespan="172800">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_next_twodays">
                         {{#str}}nexttwodaysnotifications, block_townsquare{{/str}}
                     </label>
-                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_fivedays" autocomplete="off">
+                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_fivedays"
+                           data-timespan="432000">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_next_fivedays">
                         {{#str}}nextfivedaysnotifications, block_townsquare{{/str}}
                     </label>
-                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_week" autocomplete="off">
+                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_week"
+                           data-timespan="604800">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_next_week">
                         {{#str}}nextweeknotifications, block_townsquare{{/str}}
                     </label>
-                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_month" autocomplete="off">
+                    <input type="radio" class="btn-check ts_future_time_button" name="ts_time_future" id="ts_time_next_month"
+                           data-timespan="2592000">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_next_month">
                         {{#str}}nextmonthnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
                 <div class="btn-group-vertical w-100 ts_time_group" role="group">
-                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_twodays" autocomplete="off">
+                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_twodays"
+                           data-timespan="172800">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_last_twodays">
                         {{#str}}lasttwodaysnotifications, block_townsquare{{/str}}
                     </label>
-                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_fivedays" autocomplete="off">
+                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_fivedays"
+                           data-timespan="432000">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_last_fivedays">
                         {{#str}}lastfivedaysnotifications, block_townsquare{{/str}}
                     </label>
-                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_week" autocomplete="off">
+                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_week"
+                           data-timespan="604800">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_last_week">
                         {{#str}}lastweeknotifications, block_townsquare{{/str}}
                     </label>
-                    <div class="dropdown-divider"></div>
-                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_month" autocomplete="off">
+                    <input type="radio" class="btn-check ts_past_time_button" name="ts_time_past" id="ts_time_last_month"
+                           data-timespan="2592000">
                     <label class="ts_time_buttons btn btn-secondary w-100" for="ts_time_last_month">
                         {{#str}}lastmonthnotifications, block_townsquare{{/str}}
                     </label>

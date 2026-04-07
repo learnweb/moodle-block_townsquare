@@ -31,7 +31,7 @@
     * linktoactivity - Link to the module instance
     * basiclettercolor - Color of the letter
 
-    Example (json):
+    Example context (json):
     {
           "contentid": 0,
           "isbasic": true,
@@ -41,19 +41,21 @@
           "content": "Lesson 1: Quantum Theory closes",
           "created": "20.12.2023",
           "linktocourse": "http://localhost/moodle/course/view.php?id=20",
-          "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
+          "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314",
           "basiclettercolor": "#0f6cbf"
     }
 }}
-<div class="townsquare_letter basicletter card mb-3 ms-3" id="content-nr-{{contentid}}" style="border-color: {{basiclettercolor}}">
-    <div class="townsquareletter_header basicletter_header card-header" style="background-color: {{basiclettercolor}}">
-        <div class = "townsquareletter_top basicletter_top">
-            <div class = "townsquareletter_course basicletter_course" data-courseid="{{courseid}}" id="ts_letter_course_{{courseid}}">
+<div class="townsquare_letter basicletter card mb-3 ms-3" id="content-nr-{{contentid}}"
+     style="border-color: {{basiclettercolor}}{{^basiclettercolor}}#0f6cbf{{/basiclettercolor}}">
+    <div class="townsquareletter_header basicletter_header card-header"
+         style="background-color: {{basiclettercolor}}{{^basiclettercolor}}#0f6cbf{{/basiclettercolor}}">
+        <div class="townsquareletter_top basicletter_top">
+            <div class="townsquareletter_course basicletter_course" data-courseid="{{courseid}}">
                 {{#str}} coursetitle, moodle, {"course":
                     {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a> {{/quote}} }
                 {{/str}}
             </div>
-            <div class = "townsquareletter_date basicletter_date" id="{{createdtimestamp}}">
+            <div class="townsquareletter_date basicletter_date" data-created="{{createdtimestamp}}">
                 {{created}}
             </div>
         </div>

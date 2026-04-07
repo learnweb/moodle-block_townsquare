@@ -27,17 +27,17 @@
     * courses - Array of courses that show notifications in townsquare
     * helpicon - Text that the help icon shows
 
-    Example (json):
+    Example context (json):
     {
         "courses" : [
             {
-                "courseid" => 20,
-                "coursename" => "
-            },
+                "courseid": 20,
+                "coursename": "Course1"
+            }
         ],
         "helpicon" : [
             {
-                "text" => "By clicking on the save button ..."
+                "text": "By clicking on the save button ..."
             }
          ]
      }
@@ -78,38 +78,38 @@
             <div class="card-body">
                 <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
                     <label class="ts_time_buttons btn btn-secondary active">
-                        <input class="ts_all_time_button" type="radio" checked="checked" name="ts_time_options" id="ts_time_all" autocomplete="off" > {{#str}}allnotifications, block_townsquare{{/str}}
+                        <input class="ts_all_time_button" data-timespan="15778463" type="radio" checked="checked" name="ts_time_options" id="ts_time_all"> {{#str}}allnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
 
                 <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_twodays" autocomplete="off"> {{#str}}nexttwodaysnotifications, block_townsquare{{/str}}
+                        <input class="ts_future_time_button" data-timespan="172800" type="radio" name="ts_time_options" id="ts_time_next_twodays"> {{#str}}nexttwodaysnotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_fivedays" autocomplete="off"> {{#str}}nextfivedaysnotifications, block_townsquare{{/str}}
+                        <input class="ts_future_time_button" data-timespan="432000" type="radio" name="ts_time_options" id="ts_time_next_fivedays"> {{#str}}nextfivedaysnotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_week" autocomplete="off"> {{#str}}nextweeknotifications, block_townsquare{{/str}}
+                        <input class="ts_future_time_button" data-timespan="604800" type="radio" name="ts_time_options" id="ts_time_next_week"> {{#str}}nextweeknotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_future_time_button" type="radio" name="ts_time_options" id="ts_time_next_month" autocomplete="off"> {{#str}}nextmonthnotifications, block_townsquare{{/str}}
+                        <input class="ts_future_time_button" data-timespan="2592000" type="radio" name="ts_time_options" id="ts_time_next_month"> {{#str}}nextmonthnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
 
                 <div class="btn-group-vertical btn-group-toggle btn-block" data-toggle="buttons">
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_twodays" autocomplete="off"> {{#str}}lasttwodaysnotifications, block_townsquare{{/str}}
+                        <input class="ts_past_time_button" data-timespan="172800" type="radio" name="ts_time_options" id="ts_time_last_twodays"> {{#str}}lasttwodaysnotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_fivedays" autocomplete="off"> {{#str}}lastfivedaysnotifications, block_townsquare{{/str}}
+                        <input class="ts_past_time_button" data-timespan="432000" type="radio" name="ts_time_options" id="ts_time_last_fivedays"> {{#str}}lastfivedaysnotifications, block_townsquare{{/str}}
                     </label>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_week" autocomplete="off"> {{#str}}lastweeknotifications, block_townsquare{{/str}}
+                        <input class="ts_past_time_button" data-timespan="604800" type="radio" name="ts_time_options" id="ts_time_last_week"> {{#str}}lastweeknotifications, block_townsquare{{/str}}
                     </label>
                     <div class="divider"></div>
                     <label class="ts_time_buttons btn btn-secondary">
-                        <input class="ts_past_time_button" type="radio" name="ts_time_options" id="ts_time_last_month" autocomplete="off"> {{#str}}lastmonthnotifications, block_townsquare{{/str}}
+                        <input class="ts_past_time_button" data-timespan="2592000" type="radio" name="ts_time_options" id="ts_time_last_month"> {{#str}}lastmonthnotifications, block_townsquare{{/str}}
                     </label>
                 </div>
             </div>
@@ -128,19 +128,19 @@
             <div class="card-body">
                 <div class="form-check">
                     <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="basicletter" checked>
-                    <label class="form-check-label" for="ts_basicletter_check">
+                    <label class="form-check-label" for="basicletter">
                         {{#str}}basicletters, block_townsquare{{/str}}
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="completionletter" checked>
-                    <label class="form-check-label" for="ts_completionletter_check">
+                    <label class="form-check-label" for="completionletter">
                         {{#str}}completionletters, block_townsquare{{/str}}
                     </label>
                 </div>
                 <div class="form-check">
                     <input class="ts_letter_checkbox form-check-input" name="ts_letter_checkbox" type="checkbox" value="" id="postletter" checked>
-                    <label class="form-check-label" for="ts_postletter_check">
+                    <label class="form-check-label" for="postletter">
                         {{#str}}postletters, block_townsquare{{/str}}
                     </label>
                 </div>

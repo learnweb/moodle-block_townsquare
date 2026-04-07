@@ -26,48 +26,59 @@
         * isactivitycompletion - Boolean variable if current content is an activity completion
         * ispost - Boolean variable if current content is a post
 
-    Example (json):
+    Example context (json):
     {
+        "newsidepanel": true,
+        "lastupdate": "Last update: 14:30",
+        "courses": [
+            {
+                "courseid": 20,
+                "coursename": "Course1"
+            }
+        ],
         "content": [
             {
-                "contentid": 0,
-                "isorientationmarker": true
-            },
-            {
-                "contentid": 1,
-                "isactivitycompletion": true,
-                "coursename": "Moodle Engineering",
-                "modulename":"survey",
-                "content": "How difficult was the exam? should be completed",
-                "created": "28.10.2023",
-                "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
-                "linktocourse": "http://localhost/moodle/course/view.php?id=20"
-            },
-            {
-                 "contentid": 2,
-                 "isbasic": true,
-                 "coursename": "Moodle Engineering",
-                 "modulename": "lesson",
-                 "content": "Lesson 1: Quantum Theory closes",
-                 "created": "20.12.2023",
-                 "linktocourse": "http://localhost/moodle/course/view.php?id=20",
-                 "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
-            },
-            {
-                "contentid": 3,
-                "ispost": true,
-                "coursename": "Moodle Engineering",
-                "instancename": "Exam Questions",
-                "discussionsubject": "Hour of Exam",
-                "anonymous": false,
-                "authorname": "Tamaro Walter",
-                "authorpicture": "<img src="http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13" class="userpicture" width="35" height="35" alt="" />",
-                "message": "<div class="text_to_html"><p>When do we write the exam?</p></div>",
-                "created": "03.11.2023",
-                "linktocourse": "http://localhost/moodle/course/view.php?id=20",
-                "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
-                "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
-                "linktoauthor": "http://localhost/moodle/user/view.php?id=2"
+                "day": "2026-03-31",
+                "letters": [
+                    {
+                        "contentid": 1,
+                        "isactivitycompletion": true,
+                        "coursename": "Moodle Engineering",
+                        "courseid": 3,
+                        "instancename": "How difficult was the exam?",
+                        "created": "28.10.2023",
+                        "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
+                        "linktocourse": "http://localhost/moodle/course/view.php?id=20"
+                    },
+                    {
+                        "contentid": 2,
+                        "isbasic": true,
+                        "coursename": "Moodle Engineering",
+                        "courseid": 3,
+                        "instancename": "Lesson 1: Quantum Theory",
+                        "content": "Lesson 1: Quantum Theory closes",
+                        "created": "20.12.2023",
+                        "linktocourse": "http://localhost/moodle/course/view.php?id=20",
+                        "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
+                    },
+                    {
+                        "contentid": 3,
+                        "ispost": true,
+                        "coursename": "Moodle Engineering",
+                        "courseid": 3,
+                        "instancename": "Exam Questions",
+                        "discussionsubject": "Hour of Exam",
+                        "anonymous": false,
+                        "authorname": "Tamaro Walter",
+                        "authorpicture": "<img src=\"http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13\" class=\"userpicture\" width=\"35\" height=\"35\" alt=\"\">",
+                        "message": "<div class=\"text_to_html\"><p>When do we write the exam?</p></div>",
+                        "created": "03.11.2023",
+                        "linktocourse": "http://localhost/moodle/course/view.php?id=20",
+                        "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
+                        "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
+                        "linktoauthor": "http://localhost/moodle/user/view.php?id=2"
+                    }
+                ]
             }
         ]
     }
