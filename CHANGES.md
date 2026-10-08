@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+v5.2-r2 (2026-10-08)
+------------------
+- Fix external classes: remove old class, cleanup
+
 v5.2-r1 (2026-04-07)
 ------------------
 Townsquare had little changes since the last release, mostly small UI improvements and code restructures:
