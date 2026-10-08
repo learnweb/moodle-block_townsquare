@@ -38,7 +38,8 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
  * @copyright 2024 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \external
+ * @covers \block_townsquare\external\record_usersettings
+ * @covers \block_townsquare\external\reset_usersettings
  * @runTestsInSeparateProcesses
  */
 final class external_test extends \advanced_testcase {
@@ -81,7 +82,6 @@ final class external_test extends \advanced_testcase {
 
         // Call the function to record the user settings and check, if the record is created.
         $result = $this->testdata->external->execute(
-            $usersetting->userid,
             $usersetting->timefilterpast,
             $usersetting->timefilterfuture,
             $usersetting->basicletter,
@@ -111,7 +111,6 @@ final class external_test extends \advanced_testcase {
 
         // Call the function to record the user settings and check, if the record is created.
         $result = $this->testdata->external->execute(
-            $usersetting->userid,
             $usersetting->timefilterpast,
             $usersetting->timefilterfuture,
             $usersetting->basicletter,
@@ -121,6 +120,8 @@ final class external_test extends \advanced_testcase {
         );
 
         $this->assertEquals(true, $result);
+        // The existing record is updated, no second record is created.
+        $this->assertEquals(1, $DB->count_records('block_townsquare_preferences', ['userid' => $usersetting->userid]));
         $record = $DB->get_record('block_townsquare_preferences', ['userid' => $usersetting->userid]);
 
         // Check if the record is correct.
@@ -143,28 +144,27 @@ final class external_test extends \advanced_testcase {
         $user2 = $this->getDataGenerator()->create_user();
         $this->setUser($user);
 
-        // Load a usersetting in the database.
-        $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
-                            'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
+        // Load a usersetting for both users in the database.
+        foreach ([$user->id, $user2->id] as $userid) {
+            $DB->insert_record('block_townsquare_preferences', ['userid' => $userid, 'timefilterpast' => 432000,
+                'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
+        }
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
-        // Test case 1: Wrong parameters.
-        $this->testdata->external->execute($user2->id);
-        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
-
-        // Test case 2: For some reason, many records from the same user exist.
-        $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
-            'timefilterfuture' => 2592000, 'basicletter' => 1, 'completionletter' => 0, 'postletter' => 0, ]);
-        $this->assertEquals(2, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
-
-        $this->testdata->external->execute($user->id);
+        // Test case 1: Only the settings of the current user are deleted.
+        $this->testdata->external->execute();
         $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user2->id])));
 
-        // Test case 3: normal case.
+        // Test case 2: normal case.
         $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
             'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
-        $this->testdata->external->execute($user->id);
+        $this->testdata->external->execute();
         $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
+
+        // Test case 3: Resetting without existing settings does not fail.
+        $this->assertTrue($this->testdata->external->execute());
+        $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user2->id])));
     }
 }

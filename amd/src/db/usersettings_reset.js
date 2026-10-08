@@ -32,16 +32,14 @@ const resetbutton = document.getElementById('ts_usersettings_resetbutton');
 
 /**
  * Init function. Resets user settings from the database.
- * @param {number} userid The id of the current user.
  */
-export function init(userid) {
+export function init() {
     resetbutton.addEventListener('click', async() => {
-        const data = {methodname: 'block_townsquare_reset_usersettings', args: {userid}};
-        const result = await Ajax.call([data])[0];
-
-        if (result) {
-            const message = await getString('reset_successmessage', 'block_townsquare');
-            Notification.addNotification({message, type: 'success'});
+        try {
+            await Ajax.call([{methodname: 'block_townsquare_reset_usersettings', args: {}}])[0];
+        } catch (error) {
+            Notification.exception(error);
+            return;
         }
 
         document.querySelectorAll('.ts_course_checkbox:not(:checked)').forEach(checkbox => checkbox.click());
@@ -52,6 +50,9 @@ export function init(userid) {
         });
         document.querySelectorAll('.ts_letter_checkbox:not(:checked)').forEach(checkbox => checkbox.click());
 
-        return result;
+        Notification.addNotification({
+            message: await getString('reset_successmessage', 'block_townsquare'),
+            type: 'success',
+        });
     });
 }

@@ -59,8 +59,8 @@ class block_townsquare extends block_base {
         $this->page->requires->js_call_amd('block_townsquare/filter/filtercontroller', 'init');
         $this->page->requires->js_call_amd('block_townsquare/filter/letterfilter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/filter/timefilter', 'init');
-        $this->page->requires->js_call_amd('block_townsquare/db/usersettings_reset', 'init', [$USER->id]);
-        $this->page->requires->js_call_amd('block_townsquare/db/usersettings_save', 'init', [$USER->id, $usersettings]);
+        $this->page->requires->js_call_amd('block_townsquare/db/usersettings_reset', 'init');
+        $this->page->requires->js_call_amd('block_townsquare/db/usersettings_save', 'init', [$usersettings]);
         return $this->content;
     }
 

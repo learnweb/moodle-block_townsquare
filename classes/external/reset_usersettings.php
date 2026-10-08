@@ -15,24 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace block_townsquare\external;
-use core_external\restricted_context_exception;
-use dml_exception;
-use external_function_parameters;
-use Exception;
-use external_api;
-use external_value;
-use invalid_parameter_exception;
+
 use context_user;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-require_once($CFG->dirroot . '/lib/externallib.php');
-require_once($CFG->libdir . '/externallib.php');
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
+use dml_exception;
 
 /**
- * Class implementing the external API, esp. for AJAX functions.
- *  Resets usersettings in the database.
+ * Resets usersettings in the database.
  *
  * @package    block_townsquare
  * @copyright  2024 Tamaro Walter
@@ -44,7 +35,7 @@ class reset_usersettings extends external_api {
      * @return external_function_parameters
      */
     public static function execute_parameters(): external_function_parameters {
-        return new external_function_parameters(['userid' => new external_value(PARAM_INT, 'the user id')]);
+        return new external_function_parameters([]);
     }
 
     /**
@@ -56,38 +47,15 @@ class reset_usersettings extends external_api {
     }
 
     /**
-     * Reset the user settings
+     * Reset the current users settings.
      *
-     * @param int $userid
      * @return bool
      * @throws dml_exception
-     * @throws invalid_parameter_exception|restricted_context_exception
      */
-    public static function execute(int $userid): bool {
-        global $DB;
-
-        // Parameter validation.
-        if (!self::validate_parameters(self::execute_parameters(), ['userid' => $userid])) {
-            return false;
-        }
-
-        self::validate_context(context_user::instance($userid));
-
-        $transaction = $DB->start_delegated_transaction();
-
-        // Check if there is a record in the database with the userid and delete it.
-        if ($records = $DB->get_records('block_townsquare_preferences', ['userid' => $userid])) {
-            try {
-                foreach ($records as $record) {
-                    $DB->delete_records('block_townsquare_preferences', ['id' => $record->id]);
-                }
-            } catch (Exception $e) {
-                $transaction->rollback($e);
-                return false;
-            }
-            $transaction->allow_commit();
-            return true;
-        }
+    public static function execute(): bool {
+        global $DB, $USER;
+        self::validate_context(context_user::instance($USER->id));
+        $DB->delete_records('block_townsquare_preferences', ['userid' => $USER->id]);
         return true;
     }
 }

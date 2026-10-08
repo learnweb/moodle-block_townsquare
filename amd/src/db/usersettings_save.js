@@ -47,10 +47,9 @@ const courseCheckboxes = document.querySelectorAll('.ts_course_checkbox');
  * Init function. This functions adapts the filter settings to the user settings from the database. If the user changes settings
  * and clicks the save button, the settings are stored in the database.
  *
- * @param {number} userid           The id of the current user.
  * @param {object} settingsfromdb   The settings from the database, if there are any.
  */
-export function init(userid, settingsfromdb) {
+export function init(settingsfromdb) {
     // When the page is loaded, set the settings from the database.
     if (settingsfromdb) {
         executeusersettings(settingsfromdb);
@@ -68,7 +67,6 @@ export function init(userid, settingsfromdb) {
         const data = {
             methodname: 'block_townsquare_record_usersettings',
             args: {
-                userid: userid,
                 timefilterpast: timespans.timepast,
                 timefilterfuture: timespans.timefuture,
                 basicletter: letterfilter.basicletter,
@@ -77,11 +75,16 @@ export function init(userid, settingsfromdb) {
                 courses: courses,
             },
         };
-        const result = await Ajax.call([data])[0];
-        if (result) {
-            const message = await getString('save_successmessage', 'block_townsquare');
-            await Notification.addNotification({message: message, type: 'success'});
+
+        try {
+            await Ajax.call([data])[0];
+        } catch (error) {
+            Notification.exception(error);
+            return;
         }
+        const message = await getString('save_successmessage', 'block_townsquare');
+        await Notification.addNotification({message: message, type: 'success'});
+
     });
 }
 

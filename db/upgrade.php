@@ -77,5 +77,32 @@ function xmldb_block_townsquare_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2025073103, 'townsquare');
     }
 
+    if ($oldversion < 2026100800) {
+        // Remove duplicate preferences, only keep the newest record of each user.
+        $sql = "SELECT userid, MAX(id) AS keepid
+                  FROM {block_townsquare_preferences}
+              GROUP BY userid
+                HAVING COUNT(id) > 1";
+        $duplicates = $DB->get_recordset_sql($sql);
+        foreach ($duplicates as $duplicate) {
+            $DB->delete_records_select(
+                'block_townsquare_preferences',
+                'userid = ? AND id <> ?',
+                [$duplicate->userid, $duplicate->keepid]
+            );
+        }
+        $duplicates->close();
+
+        // Define key userid (foreign-unique) to be added to block_townsquare_preferences.
+        $table = new xmldb_table('block_townsquare_preferences');
+        $key = new xmldb_key('userid', XMLDB_KEY_FOREIGN_UNIQUE, ['userid'], 'user', ['id']);
+
+        // Launch add key userid.
+        $dbman->add_key($table, $key);
+
+        // Townsquare savepoint reached.
+        upgrade_block_savepoint(true, 2026100800, 'townsquare');
+    }
+
     return true;
 }
