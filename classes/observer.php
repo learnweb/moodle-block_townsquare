@@ -37,13 +37,22 @@ class observer {
      */
     public static function course_deleted(course_deleted $event): void {
         global $DB;
-        $records = $DB->get_records('block_townsquare_preferences');
+        // Get the course id that is getting deleted.
+        $courseid = (string) $event->courseid;
 
-        // Go trough each record and check if the deleted course appears.
+        // Only load records that may contain the course id (JSON key "<courseid>":).
+        $records = $DB->get_records_select(
+            table: 'block_townsquare_preferences',
+            select: $DB->sql_like('courses', ':pattern'),
+            params: ['pattern' => '%"' . $courseid . '":%'],
+            fields: 'id, courses'
+        );
+
+        // Go through each record that may have the course and delete it from the preferences.
         foreach ($records as $record) {
-            $json = json_decode($record->courses);
-            if (property_exists($json, $event->courseid)) {
-                unset($json->{$event->courseid});
+            $json = json_decode($record->courses ?? '');
+            if (is_object($json) && property_exists($json, $courseid)) {
+                unset($json->{$courseid});
                 $record->courses = json_encode($json);
                 $DB->update_record('block_townsquare_preferences', $record);
             }

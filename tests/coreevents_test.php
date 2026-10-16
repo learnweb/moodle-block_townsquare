@@ -40,6 +40,7 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @covers \block_townsquare\townsquareevents::get_coreevents()
+ * @covers \block_townsquare\observer::course_deleted()
  */
 final class coreevents_test extends \advanced_testcase {
     // Attributes.
@@ -92,7 +93,8 @@ final class coreevents_test extends \advanced_testcase {
     }
 
     /**
-     * Test, if the post events are processed correctly if the course disappears.
+     * Test, if the post events are processed correctly if the course disappears and
+     * if the course deleted observer cleans up the course filter preferences.
      * @return void
      */
     public function test_course_deleted(): void {
@@ -105,6 +107,37 @@ final class coreevents_test extends \advanced_testcase {
 
         // There should be no posts from the first course.
         $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->courseid == $this->testdata->course1->id)));
+
+        // Create preferences: the teacher has a course filter setting, student2 has an old record without one.
+        $course2id = $this->testdata->course2->id;
+        $similarid = $course2id . '1';
+        $preference = [
+            'timefilterpast' => 432000,
+            'timefilterfuture' => 432000,
+            'basicletter' => 1,
+            'completionletter' => 1,
+            'postletter' => 1,
+        ];
+        $teacherpref = $DB->insert_record('block_townsquare_preferences', $preference + [
+            'userid' => $this->testdata->teacher->id,
+            'courses' => json_encode((object) [$this->testdata->course1->id => true, $course2id => false, $similarid => true]),
+        ]);
+        $studentpref = $DB->insert_record('block_townsquare_preferences', $preference + [
+            'userid' => $this->testdata->student2->id,
+            'courses' => null,
+        ]);
+
+        // Delete the second course properly, so that the course deleted event is triggered.
+        delete_course($this->testdata->course2, false);
+
+        // Only the deleted course should be removed from the teacher's course filter, other settings stay.
+        $teachersetting = $DB->get_record('block_townsquare_preferences', ['id' => $teacherpref]);
+        $expected = json_encode((object) [$this->testdata->course1->id => true, $similarid => true]);
+        $this->assertEquals($expected, $teachersetting->courses);
+        $this->assertEquals(1, $teachersetting->postletter);
+
+        // The record without a course filter setting should stay untouched.
+        $this->assertNull($DB->get_field('block_townsquare_preferences', 'courses', ['id' => $studentpref]));
     }
 
     /**
