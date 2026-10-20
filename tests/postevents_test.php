@@ -36,6 +36,7 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @covers \block_townsquare\townsquareevents::get_postevents()
+ * @covers \block_townsquare\local\letter\post_letter
  */
 final class postevents_test extends \advanced_testcase {
     // Attributes.
@@ -148,6 +149,40 @@ final class postevents_test extends \advanced_testcase {
             }
         }
         $this->assertTrue($result);
+    }
+
+    /**
+     * Test, if the private reply hints are only set on private replies and point in the right direction.
+     * The flags are checked on the exported post letters, as the database drivers return different types for them.
+     * @return void
+     */
+    public function test_forum_privatereply_flags(): void {
+        $this->create_forum_posts();
+        $this->create_forum_privatereply();
+
+        // The teacher is the recipient of the private reply.
+        $letters = $this->get_postletters_from_user($this->testdata->teacher);
+        $this->assertCount(3, $letters);
+        foreach ($letters as $letter) {
+            $isprivatereply = $letter['postid'] == $this->testdata->fprivatereply->id;
+            $this->assertSame($isprivatereply, $letter['privatereplyto']);
+            $this->assertFalse($letter['privatereplyfrom']);
+        }
+
+        // The second student is the author of the private reply.
+        $letters = $this->get_postletters_from_user($this->testdata->student2);
+        $this->assertCount(3, $letters);
+        foreach ($letters as $letter) {
+            $isprivatereply = $letter['postid'] == $this->testdata->fprivatereply->id;
+            $this->assertSame($isprivatereply, $letter['privatereplyfrom']);
+            $this->assertFalse($letter['privatereplyto']);
+        }
+
+        // The first student sees neither the private reply nor any private reply hint.
+        $letters = $this->get_postletters_from_user($this->testdata->student1);
+        $this->assertCount(1, $letters);
+        $this->assertFalse($letters[0]['privatereplyfrom']);
+        $this->assertFalse($letters[0]['privatereplyto']);
     }
 
     /**
@@ -319,6 +354,19 @@ final class postevents_test extends \advanced_testcase {
             }
         }
         return $postevents;
+    }
+
+    /**
+     * Helper function to get the exported post letters of a certain user.
+     * @param object $user The user for whom the letters should be built.
+     * @return array
+     */
+    private function get_postletters_from_user(object $user): array {
+        $letters = [];
+        foreach ($this->get_postevents_from_user($user) as $index => $postevent) {
+            $letters[] = (new local\letter\post_letter($index, $postevent))->export_letter();
+        }
+        return $letters;
     }
 
     /**
