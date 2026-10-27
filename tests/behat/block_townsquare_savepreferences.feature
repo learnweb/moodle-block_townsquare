@@ -27,6 +27,7 @@ Feature: In the townsquare block user can save their settings in a database.
     When I log in as "student1"
     Then I should see "Test assign 1" in the "Town Square" "block"
     And I should see "Test forum name" in the "Town Square" "block"
+    And I should not see "This is a private reply" in the "Town Square" "block"
     When I click on "Letter filter" "text"
     And I click on "postletter" "checkbox"
     Then I should not see "Test forum name" in the "Town Square" "block"

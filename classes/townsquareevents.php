@@ -182,8 +182,8 @@ class townsquareevents {
             return [];
         }
         [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
-        $params = ['courses' => $courses, 'timestart' => $timestart, 'userid' => $USER->id, 'userid2' => $USER->id,
-                'userid3' => $USER->id, 'userid4'  => $USER->id, ] + $inparamscourses;
+        $params = ['courses' => $courses, 'timestart' => $timestart, 'userid' => $USER->id, 'userid2' => $USER->id ]
+                + $inparamscourses;
 
         $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
                     'forum' AS modulename,
@@ -204,9 +204,7 @@ class townsquareevents {
                     posts.created AS timestart,
                     posts.message AS content,
                     posts.messageformat AS postmessageformat,
-                    posts.privatereplyto AS postprivatereplyto,
-                    (posts.privatereplyto <> 0 AND posts.userid = :userid3) AS privatereplyfrom,
-                    (posts.privatereplyto <> 0 AND posts.privatereplyto = :userid4) AS privatereplyto
+                    posts.privatereplyto AS postprivatereplyto
                 FROM {forum_posts} posts
                 JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
                 JOIN {forum} module ON module.id = discuss.forum

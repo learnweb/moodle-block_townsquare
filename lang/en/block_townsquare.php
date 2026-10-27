@@ -73,6 +73,7 @@ $string['postletters'] = 'Posts';
 $string['privacy:metadata:block_townsquare_preferences'] = 'Town Square stores the filters that a user wants to have activated.';
 $string['privacy:metadata:block_townsquare_preferences:basicletter'] = 'If the user wants to see basic letters';
 $string['privacy:metadata:block_townsquare_preferences:completionletter'] = 'If the user wants to see completion letters';
+$string['privacy:metadata:block_townsquare_preferences:courses'] = 'The courses the user wants to see notifications of';
 $string['privacy:metadata:block_townsquare_preferences:postletter'] = 'If the user wants to see post letters';
 $string['privacy:metadata:block_townsquare_preferences:timefilterfuture'] = 'How far into the future the user wants to see notifications';
 $string['privacy:metadata:block_townsquare_preferences:timefilterpast'] = 'How far back the user wants to see notifications';
