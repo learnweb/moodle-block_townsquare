@@ -21,8 +21,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-const letterboxes = document.getElementsByClassName('ts-letter-box');
-
 const Selectors = {
     actions: {
         collapsegroup: '[data-action="block_townsquare/collapse_group"]',
@@ -40,7 +38,7 @@ export function init() {
         if (group) {
             const icon = group.querySelector('i');
             let groupid = group.dataset.groupid;
-            letterboxes.forEach(
+            document.querySelectorAll('.ts-letter-box').forEach(
                 (element) => {
                     if (element.dataset.groupid === groupid) {
                         if (element.getAttribute('expanded') === 'true') {
@@ -67,7 +65,7 @@ export function init() {
  * @return {void}
  */
 export function setup(closedGroups = []) {
-    letterboxes.forEach((element) => {
+    document.querySelectorAll('.ts-letter-box').forEach((element) => {
         const wasclosed = closedGroups.includes(element.dataset.groupid);
 
         if (wasclosed) {

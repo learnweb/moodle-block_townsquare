@@ -66,7 +66,7 @@ export function init() {
  */
 export function setup() {
     prefetchStrings('moodle', ['showmore', 'showless']);
-    document.getElementsByClassName('postletter_message').forEach((element) => {
+    document.querySelectorAll('.postletter_message').forEach((element) => {
         const button = document.querySelector(`.townsquare_showmore[data-parentid="${element.dataset.contentid}"]`);
         if (button) {
             if (element.scrollHeight >= 90) {

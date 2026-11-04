@@ -22,6 +22,7 @@
  */
 
 import Ajax from 'core/ajax';
+import Notification from 'core/notification';
 import {setup as lettergroupSetup} from 'block_townsquare/lettergroup';
 import {setup as postletterSetup} from 'block_townsquare/postletter';
 
@@ -41,17 +42,22 @@ export function init() {
 
             // Add animation to the reload icon. Then call the new build and wait at least 600ms for the animation.
             button.classList.add('ts-reloading');
-            const [result] = await Promise.all([
-                Ajax.call([{methodname: "block_townsquare_reload", args: {}}])[0],
-                new Promise(resolve => setTimeout(resolve, 600)),
-            ]);
+            try {
+                const [result] = await Promise.all([
+                    Ajax.call([{methodname: "block_townsquare_reload", args: {}}])[0],
+                    new Promise(resolve => setTimeout(resolve, 600)),
+                ]);
 
-            document.querySelector('.townsquare_content').innerHTML = result;
+                document.querySelector('.townsquare_content').innerHTML = result;
 
-            lettergroupSetup(closedLetterGroups);
-            postletterSetup();
-
-            isReloading = false;
+                lettergroupSetup(closedLetterGroups);
+                postletterSetup();
+            } catch (error) {
+                Notification.exception(error);
+            } finally {
+                button.classList.remove('ts-reloading');
+                isReloading = false;
+            }
         }
     });
 }
