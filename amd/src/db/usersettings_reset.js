@@ -27,7 +27,6 @@
 import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
-import {setTimeButtonSelected} from 'block_townsquare/locallib';
 
 const resetbutton = document.getElementById('ts_usersettings_resetbutton');
 
@@ -45,7 +44,7 @@ export function init() {
 
         document.querySelectorAll('.ts_course_checkbox:not(:checked)').forEach(checkbox => checkbox.click());
         document.querySelectorAll('.ts_all_time_button').forEach(button => {
-            setTimeButtonSelected(button, true);
+            button.checked = true;
             button.dispatchEvent(new Event('change'));
         });
         document.querySelectorAll('.ts_letter_checkbox:not(:checked)').forEach(checkbox => checkbox.click());

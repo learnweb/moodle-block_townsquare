@@ -37,30 +37,3 @@ export function convertTimeToId(time, future) {
     }
     return "";
 }
-
-/**
- * Checks if a time filter radio button is selected.
- *
- * In the Bootstrap 4 side panel (Moodle 4.5) all time radio buttons share one name, so only one of them can be checked.
- * There, the selection is stored as 'active' class on the surrounding label. In the Bootstrap 5 markup, the past and future
- * buttons have their own names and the checked state is enough.
- *
- * @param {HTMLInputElement} button
- * @returns {boolean}
- */
-export function isTimeButtonSelected(button) {
-    return button.checked || (button.parentNode.tagName === 'LABEL' && button.parentNode.classList.contains('active'));
-}
-
-/**
- * Selects or deselects a time filter radio button (see isTimeButtonSelected).
- *
- * @param {HTMLInputElement} button
- * @param {boolean} selected
- */
-export function setTimeButtonSelected(button, selected) {
-    button.checked = selected;
-    if (button.parentNode.tagName === 'LABEL') {
-        button.parentNode.classList.toggle('active', selected);
-    }
-}

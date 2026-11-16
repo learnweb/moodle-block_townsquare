@@ -28,7 +28,6 @@
 
     Example context (json):
     {
-        "newsidepanel": true,
         "lastupdate": "Last update: 14:30",
         "courses": [
             {
@@ -86,12 +85,7 @@
 <div id="townsquare_root" class="townsquare_root container-fluid">
     <div class="row townsquare_main">
         <div class="col-md-3 townsquare_sidepanel">
-            {{#newsidepanel}}
-                {{> block_townsquare/sidepanel/sidepanel}}
-            {{/newsidepanel}}
-            {{^newsidepanel}}
-                {{> block_townsquare/sidepanel/sidepanel_old}}
-            {{/newsidepanel}}
+            {{> block_townsquare/sidepanel/sidepanel}}
         </div>
 
         <div class="col-md-9 townsquare_content">

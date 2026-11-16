@@ -27,7 +27,7 @@
 import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
-import {convertTimeToId, isTimeButtonSelected, setTimeButtonSelected} from 'block_townsquare/locallib';
+import {convertTimeToId} from 'block_townsquare/locallib';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
@@ -101,22 +101,22 @@ function executeusersettings(settingsfromdb) {
 
     // If the time span is a combination of past and future, go through the two radio buttons and activate the filter.
     if (futurebuttonid !== "ts_time_all") {
-        setTimeButtonSelected(alltimebutton, false);
+        alltimebutton.checked = false;
         futureradiobuttons.forEach(function(button) {
             if (button.id === futurebuttonid) {
-                setTimeButtonSelected(button, true);
+                button.checked = true;
                 button.dispatchEvent(new Event('change'));
             }
         });
         pastradiobuttons.forEach(function(button) {
             if (button.id === pastbuttonid) {
-                setTimeButtonSelected(button, true);
+                button.checked = true;
                 button.dispatchEvent(new Event('change'));
             }
         });
     } else {
         // If the time span is set to all time, activate the all time button.
-        setTimeButtonSelected(alltimebutton, true);
+        alltimebutton.checked = true;
         alltimebutton.dispatchEvent(new Event('change'));
     }
 
@@ -201,7 +201,7 @@ function collecttimefiltersettings() {
 
     // Get the relevant time spans of the time filter.
     // Check if the alltimebutton is set.
-    if (isTimeButtonSelected(alltimebutton)) {
+    if (alltimebutton.checked) {
         settings.timepast = Number(alltimebutton.dataset.timespan);
         settings.timefuture = Number(alltimebutton.dataset.timespan);
         settingsset = true;
@@ -213,13 +213,13 @@ function collecttimefiltersettings() {
 
     // If the alltimebutton is not set, check which of the future/past buttons is set.
     futureradiobuttons.forEach(function(button) {
-        if (isTimeButtonSelected(button)) {
+        if (button.checked) {
             settings.timefuture = Number(button.dataset.timespan);
         }
     });
 
     pastradiobuttons.forEach(function(button) {
-        if (isTimeButtonSelected(button)) {
+        if (button.checked) {
             settings.timepast = Number(button.dataset.timespan);
         }
     });

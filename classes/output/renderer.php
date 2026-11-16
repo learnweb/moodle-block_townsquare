@@ -36,7 +36,6 @@ class renderer extends plugin_renderer_base {
      * @throws moodle_exception
      */
     public function render_main(): string {
-        global $CFG;
         $controller = new contentcontroller();
         $letters = $controller->get_content();
 
@@ -47,7 +46,6 @@ class renderer extends plugin_renderer_base {
             'courses' => $controller->courses,
             'savehelpicon' => ['text' => get_string('savehelpicontext', 'block_townsquare')],
             'resethelpicon' => ['text' => get_string('resethelpicontext', 'block_townsquare')],
-            'newsidepanel' => $CFG->branch >= 500,
             'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i', $lastupdate)),
         ];
         return $this->render_from_template('block_townsquare/main', $mustachedata);

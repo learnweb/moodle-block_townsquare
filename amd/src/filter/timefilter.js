@@ -25,8 +25,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {isTimeButtonSelected, setTimeButtonSelected} from 'block_townsquare/locallib';
-
 // Get the relevant radio buttons.
 const alltimebutton = document.getElementById('ts_time_all');
 const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
@@ -38,15 +36,16 @@ const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 export function init() {
     alltimebutton.addEventListener('change', function() {
         // Disable all other radio buttons that filter more specific times.
-        futureradiobuttons.forEach(button => setTimeButtonSelected(button, false));
-        pastradiobuttons.forEach(button => setTimeButtonSelected(button, false));
+        [...futureradiobuttons, ...pastradiobuttons].forEach(button => {
+            button.checked = false;
+        });
         apply();
     });
 
     [...futureradiobuttons, ...pastradiobuttons].forEach(function(button) {
         button.addEventListener('change', function() {
             // Disable the all_time button.
-            setTimeButtonSelected(alltimebutton, false);
+            alltimebutton.checked = false;
             apply();
         });
     });
@@ -60,17 +59,17 @@ export function apply() {
     const currenttime = new Date().getTime() / 1000;
     const timespans = [];
 
-    if (isTimeButtonSelected(alltimebutton)) {
+    if (alltimebutton.checked) {
         const timespan = Number(alltimebutton.dataset.timespan);
         timespans.push([currenttime - timespan, currenttime + timespan]);
     } else {
         futureradiobuttons.forEach(function(button) {
-            if (isTimeButtonSelected(button)) {
+            if (button.checked) {
                 timespans.push([currenttime, currenttime + Number(button.dataset.timespan)]);
             }
         });
         pastradiobuttons.forEach(function(button) {
-            if (isTimeButtonSelected(button)) {
+            if (button.checked) {
                 timespans.push([currenttime - Number(button.dataset.timespan), currenttime]);
             }
         });

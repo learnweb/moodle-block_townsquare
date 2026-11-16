@@ -54,7 +54,6 @@
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-
 }
 
 .townsquare_letters {
@@ -73,17 +72,7 @@
     margin: 0.5em;
 }
 
-.ts_usersettings_message {
-    background-color: #eee;
-    display: none;
-}
-
-.ts_button_transition {
-    transition: background-color 1.0s ease, color 1.0s ease;
-}
-
 /* Style for all letter or content templates */
-
 .townsquareletter_header.card-header {
     padding-top: 0.4rem;
     padding-bottom: 0.4rem;
@@ -106,6 +95,7 @@
     color: #fff;
     text-decoration: underline;
 }
+
 .townsquareletter_courselink {
     color: #fff;
     text-decoration: none;
@@ -123,11 +113,8 @@
 }
 
 /* Styles for individual letters */
-
 /* basicletter Style*/
-
 /* postletter Style */
-
 .postletter_origin {
     margin-bottom: 0.4rem;
 }
@@ -140,9 +127,7 @@
 }
 
 /* actvitiycompletionletter Style*/
-
 /* Style for the orientation marker */
-
 .orientationmarker {
     padding-top: 0.3rem;
     padding-bottom: 0.5rem;
@@ -168,4 +153,3 @@
     overflow: hidden;
     transition: max-height 0.3s ease;
 }
-/*# sourceMappingURL=styles.css.map */
