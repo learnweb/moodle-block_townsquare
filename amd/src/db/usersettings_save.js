@@ -27,7 +27,7 @@
 import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
-import {convertTimeToId} from 'block_townsquare/locallib';
+import {convertTimeToId, isTimeButtonSelected, setTimeButtonSelected} from 'block_townsquare/locallib';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
@@ -101,32 +101,23 @@ function executeusersettings(settingsfromdb) {
 
     // If the time span is a combination of past and future, go through the two radio buttons and activate the filter.
     if (futurebuttonid !== "ts_time_all") {
-        alltimebutton.checked = false;
+        setTimeButtonSelected(alltimebutton, false);
         futureradiobuttons.forEach(function(button) {
             if (button.id === futurebuttonid) {
-                button.checked = true;
-                button.parentNode.classList.add('active');
+                setTimeButtonSelected(button, true);
                 button.dispatchEvent(new Event('change'));
             }
         });
         pastradiobuttons.forEach(function(button) {
             if (button.id === pastbuttonid) {
-                button.checked = true;
-                button.parentNode.classList.add('active');
+                setTimeButtonSelected(button, true);
                 button.dispatchEvent(new Event('change'));
             }
         });
     } else {
         // If the time span is set to all time, activate the all time button.
-        alltimebutton.checked = true;
-        alltimebutton.parentNode.classList.add('active');
+        setTimeButtonSelected(alltimebutton, true);
         alltimebutton.dispatchEvent(new Event('change'));
-        futureradiobuttons.forEach(button => {
-            button.checked = false;
-        });
-        pastradiobuttons.forEach(button => {
-            button.checked = false;
-        });
     }
 
     // Second step: set the letter filter settings.
@@ -210,7 +201,7 @@ function collecttimefiltersettings() {
 
     // Get the relevant time spans of the time filter.
     // Check if the alltimebutton is set.
-    if (alltimebutton.checked || alltimebutton.parentNode.classList.contains('active')) {
+    if (isTimeButtonSelected(alltimebutton)) {
         settings.timepast = Number(alltimebutton.dataset.timespan);
         settings.timefuture = Number(alltimebutton.dataset.timespan);
         settingsset = true;
@@ -222,13 +213,13 @@ function collecttimefiltersettings() {
 
     // If the alltimebutton is not set, check which of the future/past buttons is set.
     futureradiobuttons.forEach(function(button) {
-        if (button.checked || button.parentNode.classList.contains('active')) {
+        if (isTimeButtonSelected(button)) {
             settings.timefuture = Number(button.dataset.timespan);
         }
     });
 
     pastradiobuttons.forEach(function(button) {
-        if (button.checked || button.parentNode.classList.contains('active')) {
+        if (isTimeButtonSelected(button)) {
             settings.timepast = Number(button.dataset.timespan);
         }
     });

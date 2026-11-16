@@ -18,143 +18,68 @@
  *
  * This file implements 1 functionality:
  * - Checks, which of the radio buttons is pressed and filters the content based on the time.
+ *   One past and one future time span can be combined. "All notifications" deselects both.
  *
  * @module     block_townsquare/filter/timefilter
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+import {isTimeButtonSelected, setTimeButtonSelected} from 'block_townsquare/locallib';
+
 // Get the relevant radio buttons.
 const alltimebutton = document.getElementById('ts_time_all');
 const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
 const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 
-// Define to change the time span, an additional time span and the current time.
-let currenttime;
-let timestart;
-let timeend;
-let addstarttime;
-let addendtime;
-
 /**
- * Init function
+ * Init function. Adds event listeners to all time filter buttons.
  */
 export function init() {
-    // Set the current time.
-    currenttime = new Date().getTime() / 1000;
-
-    // Add event listeners to the all kinds of buttons.
-    alltimeaddEventListener();
-    futuretimeaddEventListener();
-    pasttimeaddEventListener();
-}
-
-/**
- * Function to execute the filter
- * @param {int} starttime   Start of time span for filtering of the current pressed button
- * @param {int} endtime     End of time span for filtering of the current pressed
- * @param {int} addstarttime Start of time span for filtering of an additional radio button.
- * @param {int} addendtime   End of time span for filtering of an additional radio button.
- * @param {boolean} buttonstate State of the radio button (true or false)
- */
-function executefilter(starttime, endtime, addstarttime, addendtime, buttonstate) {
-    // Get all letters.
-    const letters = document.querySelectorAll('.townsquare_letter');
-
-    // Loop through each letter and hide/show based on radiobutton state.
-    letters.forEach(function(letter) {
-        // Get the created time stamp of each letter.
-        let lettertime = letter.querySelector('.townsquareletter_date').dataset.created;
-
-        // If the radio button is checked and the letter is in the time span, activate it.
-        if ((buttonstate && (lettertime >= starttime && lettertime <= endtime)) ||
-            (lettertime >= addstarttime && lettertime <= addendtime)) {
-            letter.classList.add('ts_timefilter_approved'); // Mark the letter as "approved".
-        } else {
-            letter.classList.remove('ts_timefilter_approved'); // Mark the letter as "not approved".
-        }
-    });
-}
-
-/**
- * Function to add event listeners to the all_time button.
- */
-function alltimeaddEventListener() {
     alltimebutton.addEventListener('change', function() {
-        // Set the time span to show all letters.
-        timestart = currenttime - Number(alltimebutton.dataset.timespan);
-        timeend = currenttime + Number(alltimebutton.dataset.timespan);
-
         // Disable all other radio buttons that filter more specific times.
-        futureradiobuttons.forEach(function(futureradiobutton) {
-            futureradiobutton.checked = false;
-            futureradiobutton.parentNode.classList.remove("active");
-        });
-        pastradiobuttons.forEach(function(pastradiobutton) {
-            pastradiobutton.checked = false;
-            pastradiobutton.parentNode.classList.remove("active");
-        });
-
-        // Execute the filter function.
-        executefilter(timestart, timeend, 0, 0, alltimebutton.checked);
+        futureradiobuttons.forEach(button => setTimeButtonSelected(button, false));
+        pastradiobuttons.forEach(button => setTimeButtonSelected(button, false));
+        apply();
     });
-}
 
-/**
- * Function to add event listeners to the future time radio buttons.
- */
-function futuretimeaddEventListener() {
-    futureradiobuttons.forEach(function(button) {
+    [...futureradiobuttons, ...pastradiobuttons].forEach(function(button) {
         button.addEventListener('change', function() {
             // Disable the all_time button.
-            alltimebutton.checked = false;
-            alltimebutton.parentNode.classList.remove('active');
-
-            // Set the time span based on the radiobutton id.
-            timestart = currenttime;
-            timeend = currenttime + Number(button.dataset.timespan);
-
-            // Check if one past time button is checked. If yes, set the additional time span based on its id.
-            addstarttime = 0;
-            addendtime = 0;
-            pastradiobuttons.forEach(function(pastradiobutton) {
-                if (pastradiobutton.checked || pastradiobutton.parentNode.classList.contains('active')) {
-                    addstarttime = currenttime - Number(pastradiobutton.dataset.timespan);
-                    addendtime = currenttime;
-                }
-            });
-
-            // Execute the filter function.
-            executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
+            setTimeButtonSelected(alltimebutton, false);
+            apply();
         });
     });
 }
 
 /**
- * Function to add event listeners to the past time radio buttons.
+ * Applies the time filter to all letters based on the selected time filter buttons.
+ * Is also used after the content was reloaded.
  */
-function pasttimeaddEventListener() {
-    pastradiobuttons.forEach(function(button) {
-        button.addEventListener('change', function() {
-            // Disable the all_time button.
-            alltimebutton.checked = false;
+export function apply() {
+    const currenttime = new Date().getTime() / 1000;
+    const timespans = [];
 
-            // Set the time span based on the radiobutton id.
-            timestart = currenttime - Number(button.dataset.timespan);
-            timeend = currenttime;
-
-            // Check if one future time button is checked. If yes, set the additional time span based on its id.
-            addstarttime = 0;
-            addendtime = 0;
-            futureradiobuttons.forEach(function(futureradiobutton) {
-                if (futureradiobutton.checked || futureradiobutton.parentNode.classList.contains('active')) {
-                    addstarttime = currenttime;
-                    addendtime = currenttime + Number(futureradiobutton.dataset.timespan);
-                }
-            });
-
-            // Execute the filter function.
-            executefilter(timestart, timeend, addstarttime, addendtime, button.checked);
+    if (isTimeButtonSelected(alltimebutton)) {
+        const timespan = Number(alltimebutton.dataset.timespan);
+        timespans.push([currenttime - timespan, currenttime + timespan]);
+    } else {
+        futureradiobuttons.forEach(function(button) {
+            if (isTimeButtonSelected(button)) {
+                timespans.push([currenttime, currenttime + Number(button.dataset.timespan)]);
+            }
         });
+        pastradiobuttons.forEach(function(button) {
+            if (isTimeButtonSelected(button)) {
+                timespans.push([currenttime - Number(button.dataset.timespan), currenttime]);
+            }
+        });
+    }
+
+    // Loop through each letter and mark it as "approved" if it is in one of the time spans.
+    document.querySelectorAll('.townsquare_letter').forEach(function(letter) {
+        const lettertime = Number(letter.querySelector('.townsquareletter_date').dataset.created);
+        const approved = timespans.some(([start, end]) => lettertime >= start && lettertime <= end);
+        letter.classList.toggle('ts_timefilter_approved', approved);
     });
 }

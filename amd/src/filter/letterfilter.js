@@ -30,21 +30,18 @@ const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
  */
 export function init() {
     checkboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            // Get the letter name associated with the checkbox.
-            const lettername = checkbox.id;
+        checkbox.addEventListener('change', apply);
+    });
+}
 
-            // Get all letters associate with the checkbox.
-            const letters = document.querySelectorAll('.townsquare_letter.' + lettername);
-
-            // Loop through each letter and hide/show based on checkbox state.
-            letters.forEach(function(letter) {
-                if (checkbox.checked) {
-                    letter.classList.add('ts_letterfilter_approved'); // Mark the letter as "approved".
-                } else {
-                    letter.classList.remove('ts_letterfilter_approved'); // Mark the letter as "not approved".
-                }
-            });
+/**
+ * Applies the letter filter to all letters. Every checkbox id is the class name of a kind of letter.
+ * Is also used after the content was reloaded.
+ */
+export function apply() {
+    checkboxes.forEach(function(checkbox) {
+        document.querySelectorAll('.townsquare_letter.' + checkbox.id).forEach(function(letter) {
+            letter.classList.toggle('ts_letterfilter_approved', checkbox.checked);
         });
     });
 }

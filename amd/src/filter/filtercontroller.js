@@ -21,13 +21,20 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get all letters from townsquare.
-const letters = document.querySelectorAll('.townsquare_letter');
-
 /**
  * Init function. Controls the visibility of letters based on the approval of all filters.
  */
 export function init() {
+    setup();
+}
+
+/**
+ * Activates every letter and observes the filter classes of every letter.
+ * Is also used after the content was reloaded, as the reload replaces all letters.
+ */
+export function setup() {
+    const letters = document.querySelectorAll('.townsquare_letter');
+
     // First step: activate every letter by adding the filter classes.
     letters.forEach(function(letter) {
         letter.classList.add('ts_coursefilter_approved');

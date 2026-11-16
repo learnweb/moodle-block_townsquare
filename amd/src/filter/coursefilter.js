@@ -33,25 +33,23 @@ const checkboxes = document.querySelectorAll('.ts_course_checkbox');
  */
 export function init() {
     checkboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            // Get the courseid associated with the checkbox.
-            const courseid = Number(checkbox.dataset.courseid);
+        checkbox.addEventListener('change', apply);
+    });
+}
 
-            // Get all letters.
-            const letters = document.querySelectorAll('.townsquare_letter');
+/**
+ * Applies the course filter to all letters. Letters from courses whose checkbox is not checked are not "approved".
+ * Is also used after the content was reloaded.
+ */
+export function apply() {
+    // Collect the ids of all courses that are not selected.
+    const hiddencourses = [...checkboxes]
+        .filter(checkbox => !checkbox.checked)
+        .map(checkbox => Number(checkbox.dataset.courseid));
 
-            // Loop through each letter and mark it as "approved" or not based on checkbox state and the letter id.
-            letters.forEach(function(letter) {
-                let letterCourseId = Number(letter.querySelector('.townsquareletter_course').dataset.courseid);
-
-                if (courseid === letterCourseId) {
-                    if (checkbox.checked) {
-                        letter.classList.add('ts_coursefilter_approved'); // Mark the letter as "approved".
-                    } else {
-                        letter.classList.remove('ts_coursefilter_approved'); // Mark the letter as "not approved".
-                    }
-                }
-            });
-        });
+    // Loop through each letter and mark it as "approved" or not based on its course.
+    document.querySelectorAll('.townsquare_letter').forEach(function(letter) {
+        const lettercourseid = Number(letter.querySelector('.townsquareletter_course').dataset.courseid);
+        letter.classList.toggle('ts_coursefilter_approved', !hiddencourses.includes(lettercourseid));
     });
 }

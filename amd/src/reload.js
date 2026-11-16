@@ -25,6 +25,10 @@ import Ajax from 'core/ajax';
 import Notification from 'core/notification';
 import {setup as lettergroupSetup} from 'block_townsquare/lettergroup';
 import {setup as postletterSetup} from 'block_townsquare/postletter';
+import {setup as filtercontrollerSetup} from 'block_townsquare/filter/filtercontroller';
+import {apply as applyCourseFilter} from 'block_townsquare/filter/coursefilter';
+import {apply as applyLetterFilter} from 'block_townsquare/filter/letterfilter';
+import {apply as applyTimeFilter} from 'block_townsquare/filter/timefilter';
 
 let isReloading = false;
 
@@ -49,6 +53,12 @@ export function init() {
                 ]);
 
                 document.querySelector('.townsquare_content').innerHTML = result;
+
+                // The new letters do not know the current filter settings yet.
+                filtercontrollerSetup();
+                applyCourseFilter();
+                applyLetterFilter();
+                applyTimeFilter();
 
                 lettergroupSetup(closedLetterGroups);
                 postletterSetup();
