@@ -21,7 +21,6 @@
 
      Variables required for this template:
      * content - Array with content
-        * isorientationmarker - Boolean variable if current content is a orientationmarker
         * isbasic - Boolean variable if current content is a basic notification
         * isactivitycompletion - Boolean variable if current content is an activity completion
         * ispost - Boolean variable if current content is a post
@@ -82,14 +81,10 @@
         ]
     }
 }}
-<div id="townsquare_root" class="townsquare_root container-fluid">
-    <div class="row townsquare_main">
-        <div class="col-md-3 townsquare_sidepanel">
-            {{> block_townsquare/sidepanel/sidepanel}}
-        </div>
+<div id="townsquare_root">
+    {{> block_townsquare/filterbar}}
 
-        <div class="col-md-9 townsquare_content">
-            {{> block_townsquare/content}}
-        </div>
+    <div class="townsquare_content d-flex flex-column overflow-hidden" id="ts_feed">
+        {{> block_townsquare/content}}
     </div>
 </div>

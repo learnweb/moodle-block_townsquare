@@ -16,32 +16,52 @@
 /**
  * JavaScript for the letter filter
  *
+ * The tabs "Posts" and "Deadlines" show the letters of the types in their data-letters attribute
+ * (postletter, basicletter, completionletter). The selected tab is not saved, the block always starts with "Posts".
+ *
  * @module     block_townsquare/filter/letterfilter
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get the relevant checkboxes.
-const checkboxes = document.querySelectorAll('.ts_letter_checkbox');
+import {refresh} from 'block_townsquare/filter/filtercontroller';
+
+const Selectors = {
+    tab: '.ts_letter_tabs .nav-link',
+    activeTab: '.ts_letter_tabs .nav-link[aria-pressed="true"]',
+    letter: '.townsquare_letter',
+    letters: '.townsquare_letters',
+};
 
 /**
- * Init function. Adds an event listener to the letter filter checkboxes. This is part of the content filtering functionality.
- * Every checkbox represents a kind of letter (posts, activity completions, basic notifications) that shows content in Town square.
+ * Init function. Selects a tab when it is clicked.
  */
 export function init() {
-    checkboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', apply);
-    });
+    document.querySelectorAll(Selectors.tab).forEach(tab => tab.addEventListener('click', () => selectTab(tab)));
+    apply();
 }
 
 /**
- * Applies the letter filter to all letters. Every checkbox id is the class name of a kind of letter.
+ * Marks the clicked tab as selected and shows its letters from the top of the list.
+ * @param {HTMLElement} selectedTab
+ */
+function selectTab(selectedTab) {
+    document.querySelectorAll(Selectors.tab).forEach(tab => {
+        tab.classList.toggle('active', tab === selectedTab);
+        tab.setAttribute('aria-pressed', tab === selectedTab ? 'true' : 'false');
+    });
+    apply();
+    document.querySelector(Selectors.letters).scrollTop = 0;
+}
+
+/**
+ * Applies the letter filter to all letters: the letters of the types of the selected tab are "approved".
  * Is also used after the content was reloaded.
  */
 export function apply() {
-    checkboxes.forEach(function(checkbox) {
-        document.querySelectorAll('.townsquare_letter.' + checkbox.id).forEach(function(letter) {
-            letter.classList.toggle('ts_letterfilter_approved', checkbox.checked);
-        });
+    const types = document.querySelector(Selectors.activeTab).dataset.letters.split(' ');
+    document.querySelectorAll(Selectors.letter).forEach(letter => {
+        letter.classList.toggle('ts_letterfilter_approved', types.some(type => letter.classList.contains(type)));
     });
+    refresh();
 }

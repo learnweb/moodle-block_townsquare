@@ -26,7 +26,7 @@ import Notification from 'core/notification';
 import {setup as lettergroupSetup} from 'block_townsquare/lettergroup';
 import {setup as postletterSetup} from 'block_townsquare/postletter';
 import {setup as filtercontrollerSetup} from 'block_townsquare/filter/filtercontroller';
-import {apply as applyCourseFilter} from 'block_townsquare/filter/coursefilter';
+import {apply as applyCourseFilter, updateCourseList} from 'block_townsquare/filter/coursefilter';
 import {apply as applyLetterFilter} from 'block_townsquare/filter/letterfilter';
 import {apply as applyTimeFilter} from 'block_townsquare/filter/timefilter';
 
@@ -53,6 +53,14 @@ export function init() {
                 ]);
 
                 document.querySelector('.townsquare_content').innerHTML = result;
+
+                // The reload button is outside of the reloaded content and shows the last update.
+                const reloadlabel = document.querySelector('.townsquare_letters').dataset.reloadlabel;
+                button.title = reloadlabel;
+                button.setAttribute('aria-label', reloadlabel);
+
+                // The course filter shows the courses of the new letters.
+                updateCourseList();
 
                 // The new letters do not know the current filter settings yet.
                 filtercontrollerSetup();

@@ -27,18 +27,15 @@
 import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
-import {convertTimeToId} from 'block_townsquare/locallib';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
 
-// Get the buttons from the time filter.
-const alltimebutton = document.getElementById('ts_time_all');
-const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
-const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
+// The radio buttons of the time filter.
+const timeButtonSelector = '.ts_time_button';
 
-// Get the checkboxes from the course filter.
-const courseCheckboxes = document.querySelectorAll('.ts_course_checkbox');
+// The checkboxes of the course filter are not kept in a constant, because a reload replaces them.
+const courseCheckboxSelector = '.ts_course_checkbox';
 
 /**
  * Init function. This functions adapts the filter settings to the user settings from the database. If the user changes settings
@@ -87,36 +84,18 @@ export function init(settingsfromdb) {
  */
 function executeusersettings(settingsfromdb) {
 
-    // First step: set the time filter settings.
-    // Change the time into the correct radio button id.
-    let futurebuttonid = convertTimeToId(settingsfromdb.timefilterfuture, true);
-    let pastbuttonid = convertTimeToId(settingsfromdb.timefilterpast, false);
-
-    // If the time span is a combination of past and future, go through the two radio buttons and activate the filter.
-    if (futurebuttonid !== "ts_time_all") {
-        alltimebutton.checked = false;
-        futureradiobuttons.forEach(function(button) {
-            if (button.id === futurebuttonid) {
-                button.checked = true;
-                button.dispatchEvent(new Event('change'));
-            }
-        });
-        pastradiobuttons.forEach(function(button) {
-            if (button.id === pastbuttonid) {
-                button.checked = true;
-                button.dispatchEvent(new Event('change'));
-            }
-        });
-    } else {
-        // If the time span is set to all time, activate the all time button.
-        alltimebutton.checked = true;
-        alltimebutton.dispatchEvent(new Event('change'));
-    }
+    // First step: set the time filter. Older settings can have different time spans for the past and the future,
+    // then the longer one is used.
+    const timespan = Math.max(Number(settingsfromdb.timefilterpast), Number(settingsfromdb.timefilterfuture));
+    const timebutton = [...document.querySelectorAll(timeButtonSelector)]
+        .find(button => Number(button.dataset.timespan) === timespan) ?? document.getElementById('ts_time_all');
+    timebutton.checked = true;
+    timebutton.dispatchEvent(new Event('change'));
 
     // Second step: set the course filter settings.
     let coursessettings = JSON.parse(settingsfromdb.courses);
 
-    courseCheckboxes.forEach(function(checkbox) {
+    document.querySelectorAll(courseCheckboxSelector).forEach(function(checkbox) {
         let courseid = Number(checkbox.dataset.courseid);
         if (coursessettings.hasOwnProperty(courseid)) {
             // If the setting is false, uncheck the checkbox.
@@ -139,7 +118,7 @@ function collectcoursesettings(coursesettingsfromdb) {
     let settings = coursesettingsfromdb ? JSON.parse(coursesettingsfromdb) : {};
 
     // Build a JSON in the format courseid => coursename.
-    courseCheckboxes.forEach(function(checkbox) {
+    document.querySelectorAll(courseCheckboxSelector).forEach(function(checkbox) {
         settings[Number(checkbox.dataset.courseid)] = checkbox.checked;
     });
 
@@ -148,36 +127,10 @@ function collectcoursesettings(coursesettingsfromdb) {
 }
 
 /**
- * Function to collect the time filter settings.
+ * Function to collect the time filter settings. The time span is the same for the past and the future.
  * @returns {{timepast: number, timefuture: number}}
  */
 function collecttimefiltersettings() {
-    let settings = {timepast: 0, timefuture: 0};
-    let settingsset = false;
-
-    // Get the relevant time spans of the time filter.
-    // Check if the alltimebutton is set.
-    if (alltimebutton.checked) {
-        settings.timepast = Number(alltimebutton.dataset.timespan);
-        settings.timefuture = Number(alltimebutton.dataset.timespan);
-        settingsset = true;
-    }
-
-    if (settingsset) {
-        return settings;
-    }
-
-    // If the alltimebutton is not set, check which of the future/past buttons is set.
-    futureradiobuttons.forEach(function(button) {
-        if (button.checked) {
-            settings.timefuture = Number(button.dataset.timespan);
-        }
-    });
-
-    pastradiobuttons.forEach(function(button) {
-        if (button.checked) {
-            settings.timepast = Number(button.dataset.timespan);
-        }
-    });
-    return settings;
+    const timespan = Number(document.querySelector(`${timeButtonSelector}:checked`).dataset.timespan);
+    return {timepast: timespan, timefuture: timespan};
 }

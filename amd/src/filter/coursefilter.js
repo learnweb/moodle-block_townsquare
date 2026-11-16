@@ -16,24 +16,46 @@
 /**
  * JavaScript for the course filter
  *
- * This file implements 1 functionality:
+ * This file implements 2 functionalities:
  * - Checks the checkboxes of the course filter and hides content from courses if the checkbox is not checked.
+ * - Updates the course list after a reload, so that it shows the courses of the new content.
  *
  * @module     block_townsquare/filter/coursefilter
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get the relevant checkboxes.
-const checkboxes = document.querySelectorAll('.ts_course_checkbox');
+import {refresh} from 'block_townsquare/filter/filtercontroller';
+
+const Selectors = {
+    menu: '.ts_course_menu',
+    checkbox: '.ts_course_checkbox',
+    newCourseList: '[data-region="ts_course_list"]',
+};
 
 /**
  * Init function. Adds an event listener to the course filter checkboxes. This is part of the content filtering functionality.
  * Every checkbox represents one course that shows content in Town square.
  */
 export function init() {
-    checkboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', apply);
+    // One listener on the menu, so that it also works for the checkboxes of a reload.
+    document.querySelector(Selectors.menu).addEventListener('change', apply);
+}
+
+/**
+ * Replaces the course list with the courses of the reloaded content. Courses that were in the list before keep
+ * their state, new courses are checked.
+ */
+export function updateCourseList() {
+    const menu = document.querySelector(Selectors.menu);
+    const checkedStates = new Map([...menu.querySelectorAll(Selectors.checkbox)]
+        .map(checkbox => [checkbox.dataset.courseid, checkbox.checked]));
+
+    menu.replaceChildren(document.querySelector(Selectors.newCourseList).content);
+    menu.querySelectorAll(Selectors.checkbox).forEach(function(checkbox) {
+        if (checkedStates.has(checkbox.dataset.courseid)) {
+            checkbox.checked = checkedStates.get(checkbox.dataset.courseid);
+        }
     });
 }
 
@@ -42,14 +64,15 @@ export function init() {
  * Is also used after the content was reloaded.
  */
 export function apply() {
-    // Collect the ids of all courses that are not selected.
-    const hiddencourses = [...checkboxes]
-        .filter(checkbox => !checkbox.checked)
+    // Collect the ids of all courses that are selected.
+    const approvedcourses = [...document.querySelectorAll(Selectors.checkbox)]
+        .filter(checkbox => checkbox.checked)
         .map(checkbox => Number(checkbox.dataset.courseid));
 
     // Loop through each letter and mark it as "approved" or not based on its course.
     document.querySelectorAll('.townsquare_letter').forEach(function(letter) {
         const lettercourseid = Number(letter.querySelector('.townsquareletter_course').dataset.courseid);
-        letter.classList.toggle('ts_coursefilter_approved', !hiddencourses.includes(lettercourseid));
+        letter.classList.toggle('ts_coursefilter_approved', approvedcourses.includes(lettercourseid));
     });
+    refresh();
 }

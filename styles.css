@@ -1,18 +1,3 @@
-/* Style for the blockcontent template*/
-.townsquare_header {
-    background-color: #f8f9fa;
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.75rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-@media (max-width: 767.98px) {
-    .townsquare_header {
-        margin-top: 0.5rem;
-    }
-}
-
 @keyframes ts-spin {
     from {
         transform: rotate(0deg);
@@ -27,49 +12,16 @@
     transform-origin: center center;
 }
 
-#ts_reload_button {
-    outline: none;
-    user-select: none;
-}
-
-#ts_reload_button i {
-    display: inline-block;
-}
-
-#ts_reload_button:active {
-    transform: none;
-}
-
-.townsquare_sidepanel.col-md-3 {
-    background-color: #eee;
-    border-radius: 0.5rem;
-    padding-left: 0;
-    padding-right: 0;
-}
-
+/* The letters scroll within this height. */
 .townsquare_content {
     max-height: 750px;
-    max-width: 100%;
-    border-radius: 0.5rem;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
 }
 
-.townsquare_letters {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    flex: 1;
-}
-
-/* Style for the side panel filter */
-.ts_usersettings {
-    padding-left: 0.5em;
-}
-
-.ts_usersettings_button {
-    display: flex;
-    margin: 0.5em;
+/* The course menu is as wide as the longest course name (within limits) and scrolls if there are many courses. */
+.ts_course_menu {
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    max-height: 50vh;
 }
 
 /* Style for all letter or content templates */
@@ -149,7 +101,7 @@
     cursor: pointer;
 }
 
+/* Animation when a day is collapsed or expanded (see amd/src/lettergroup.js). */
 .ts-letter-box {
-    overflow: hidden;
     transition: max-height 0.3s ease;
 }

@@ -21,11 +21,18 @@
 
      Variables required for this template:
      * content - Array with content
-     * lastupdate - Last update timestamp
+     * reloadlabel - Label of the reload button with the time of the last update
+     * courses - Array of courses that show notifications in townsquare (for the course filter after a reload)
 
     Example context (json):
     {
-        "lastupdate": "Last updated: 14:30",
+        "reloadlabel": "Reload (last update: 2:30 PM)",
+        "courses": [
+            {
+                "courseid": 3,
+                "coursename": "Moodle Engineering"
+            }
+        ],
         "content": [
             {
                 "day": "2026-03-31",
@@ -39,8 +46,7 @@
                          "content": "Lesson 1: Quantum Theory closes",
                          "created": "20.12.2023",
                          "linktocourse": "http://localhost/moodle/course/view.php?id=20",
-                         "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314",
-                         "basiclettercolor": "#0f6cbf"
+                         "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
                     }
                 ]
             }
@@ -48,13 +54,12 @@
     }
 }}
 
-<div class="d-flex townsquare_header">
-    {{lastupdate}}
-    <span class="ms-auto" id="ts_reload_button" role="button" data-action="ts_reload">
-        <i class="fa fa-refresh fa-lg" aria-hidden="true"></i>
-    </span>
-</div>
-<div class="townsquare_letters">
+{{! The course filter is outside of the reloaded content. After a reload, its course list is replaced with this one. }}
+<template data-region="ts_course_list">
+    {{> block_townsquare/courselist}}
+</template>
+{{! The reload button shows the time of the last update. After a reload, its label is copied from data-reloadlabel. }}
+<div class="townsquare_letters flex-grow-1 overflow-y-scroll overflow-x-hidden" data-reloadlabel="{{reloadlabel}}">
     {{#content}}
         <div class="ts-lettergroup" id="ts-lettergroup-{{day}}">
             <div class="orientationmarker">
@@ -64,7 +69,7 @@
                     <i class="fa fa-chevron-down ms-3 me-2"></i>
                 </span>
             </div>
-            <div class="ts-letter-box" data-groupid="{{day}}">
+            <div class="ts-letter-box overflow-hidden" data-groupid="{{day}}">
                 {{#letters}}
                     {{#isbasic}}
                         {{> block_townsquare/letter/basicletter}}
@@ -79,4 +84,28 @@
             </div>
         </div>
     {{/content}}
+    {{! Shown by block_townsquare/filter/filtercontroller if the selected tab has no letters to show. If the course or
+        time filter is set, the second line offers to show all letters instead. }}
+    <div class="ts_empty d-none text-center text-body-secondary border rounded py-5 px-3" data-tab="ts_tab_posts">
+        <div class="icon-size-6 mb-2">{{#pix}}t/messages, core{{/pix}}</div>
+        <p class="mb-1">{{#str}}emptyposts, block_townsquare{{/str}}</p>
+        <p class="small mb-0" data-region="ts_empty_hint">{{#str}}emptypostshint, block_townsquare{{/str}}</p>
+        <p class="small mb-0 d-none" data-region="ts_empty_filtered">
+            {{#str}}emptyfiltered, block_townsquare{{/str}}
+            <button type="button" class="btn btn-link btn-sm p-0 align-baseline" data-action="block_townsquare/show_all">
+                {{#str}}showall, block_townsquare{{/str}}
+            </button>
+        </p>
+    </div>
+    <div class="ts_empty d-none text-center text-body-secondary border rounded py-5 px-3" data-tab="ts_tab_deadlines">
+        <div class="icon-size-6 mb-2">{{#pix}}i/scheduled, core{{/pix}}</div>
+        <p class="mb-1">{{#str}}emptydeadlines, block_townsquare{{/str}}</p>
+        <p class="small mb-0" data-region="ts_empty_hint">{{#str}}emptydeadlineshint, block_townsquare{{/str}}</p>
+        <p class="small mb-0 d-none" data-region="ts_empty_filtered">
+            {{#str}}emptyfiltered, block_townsquare{{/str}}
+            <button type="button" class="btn btn-link btn-sm p-0 align-baseline" data-action="block_townsquare/show_all">
+                {{#str}}showall, block_townsquare{{/str}}
+            </button>
+        </p>
+    </div>
 </div>

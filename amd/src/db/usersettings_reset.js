@@ -43,10 +43,9 @@ export function init() {
         }
 
         document.querySelectorAll('.ts_course_checkbox:not(:checked)').forEach(checkbox => checkbox.click());
-        document.querySelectorAll('.ts_all_time_button').forEach(button => {
-            button.checked = true;
-            button.dispatchEvent(new Event('change'));
-        });
+        const alltime = document.getElementById('ts_time_all');
+        alltime.checked = true;
+        alltime.dispatchEvent(new Event('change'));
 
         Notification.addNotification({
             message: await getString('reset_successmessage', 'block_townsquare'),

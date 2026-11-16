@@ -16,69 +16,40 @@
 /**
  * JavaScript for the time filter
  *
- * This file implements 1 functionality:
- * - Checks, which of the radio buttons is pressed and filters the content based on the time.
- *   One past and one future time span can be combined. "All notifications" deselects both.
+ * The time filter shows the letters of the last and the next days, e.g. of the last and the next week.
+ * "All time" uses the longest time span.
  *
  * @module     block_townsquare/filter/timefilter
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get the relevant radio buttons.
-const alltimebutton = document.getElementById('ts_time_all');
-const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
-const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
+import {refresh} from 'block_townsquare/filter/filtercontroller';
+
+const Selectors = {
+    button: '.ts_time_button',
+    selected: '.ts_time_button:checked',
+    letter: '.townsquare_letter',
+    date: '.townsquareletter_date',
+};
 
 /**
- * Init function. Adds event listeners to all time filter buttons.
+ * Init function. Applies the time filter when another time span is selected.
  */
 export function init() {
-    alltimebutton.addEventListener('change', function() {
-        // Disable all other radio buttons that filter more specific times.
-        [...futureradiobuttons, ...pastradiobuttons].forEach(button => {
-            button.checked = false;
-        });
-        apply();
-    });
-
-    [...futureradiobuttons, ...pastradiobuttons].forEach(function(button) {
-        button.addEventListener('change', function() {
-            // Disable the all_time button.
-            alltimebutton.checked = false;
-            apply();
-        });
-    });
+    document.querySelectorAll(Selectors.button).forEach(button => button.addEventListener('change', apply));
 }
 
 /**
- * Applies the time filter to all letters based on the selected time filter buttons.
- * Is also used after the content was reloaded.
+ * Applies the time filter to all letters: a letter is "approved" if it is within the selected time span before or
+ * after now. Is also used after the content was reloaded.
  */
 export function apply() {
-    const currenttime = new Date().getTime() / 1000;
-    const timespans = [];
-
-    if (alltimebutton.checked) {
-        const timespan = Number(alltimebutton.dataset.timespan);
-        timespans.push([currenttime - timespan, currenttime + timespan]);
-    } else {
-        futureradiobuttons.forEach(function(button) {
-            if (button.checked) {
-                timespans.push([currenttime, currenttime + Number(button.dataset.timespan)]);
-            }
-        });
-        pastradiobuttons.forEach(function(button) {
-            if (button.checked) {
-                timespans.push([currenttime - Number(button.dataset.timespan), currenttime]);
-            }
-        });
-    }
-
-    // Loop through each letter and mark it as "approved" if it is in one of the time spans.
-    document.querySelectorAll('.townsquare_letter').forEach(function(letter) {
-        const lettertime = Number(letter.querySelector('.townsquareletter_date').dataset.created);
-        const approved = timespans.some(([start, end]) => lettertime >= start && lettertime <= end);
-        letter.classList.toggle('ts_timefilter_approved', approved);
+    const now = Date.now() / 1000;
+    const timespan = Number(document.querySelector(Selectors.selected).dataset.timespan);
+    document.querySelectorAll(Selectors.letter).forEach(letter => {
+        const created = Number(letter.querySelector(Selectors.date).dataset.created);
+        letter.classList.toggle('ts_timefilter_approved', Math.abs(created - now) <= timespan);
     });
+    refresh();
 }
