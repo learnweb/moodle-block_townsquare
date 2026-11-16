@@ -87,17 +87,13 @@ class contentcontroller {
             };
             $templetter = $templetter->export_letter();
 
-            // Group the letters by its day.
-            $day = date('d.m.Y', $templetter['createdtimestamp']);
+            // Group the letters by its day in the timezone of the user.
+            $day = $this->get_day($templetter['createdtimestamp']);
             if (!isset($this->content[$day])) {
                 $this->content[$day] = (object) [
                     'day' => $day,
                     'daylabel' => $this->get_daylabel($day),
-                    'daydate' => userdate(
-                        $templetter['createdtimestamp'],
-                        get_string('strftimedayshort', 'langconfig'),
-                        \core_date::get_server_timezone()
-                    ),
+                    'daydate' => userdate($templetter['createdtimestamp'], get_string('strftimedayshort', 'langconfig')),
                     'count' => 0,
                     'letters' => [],
                 ];
@@ -118,17 +114,28 @@ class contentcontroller {
     }
 
     /**
-     * Returns "Today", "Tomorrow" or "Yesterday" for a day, otherwise an empty string.
-     * The days are compared in the same timezone as they are grouped (server timezone).
+     * Returns the day of a timestamp in the timezone of the user, e.g. "16.11.2026". Is used to group the letters.
      *
-     * @param string $day Day in the format d.m.Y
+     * @param int $timestamp
+     * @return string
+     */
+    private function get_day(int $timestamp): string {
+        return userdate($timestamp, '%d.%m.%Y', 99, false);
+    }
+
+    /**
+     * Returns "Today", "Tomorrow" or "Yesterday" for a day, otherwise an empty string.
+     *
+     * @param string $day Day in the format of get_day()
      * @return string
      */
     private function get_daylabel(string $day): string {
+        // A day has 23 to 25 hours (daylight saving time), so the days next to today are found from its midnight.
+        $today = usergetmidnight(time());
         return match ($day) {
-            date('d.m.Y') => get_string('today', 'calendar'),
-            date('d.m.Y', strtotime('+1 day')) => get_string('tomorrow', 'calendar'),
-            date('d.m.Y', strtotime('-1 day')) => get_string('yesterday', 'calendar'),
+            $this->get_day($today) => get_string('today', 'calendar'),
+            $this->get_day($today + DAYSECS + 2 * HOURSECS) => get_string('tomorrow', 'calendar'),
+            $this->get_day($today - 2 * HOURSECS) => get_string('yesterday', 'calendar'),
             default => '',
         };
     }

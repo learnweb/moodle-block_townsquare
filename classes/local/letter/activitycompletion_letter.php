@@ -63,7 +63,7 @@ class activitycompletion_letter extends letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => date('G:i', $this->created),
+            'created' => $this->get_createdtime(),
             'createdtimestamp' => $this->created,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),

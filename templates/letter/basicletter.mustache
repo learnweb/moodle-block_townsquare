@@ -94,8 +94,9 @@
                 {{/hassubinstances}}
             </div>
         </div>
-        <div class="townsquareletter_date small text-body-secondary text-nowrap" data-created="{{createdtimestamp}}">
+        <div class="townsquareletter_date small text-body-secondary text-nowrap text-end" data-created="{{createdtimestamp}}">
             {{created}}
+            <div class="d-none" data-region="ts_relativetime" data-timestamp="{{createdtimestamp}}"></div>
         </div>
     </div>
 </div>

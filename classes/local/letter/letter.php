@@ -133,7 +133,7 @@ class letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => date('G:i', $this->created),
+            'created' => $this->get_createdtime(),
             'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
@@ -143,6 +143,14 @@ class letter {
             'hassubinstances' => !empty($this->subinstances),
             'eventtype' => $this->eventtype,
         ];
+    }
+
+    /**
+     * Returns the time of the letter in the timezone and time format of the user, e.g. "2:30 PM".
+     * @return string
+     */
+    protected function get_createdtime(): string {
+        return userdate($this->created, get_string('strftimetime', 'langconfig'));
     }
 
     /**

@@ -126,7 +126,7 @@ class post_letter extends letter {
             'authorpictureurl' => $this->author->pictureurl ?: $OUTPUT->image_url('u/f2')->out(false),
             'postid' => $this->post->id,
             'message' => $this->post->message,
-            'created' => date('G:i', $this->created),
+            'created' => $this->get_createdtime(),
             'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),

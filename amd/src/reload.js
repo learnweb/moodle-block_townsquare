@@ -28,6 +28,7 @@ import {setup as filtercontrollerSetup} from 'block_townsquare/filter/filtercont
 import {apply as applyCourseFilter, updateCourseList} from 'block_townsquare/filter/coursefilter';
 import {apply as applyLetterFilter} from 'block_townsquare/filter/letterfilter';
 import {apply as applyTimeFilter} from 'block_townsquare/filter/timefilter';
+import {update as updateRelativeTime} from 'block_townsquare/relativetime';
 
 let isReloading = false;
 
@@ -64,6 +65,7 @@ export function init() {
                 applyTimeFilter();
 
                 postletterSetup();
+                updateRelativeTime();
             } catch (error) {
                 Notification.exception(error);
             } finally {
