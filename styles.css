@@ -24,58 +24,26 @@
     max-height: 50vh;
 }
 
-/* Style for all letter or content templates */
-.townsquareletter_header.card-header {
-    padding-top: 0.4rem;
-    padding-bottom: 0.4rem;
-}
-
-.townsquareletter_body.card-body {
-    padding-top: 0.7rem;
-    padding-bottom: 0.6rem;
-}
-
-.townsquareletter_top {
-    display: flex;
-}
-
-.townsquareletter_course {
-    flex: 1;
-}
-
-.townsquareletter_courselink:hover {
-    color: #fff;
-    text-decoration: underline;
-}
-
-.townsquareletter_courselink {
-    color: #fff;
-    text-decoration: none;
-}
-
-.townsquareletter_course,
-.townsquareletter_date {
-    color: #fff;
-    text-shadow: 1px 1px 2px #000;
-}
-
-.townsquare_showmore {
-    cursor: pointer;
-    background-color: #6a737b;
-}
-
-/* Styles for individual letters */
-/* basicletter Style*/
-/* postletter Style */
-.postletter_origin {
-    margin-bottom: 0.4rem;
-}
-
-.postletter_message {
-    max-height: 90px; /*4 lines with font-size 15px and line-height 1.5*/
+/* Long posts are shortened to four lines (see amd/src/postletter.js). */
+.postletter_message[data-clamp="true"] {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    display: block;
-    transition: max-height 0.3s ease;
+}
+
+/* Formatting of the post messages. */
+.postletter_message[data-clamp] p:last-child {
+    margin-bottom: 0;
+}
+
+.postletter_message[data-clamp] pre {
+    white-space: pre-wrap;
+}
+
+.postletter_message[data-clamp] img {
+    max-width: 100%;
+    height: auto;
 }
 
 /* actvitiycompletionletter Style*/

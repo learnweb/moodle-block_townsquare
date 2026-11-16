@@ -49,7 +49,6 @@ class activitycompletion_letter extends letter {
             $coreevent->coursemoduleid
         );
         $this->lettertype = 'activitycompletion';
-        $this->lettercolor = block_townsquare_get_colorsetting('completionletter');
     }
 
     // Functions.
@@ -68,7 +67,8 @@ class activitycompletion_letter extends letter {
             'createdtimestamp' => $this->created,
             'linktoactivity' => $this->linktoactivity->out(),
             'linktocourse' => $this->linktocourse->out(),
-            'completionlettercolor' => $this->lettercolor,
+            'modulename' => $this->modulename,
+            'activityicon' => $this->get_activityicon(),
         ];
     }
 }

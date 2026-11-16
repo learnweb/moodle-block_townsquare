@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026100801;
+$plugin->version = 2026100802;
 $plugin->requires = 2025100600.00; // Require Moodle 5.1.
 $plugin->supported = [501, 502];
 $plugin->component = 'block_townsquare';

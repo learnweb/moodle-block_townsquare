@@ -17,7 +17,7 @@
 {{!
     @template block_townsquare/letter/activitycompletionletter
 
-    This template renders a activity completion letter.
+    This template renders an activity completion letter as a compact row.
 
     Variables required for this template (more variables are available for testing and future features):
     * contentid - Unique identification for every shown plugin content
@@ -25,10 +25,11 @@
     * coursename - Name of the course
     * courseid - Id of the course
     * instancename - Name of the instance
-    * created - Due date of activity completions
+    * created - Time of the expected completion
+    * createdtimestamp - Timestamp of the expected completion
     * linktocourse - Link to the course
     * linktoactivity - Link to the module instance
-    * completionlettercolor - Color of the letter
+    * activityicon - Activity icon of the module (see core_course/activity_icon)
 
     Example context (json):
     {
@@ -38,34 +39,38 @@
         "courseid": 3,
         "modulename": "survey",
         "instancename": "How difficult was the exam?",
-        "created": "28.10.2023",
+        "created": "23:59",
+        "createdtimestamp": 1698530340,
         "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
         "linktocourse": "http://localhost/moodle/course/view.php?id=3",
-        "completionlettercolor": "#ca3120"
+        "activityicon": {
+            "icon": "http://localhost/moodle/theme/image.php/boost/survey/1/monologo",
+            "iconclass": "activityicon",
+            "modname": "lesson",
+            "pluginname": "Lesson",
+            "purpose": "content",
+            "branded": false,
+            "extraclasses": "smaller"
+        }
     }
 }}
-<div class="townsquare_letter completionletter card mb-3 ms-3" id="content-nr-{{contentid}}"
-     style="border-color: {{completionlettercolor}}{{^completionlettercolor}}#ca3120{{/completionlettercolor}}">
-    <div class="townsquareletter_header completionletter_header card-header"
-         style="background-color: {{completionlettercolor}}{{^completionlettercolor}}#ca3120{{/completionlettercolor}}">
-        <div class = "townsquareletter_top completionletter_top">
-            <div class = "townsquareletter_course completionletter_course" data-courseid="{{courseid}}">
-                {{#str}} coursetitle, moodle, {"course":
-                    {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}} </a> {{/quote}} }
-                {{/str}}
-            </div>
-            <div class="townsquareletter_date completionletter_date" data-created="{{createdtimestamp}}">
-                {{created}}
-            </div>
-        </div>
-    </div>
-    <div class="townsquareletter_body completionletter_body card-body">
-        <div class="completionletter_content">
-            <b>
+<div class="townsquare_letter completionletter list-group-item bg-transparent px-0" id="content-nr-{{contentid}}">
+    <div class="d-flex align-items-start gap-3">
+        <div class="flex-shrink-0">{{#activityicon}}{{> core_course/activity_icon}}{{/activityicon}}</div>
+        <div class="flex-grow-1 text-break">
+            <div>
                 {{#str}} completionletterorigin, block_townsquare, {
                     "modulename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
                 {{/str}}
-            </b>
+            </div>
+            <div class="small text-body-secondary">
+                <span class="townsquareletter_course" data-courseid="{{courseid}}">
+                    <a href="{{linktocourse}}">{{coursename}}</a>
+                </span>
+            </div>
+        </div>
+        <div class="townsquareletter_date small text-body-secondary text-nowrap" data-created="{{createdtimestamp}}">
+            {{created}}
         </div>
     </div>
 </div>

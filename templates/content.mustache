@@ -59,7 +59,7 @@
     {{> block_townsquare/courselist}}
 </template>
 {{! The reload button shows the time of the last update. After a reload, its label is copied from data-reloadlabel. }}
-<div class="townsquare_letters flex-grow-1 overflow-y-scroll overflow-x-hidden" data-reloadlabel="{{reloadlabel}}">
+<div class="townsquare_letters flex-grow-1 overflow-y-scroll overflow-x-hidden pe-2" data-reloadlabel="{{reloadlabel}}">
     {{#content}}
         <div class="ts-lettergroup" id="ts-lettergroup-{{day}}">
             <div class="orientationmarker">
@@ -69,7 +69,7 @@
                     <i class="fa fa-chevron-down ms-3 me-2"></i>
                 </span>
             </div>
-            <div class="ts-letter-box overflow-hidden" data-groupid="{{day}}">
+            <div class="ts-letter-box overflow-hidden list-group list-group-flush" data-groupid="{{day}}">
                 {{#letters}}
                     {{#isbasic}}
                         {{> block_townsquare/letter/basicletter}}

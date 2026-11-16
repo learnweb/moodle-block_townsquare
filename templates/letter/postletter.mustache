@@ -17,7 +17,7 @@
 {{!
     @template block_townsquare/letter/postletter
 
-    This template renders a post letter.
+    This template renders a post letter. The message is shortened to a few lines and can be expanded.
 
     Variables required for this template (more variables are available for testing and future features):
     * contentid - Unique identification for every shown plugin content
@@ -28,14 +28,17 @@
     * discussionsubject - Name of the discussion
     * anonymous - if the post is anonymous
     * authorname - Name of the post author
-    * authorpicture - Picture of the post author
+    * authorpictureurl - Url of the profile picture of the author (default picture for anonymous posts)
     * message - Content of the post
-    * created - Date of creation
+    * created - Time of creation
+    * createdtimestamp - Timestamp of creation
     * linktocourse - Link to the course
     * linktoactivity - Link to the module instance
     * linktopost - Link to the discussion post
-    * linttoauthor - Link to the user
-    * postlettercolor - Color of the letter
+    * linktoauthor - Link to the user
+    * activityicon - Activity icon of the module (see core_course/activity_icon)
+    * privatereplyto - If the post is a private reply to the user
+    * privatereplyfrom - If the post is a private reply from the user
 
     Example context (json):
     {
@@ -47,70 +50,79 @@
         "discussionsubject": "Hour of Exam",
         "anonymous": false,
         "authorname": "Tamaro Walter",
-        "authorpicture": "<img src=\"http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13\" class=\"userpicture\" width=\"35\" height=\"35\" alt=\"\">",
+        "authorpictureurl": "http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13",
         "message": "<div class=\"text_to_html\"><p>When do we write the exam?</p></div>",
-        "created": "03.11.2023",
+        "created": "09:15",
+        "createdtimestamp": 1698999300,
         "linktocourse": "http://localhost/moodle/course/view.php?id=20",
-        "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
-        "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
+        "linktoactivity": "http://localhost/moodle/mod/forum/view.php?id=66",
+        "linktopost": "http://localhost/moodle/mod/forum/discuss.php?d=4#p6",
         "linktoauthor": "http://localhost/moodle/user/view.php?id=2",
-        "postlettercolor": "#f7634d"
+        "activityicon": {
+            "icon": "http://localhost/moodle/theme/image.php/boost/forum/1/monologo",
+            "iconclass": "activityicon",
+            "modname": "forum",
+            "pluginname": "Forum",
+            "purpose": "collaboration",
+            "branded": false,
+            "extraclasses": "smaller"
+        }
     }
 }}
-<div class="townsquare_letter postletter card mb-3 ms-3" id="content-nr-{{contentid}}"
-     style="border-color: {{postlettercolor}}{{^postlettercolor}}#f7634d{{/postlettercolor}}">
-    <div class="townsquareletter_header postletter_header card-header"
-         style="background-color: {{postlettercolor}}{{^postlettercolor}}#f7634d{{/postlettercolor}}">
-        <div class="townsquareletter_top postletter_top">
-            <div class="townsquareletter_course postletter_course" data-courseid="{{courseid}}">
-                {{#str}} coursetitle, moodle, {
-                    "course": {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a>
-                              {{/quote}} }
-                {{/str}}
-            </div>
-            <div class="townsquareletter_date postletter_date" data-created="{{createdtimestamp}}">
-                {{created}}
-            </div>
-        </div>
-    </div>
-    <div class="townsquareletter_body postletter_body card-body">
-        <div class="postletter_origin">
-            <b>
-                {{#anonymous}}
-                    {{#str}} postletterorigin, block_townsquare, {
-                        "authorname": {{#quote}} <i> anonymous </i> {{/quote}},
-                        "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}},
-                        "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
-                    {{/str}}
-                {{/anonymous}}
-                {{^anonymous}}
-                    {{{authorpicture}}}
-                    {{#str}} postletterorigin, block_townsquare, {
-                        "authorname": {{#quote}} <a href='{{linktoauthor}}'>{{authorname}}</a> {{/quote}},
-                        "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}},
-                        "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
-                    {{/str}}
-                {{/anonymous}}
-            </b>
-        </div>
-        <div class="postletter_content">
-                <div class ="postletter_message" data-contentid="{{contentid}}">
-                    {{{message}}}
+<div class="townsquare_letter postletter list-group-item bg-transparent px-0" id="content-nr-{{contentid}}">
+    <div class="d-flex align-items-start gap-3">
+        <div class="flex-shrink-0">{{#activityicon}}{{> core_course/activity_icon}}{{/activityicon}}</div>
+        <div class="flex-grow-1 text-break">
+            <div class="d-flex align-items-start gap-2">
+                <div class="flex-grow-1">
+                    {{! Course and forum come first, so posts from different courses and forums can be told apart. }}
+                    <div class="small text-body-secondary">
+                        <span class="townsquareletter_course" data-courseid="{{courseid}}">
+                            <a href="{{linktocourse}}" class="fw-semibold text-body">{{coursename}}</a>
+                        </span>
+                        &rsaquo;
+                        <a href="{{linktoactivity}}" class="text-reset">{{instancename}}</a>
+                    </div>
+                    <div class="mb-1">
+                        <img src="{{authorpictureurl}}" class="rounded-circle me-1 align-middle object-fit-cover" width="24" height="24" alt="">
+                        {{#anonymous}}
+                            {{#str}} postletterheader, block_townsquare, {
+                                "authorname": {{#quote}} <i>{{#str}}anonymousauthor, block_townsquare{{/str}}</i> {{/quote}},
+                                "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
+                            {{/str}}
+                        {{/anonymous}}
+                        {{^anonymous}}
+                            {{#str}} postletterheader, block_townsquare, {
+                                "authorname": {{#quote}} <a href='{{linktoauthor}}'>{{authorname}}</a> {{/quote}},
+                                "discussionname": {{#quote}} <a href='{{linktopost}}'>{{discussionsubject}}</a> {{/quote}} }
+                            {{/str}}
+                        {{/anonymous}}
+                    </div>
                 </div>
-                <span class="townsquare_showmore badge rounded-pill" data-parentid="{{contentid}}"
-                      data-action="block_townsquare/showmore_button">
+                <div class="townsquareletter_date small text-body-secondary text-nowrap" data-created="{{createdtimestamp}}">
+                    {{created}}
+                </div>
+            </div>
+            <div class="postletter_message no-overflow mt-2" data-contentid="{{contentid}}" data-clamp="true">
+                {{{message}}}
+            </div>
+            {{#privatereplyto}}
+                <div class="small text-body-secondary mt-1">
+                    {{#pix}}t/locked, core{{/pix}}{{#str}} privatereplyto, block_townsquare {{/str}}
+                </div>
+            {{/privatereplyto}}
+            {{#privatereplyfrom}}
+                <div class="small text-body-secondary mt-1">
+                    {{#pix}}t/locked, core{{/pix}}{{#str}} privatereplyfrom, block_townsquare {{/str}}
+                </div>
+            {{/privatereplyfrom}}
+            <div class="small d-flex flex-wrap gap-3 mt-1">
+                <button type="button" class="btn btn-link btn-sm p-0 townsquare_showmore" data-parentid="{{contentid}}"
+                        data-action="block_townsquare/showmore_button">
                     {{#str}} showmore, block_townsquare {{/str}}
-                </span>
-                <div>
-                    {{#privatereplyto}}
-                        <hr>
-                        <i>{{#str}} privatereplyto, block_townsquare {{/str}}</i>
-                    {{/privatereplyto}}
-                    {{#privatereplyfrom}}
-                        <hr>
-                        <i>{{#str}} privatereplyfrom, block_townsquare {{/str}}</i>
-                    {{/privatereplyfrom}}
-                </div>
+                </button>
+                <a href="{{linktopost}}">{{#str}}gotodiscussion, block_townsquare{{/str}}</a>
+            </div>
         </div>
     </div>
 </div>

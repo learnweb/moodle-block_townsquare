@@ -118,5 +118,15 @@ function xmldb_block_townsquare_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2026100801, 'townsquare');
     }
 
+    if ($oldversion < 2026100802) {
+        // Remove the color settings of the letters. The letters show the activity icons in their own colors.
+        unset_config('basiclettercolor', 'block_townsquare');
+        unset_config('postlettercolor', 'block_townsquare');
+        unset_config('completionlettercolor', 'block_townsquare');
+
+        // Townsquare savepoint reached.
+        upgrade_block_savepoint(true, 2026100802, 'townsquare');
+    }
+
     return true;
 }
