@@ -52,7 +52,6 @@ class block_townsquare extends block_base {
         $usersettings = $DB->get_record('block_townsquare_preferences', ['userid' => $USER->id]);
 
         // Load all javascripts.
-        $this->page->requires->js_call_amd('block_townsquare/lettergroup', 'init');
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/reload', 'init');
         $this->page->requires->js_call_amd('block_townsquare/filter/coursefilter', 'init');

@@ -87,12 +87,14 @@ function isApproved(letter) {
 }
 
 /**
- * Shows a letter group only if at least one of its letters is visible.
+ * Shows a letter group only if at least one of its letters is visible and updates the number of visible letters
+ * in the day header.
  * @param {HTMLElement} group
  */
 function updateLetterGroup(group) {
-    const anyVisible = [...group.querySelectorAll(Selectors.groupLetters)].some(isApproved);
-    group.style.display = anyVisible ? 'block' : 'none';
+    const visibleCount = [...group.querySelectorAll(Selectors.groupLetters)].filter(isApproved).length;
+    group.style.display = visibleCount > 0 ? 'block' : 'none';
+    group.querySelector(Selectors.dayCount).textContent = visibleCount;
 }
 
 /**

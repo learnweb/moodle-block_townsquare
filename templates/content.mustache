@@ -20,7 +20,12 @@
     This template renders the main content area for the townsquare block.
 
      Variables required for this template:
-     * content - Array with content
+     * content - Array with the letters grouped by day
+        * day - Day of the group (d.m.Y), used as id
+        * daylabel - "Today", "Tomorrow", "Yesterday" or empty
+        * daydate - Formatted date of the day
+        * count - Number of letters of the day
+        * letters - Array with the letters of the day
      * reloadlabel - Label of the reload button with the time of the last update
      * courses - Array of courses that show notifications in townsquare (for the course filter after a reload)
 
@@ -35,7 +40,10 @@
         ],
         "content": [
             {
-                "day": "2026-03-31",
+                "day": "31.03.2026",
+                "daylabel": "Today",
+                "daydate": "Tuesday, 31 March",
+                "count": 1,
                 "letters": [
                     {
                          "contentid": 0,
@@ -61,15 +69,30 @@
 {{! The reload button shows the time of the last update. After a reload, its label is copied from data-reloadlabel. }}
 <div class="townsquare_letters flex-grow-1 overflow-y-scroll overflow-x-hidden pe-2" data-reloadlabel="{{reloadlabel}}">
     {{#content}}
-        <div class="ts-lettergroup" id="ts-lettergroup-{{day}}">
-            <div class="orientationmarker">
-                <span class="orientationmarker_date">{{day}}</span>
-                <span class="orientationmarker_line" aria-hidden="true"></span>
-                <span class="orientationmarker-collapse" data-action="block_townsquare/collapse_group" data-groupid="{{day}}">
-                    <i class="fa fa-chevron-down ms-3 me-2"></i>
+        <div class="ts-lettergroup mb-2" id="ts-lettergroup-{{day}}">
+            <div class="ts_day_header d-flex align-items-center gap-2 px-2 py-1 rounded bg-body-tertiary">
+                <span id="ts-daylabel-{{day}}">
+                    {{#daylabel}}
+                        <span class="fw-bold">{{daylabel}}</span>
+                        <span class="small text-body-secondary">{{daydate}}</span>
+                    {{/daylabel}}
+                    {{^daylabel}}
+                        <span class="fw-bold">{{daydate}}</span>
+                    {{/daylabel}}
                 </span>
+                <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis" data-region="ts_day_count">{{count}}</span>
+                {{! Bootstrap collapses the day, Moodle's icons-collapse-expand shows the matching chevron. }}
+                <button type="button" class="btn btn-icon btn-sm ms-auto icons-collapse-expand" data-bs-toggle="collapse"
+                        data-bs-target="#ts-letterbox-{{day}}" aria-expanded="true" aria-controls="ts-letterbox-{{day}}"
+                        aria-labelledby="ts-daylabel-{{day}}">
+                    <span class="expanded-icon">{{#pix}}t/expandedchevron, core{{/pix}}</span>
+                    <span class="collapsed-icon">
+                        <span class="dir-rtl-hide">{{#pix}}t/collapsedchevron, core{{/pix}}</span>
+                        <span class="dir-ltr-hide">{{#pix}}t/collapsedchevron_rtl, core{{/pix}}</span>
+                    </span>
+                </button>
             </div>
-            <div class="ts-letter-box overflow-hidden list-group list-group-flush" data-groupid="{{day}}">
+            <div class="ts-letter-box collapse show list-group list-group-flush" id="ts-letterbox-{{day}}" data-groupid="{{day}}">
                 {{#letters}}
                     {{#isbasic}}
                         {{> block_townsquare/letter/basicletter}}

@@ -23,7 +23,6 @@
 
 import Ajax from 'core/ajax';
 import Notification from 'core/notification';
-import {setup as lettergroupSetup} from 'block_townsquare/lettergroup';
 import {setup as postletterSetup} from 'block_townsquare/postletter';
 import {setup as filtercontrollerSetup} from 'block_townsquare/filter/filtercontroller';
 import {apply as applyCourseFilter, updateCourseList} from 'block_townsquare/filter/coursefilter';
@@ -40,10 +39,6 @@ export function init() {
         const button = e.target.closest('#ts_reload_button');
         if (button && !isReloading) {
             isReloading = true;
-            // Save all closed letter groups to enable to expand them afterwards.
-            const groupSelector = '.ts-letter-box[expanded="false"]';
-            const closedLetterGroups = [...document.querySelectorAll(groupSelector)].map(el => el.dataset.groupid);
-
             // Add animation to the reload icon. Then call the new build and wait at least 600ms for the animation.
             button.classList.add('ts-reloading');
             try {
@@ -68,7 +63,6 @@ export function init() {
                 applyLetterFilter();
                 applyTimeFilter();
 
-                lettergroupSetup(closedLetterGroups);
                 postletterSetup();
             } catch (error) {
                 Notification.exception(error);

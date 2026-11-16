@@ -92,10 +92,18 @@ class contentcontroller {
             if (!isset($this->content[$day])) {
                 $this->content[$day] = (object) [
                     'day' => $day,
+                    'daylabel' => $this->get_daylabel($day),
+                    'daydate' => userdate(
+                        $templetter['createdtimestamp'],
+                        get_string('strftimedayshort', 'langconfig'),
+                        \core_date::get_server_timezone()
+                    ),
+                    'count' => 0,
                     'letters' => [],
                 ];
             }
             $this->content[$day]->letters[] = $templetter;
+            $this->content[$day]->count++;
 
             // Collect the courses shown in the townsquare to be able to filter them afterwards.
             if (!array_key_exists($templetter['courseid'], $appearedcourses)) {
@@ -107,6 +115,22 @@ class contentcontroller {
             }
         }
         return array_values($this->content);
+    }
+
+    /**
+     * Returns "Today", "Tomorrow" or "Yesterday" for a day, otherwise an empty string.
+     * The days are compared in the same timezone as they are grouped (server timezone).
+     *
+     * @param string $day Day in the format d.m.Y
+     * @return string
+     */
+    private function get_daylabel(string $day): string {
+        return match ($day) {
+            date('d.m.Y') => get_string('today', 'calendar'),
+            date('d.m.Y', strtotime('+1 day')) => get_string('tomorrow', 'calendar'),
+            date('d.m.Y', strtotime('-1 day')) => get_string('yesterday', 'calendar'),
+            default => '',
+        };
     }
 
     // Getter.

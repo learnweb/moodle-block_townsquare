@@ -24,6 +24,13 @@
     max-height: 50vh;
 }
 
+/* The day headers stick to the top of the list while scrolling through their day. */
+.ts_day_header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
 /* Long posts are shortened to four lines (see amd/src/postletter.js). */
 .postletter_message[data-clamp="true"] {
     display: -webkit-box;
@@ -44,32 +51,4 @@
 .postletter_message[data-clamp] img {
     max-width: 100%;
     height: auto;
-}
-
-/* actvitiycompletionletter Style*/
-/* Style for the orientation marker */
-.orientationmarker {
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.orientationmarker_date {
-    margin-right: 0.75rem;
-}
-
-.orientationmarker_line {
-    flex: 1;
-    height: 1px;
-    background-color: #0e0e0e;
-}
-
-.orientationmarker-collapse {
-    cursor: pointer;
-}
-
-/* Animation when a day is collapsed or expanded (see amd/src/lettergroup.js). */
-.ts-letter-box {
-    transition: max-height 0.3s ease;
 }

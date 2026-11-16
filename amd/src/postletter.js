@@ -91,11 +91,6 @@ function updateClampButton(element) {
  */
 function toggleClamp(element, expand) {
     element.dataset.clamp = expand ? 'false' : 'true';
-    // The letter group needs a new max height, otherwise the expanded message is cut.
-    const group = element.closest('.ts-letter-box');
-    if (group && group.getAttribute('expanded') !== 'false') {
-        group.style.maxHeight = `${group.scrollHeight}px`;
-    }
 }
 
 /**
