@@ -34,6 +34,21 @@ Feature: The townsquare block updates automatically every 30 min. Users can relo
     And I should "not" see in townsquare the elements:
       | Test assign 1 | Test assign 4 |
 
+  Scenario: A collapsed day stays collapsed after a reload
+    Given I log in as "student1"
+    And I click on "Deadlines" "button" in the "Town Square" "block"
+    When I click on "//div[contains(@class, 'ts_day_header')][contains(., 'Tomorrow')]//button" "xpath_element"
+    Then I should not see "Test assign 1" in the "Town Square" "block"
+    And the following "activities" exist:
+      | activity | course | idnumber | name          | intro       | timeopen        | duedate         |
+      | assign   | C2     | 13       | Test assign 4 | Description | ##now -2 days## | ##now +8 days## |
+    When I reload the townsquare block
+    # The new assignment is shown after the reload, the collapsed day stays collapsed.
+    Then I should see "Test assign 4" in the "Town Square" "block"
+    And I should not see "Test assign 1" in the "Town Square" "block"
+    When I click on "//div[contains(@class, 'ts_day_header')][contains(., 'Tomorrow')]//button" "xpath_element"
+    Then I should see "Test assign 1" in the "Town Square" "block"
+
   Scenario: A course that shows letters for the first time after a reload is added to the course filter
     Given the following "courses" exist:
       | fullname | shortname | category | startdate      | enddate        | enablecompletion |
