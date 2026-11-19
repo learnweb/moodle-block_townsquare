@@ -47,7 +47,6 @@ export function init() {
             button.checked = true;
             button.dispatchEvent(new Event('change'));
         });
-        document.querySelectorAll('.ts_letter_checkbox:not(:checked)').forEach(checkbox => checkbox.click());
 
         Notification.addNotification({
             message: await getString('reset_successmessage', 'block_townsquare'),

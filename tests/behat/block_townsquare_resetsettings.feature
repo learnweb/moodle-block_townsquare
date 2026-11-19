@@ -28,9 +28,7 @@ Feature: In the townsquare block user can reset their filter settings
     And I click in townsquare on "checkbox" type:
       | C1 | C3 |
     And I click in townsquare on "text" type:
-      | Time filter | Next week | Last five days | Letter filter |
-    And I click in townsquare on "checkbox" type:
-      | basicletter | postletter |
+      | Time filter | Next week | Last five days |
     When I click on "Reset Settings" "button"
     And I click on "Course filter" "text"
     Then "C1" "checkbox" should exist
@@ -40,14 +38,6 @@ Feature: In the townsquare block user can reset their filter settings
       | C1 | 1 |
       | C2 | 1 |
       | C3 | 1 |
-    When I click on "Letter filter" "text"
-    Then "basicletter" "checkbox" should exist
-    And "completionletter" "checkbox" should exist
-    And "postletter" "checkbox" should exist
-    And the following fields match these values:
-      | basicletter      | 1 |
-      | completionletter | 1 |
-      | postletter       | 1 |
     When I click on "Time filter" "text"
     Then "All notifications" "text" should exist
     And the following fields match these values:

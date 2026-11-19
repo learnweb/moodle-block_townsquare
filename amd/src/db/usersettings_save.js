@@ -37,9 +37,6 @@ const alltimebutton = document.getElementById('ts_time_all');
 const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
 const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
 
-// Get the checkboxes from the letter filter.
-const letterCheckboxes = document.querySelectorAll('.ts_letter_checkbox');
-
 // Get the checkboxes from the course filter.
 const courseCheckboxes = document.querySelectorAll('.ts_course_checkbox');
 
@@ -59,9 +56,8 @@ export function init(settingsfromdb) {
     savebutton.addEventListener('click', async function() {
 
         // First step: collect the current settings.
-        // Get the relevant time spans of the time filter and the setting of the letter filter checkboxes.
+        // Get the relevant time spans of the time filter.
         let timespans = collecttimefiltersettings();
-        let letterfilter = collectletterfiltersettings();
         let courses = collectcoursesettings(settingsfromdb.courses);
 
         const data = {
@@ -69,9 +65,6 @@ export function init(settingsfromdb) {
             args: {
                 timefilterpast: timespans.timepast,
                 timefilterfuture: timespans.timefuture,
-                basicletter: letterfilter.basicletter,
-                completionletter: letterfilter.completionletter,
-                postletter: letterfilter.postletter,
                 courses: courses,
             },
         };
@@ -120,19 +113,7 @@ function executeusersettings(settingsfromdb) {
         alltimebutton.dispatchEvent(new Event('change'));
     }
 
-    // Second step: set the letter filter settings.
-    // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
-    letterCheckboxes.forEach(function(checkbox) {
-        let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb.basicletter === "0";
-        let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb.completionletter === "0";
-        let postlettercheck = checkbox.id === 'postletter' && settingsfromdb.postletter === "0";
-
-        if (basiclettercheck || completionlettercheck || postlettercheck) {
-            checkbox.click();
-        }
-    });
-
-    // Third step: set the course filter settings.
+    // Second step: set the course filter settings.
     let coursessettings = JSON.parse(settingsfromdb.courses);
 
     courseCheckboxes.forEach(function(checkbox) {
@@ -144,31 +125,6 @@ function executeusersettings(settingsfromdb) {
             }
         }
     });
-}
-
-/**
- * Function to collect the letter filter settings.
- * @returns {{basicletter: number, completionletter: number, postletter: number}}
- */
-function collectletterfiltersettings() {
-    let settings = {'basicletter': 0, 'completionletter': 0, 'postletter': 0};
-
-    letterCheckboxes.forEach(function(checkbox) {
-        if (checkbox.checked) {
-            switch (checkbox.id) {
-                case "basicletter":
-                    settings.basicletter = 1;
-                    break;
-                case "completionletter":
-                    settings.completionletter = 1;
-                    break;
-                case "postletter":
-                    settings.postletter = 1;
-            }
-        }
-    });
-    // Calculate the setting number. It is a number between 0 and 7, and each letter represents a bit.
-    return settings;
 }
 
 /**

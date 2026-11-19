@@ -42,9 +42,6 @@ class record_usersettings extends external_api {
             [
                 'timefilterpast' => new external_value(PARAM_INT, 'time span for filtering the past'),
                 'timefilterfuture' => new external_value(PARAM_INT, 'time span for filtering the future'),
-                'basicletter' => new external_value(PARAM_INT, 'Setting of the letter filter for basic letters'),
-                'completionletter' => new external_value(PARAM_INT, 'Setting of the letter filter for completion letters'),
-                'postletter' => new external_value(PARAM_INT, 'Setting of the letter filter for post letters'),
                 'courses' => new external_value(PARAM_TEXT, 'courses the user wants to see letters from'),
             ]
         );
@@ -63,9 +60,6 @@ class record_usersettings extends external_api {
      *
      * @param int $timefilterpast Time span for filtering the past
      * @param int $timefilterfuture Time span for filtering the future
-     * @param int $basicletter If basic letters should be shown
-     * @param int $completionletter If completion letters should be shown
-     * @param int $postletter If post letters should be shown
      * @param string $courses The setting for the course filter
      * @return bool
      * @throws invalid_parameter_exception
@@ -75,16 +69,11 @@ class record_usersettings extends external_api {
     public static function execute(
         int $timefilterpast,
         int $timefilterfuture,
-        int $basicletter,
-        int $completionletter,
-        int $postletter,
         string $courses
     ): bool {
         global $DB, $USER;
         $params = self::validate_parameters(self::execute_parameters(), [
-            'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture,
-            'basicletter' => $basicletter, 'completionletter' => $completionletter, 'postletter' => $postletter,
-            'courses' => $courses,
+            'timefilterpast' => $timefilterpast, 'timefilterfuture' => $timefilterfuture, 'courses' => $courses,
         ]);
         self::validate_context(context_user::instance($USER->id));
 

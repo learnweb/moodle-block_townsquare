@@ -104,5 +104,19 @@ function xmldb_block_townsquare_upgrade($oldversion) {
         upgrade_block_savepoint(true, 2026100800, 'townsquare');
     }
 
+    if ($oldversion < 2026100801) {
+        // The letter filter is not saved anymore. Remove its columns from the user settings.
+        $table = new xmldb_table('block_townsquare_preferences');
+        foreach (['basicletter', 'completionletter', 'postletter'] as $fieldname) {
+            $field = new xmldb_field($fieldname);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->drop_field($table, $field);
+            }
+        }
+
+        // Townsquare savepoint reached.
+        upgrade_block_savepoint(true, 2026100801, 'townsquare');
+    }
+
     return true;
 }

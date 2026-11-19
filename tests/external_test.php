@@ -69,9 +69,6 @@ final class external_test extends \advanced_testcase {
         $usersetting->userid = $user->id;
         $usersetting->timefilterpast = 432000;
         $usersetting->timefilterfuture = 2592000;
-        $usersetting->basicletter = 0;
-        $usersetting->completionletter = 1;
-        $usersetting->postletter = 1;
         $usersetting->courses = json_encode((object) ["2" => true, "4" => false]);
 
         // Test Case 1: The User sets the setting for the first time.
@@ -84,9 +81,6 @@ final class external_test extends \advanced_testcase {
         $result = $this->testdata->external->execute(
             $usersetting->timefilterpast,
             $usersetting->timefilterfuture,
-            $usersetting->basicletter,
-            $usersetting->completionletter,
-            $usersetting->postletter,
             $usersetting->courses
         );
 
@@ -96,26 +90,17 @@ final class external_test extends \advanced_testcase {
         // Check if the record is correct.
         $this->assertEquals($usersetting->timefilterpast, $record->timefilterpast);
         $this->assertEquals($usersetting->timefilterfuture, $record->timefilterfuture);
-        $this->assertEquals($usersetting->basicletter, $record->basicletter);
-        $this->assertEquals($usersetting->completionletter, $record->completionletter);
-        $this->assertEquals($usersetting->postletter, $record->postletter);
         $this->assertEquals($usersetting->courses, $record->courses);
 
         // Test Case 2: The User updates the settings.
         $usersetting->timefilterpast = 2592000;
         $usersetting->timefilterfuture = 0;
-        $usersetting->basicletter = 1;
-        $usersetting->completionletter = 0;
-        $usersetting->postletter = 0;
         $usersetting->courses = json_encode((object) ["4" => false]);
 
         // Call the function to record the user settings and check, if the record is created.
         $result = $this->testdata->external->execute(
             $usersetting->timefilterpast,
             $usersetting->timefilterfuture,
-            $usersetting->basicletter,
-            $usersetting->completionletter,
-            $usersetting->postletter,
             $usersetting->courses
         );
 
@@ -127,9 +112,6 @@ final class external_test extends \advanced_testcase {
         // Check if the record is correct.
         $this->assertEquals($usersetting->timefilterpast, $record->timefilterpast);
         $this->assertEquals($usersetting->timefilterfuture, $record->timefilterfuture);
-        $this->assertEquals($usersetting->basicletter, $record->basicletter);
-        $this->assertEquals($usersetting->completionletter, $record->completionletter);
-        $this->assertEquals($usersetting->postletter, $record->postletter);
         $this->assertEquals($usersetting->courses, $record->courses);
     }
 
@@ -147,7 +129,7 @@ final class external_test extends \advanced_testcase {
         // Load a usersetting for both users in the database.
         foreach ([$user->id, $user2->id] as $userid) {
             $DB->insert_record('block_townsquare_preferences', ['userid' => $userid, 'timefilterpast' => 432000,
-                'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
+                'timefilterfuture' => 2592000, ]);
         }
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
 
@@ -158,7 +140,7 @@ final class external_test extends \advanced_testcase {
 
         // Test case 2: normal case.
         $DB->insert_record('block_townsquare_preferences', ['userid' => $user->id, 'timefilterpast' => 432000,
-            'timefilterfuture' => 2592000, 'basicletter' => 0, 'completionletter' => 1, 'postletter' => 1, ]);
+            'timefilterfuture' => 2592000, ]);
         $this->assertEquals(1, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));
         $this->testdata->external->execute();
         $this->assertEquals(0, count($DB->get_records('block_townsquare_preferences', ['userid' => $user->id])));

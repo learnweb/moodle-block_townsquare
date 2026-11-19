@@ -46,9 +46,6 @@ class provider implements
             'userid' => 'privacy:metadata:block_townsquare_preferences:userid',
             'timefilterpast' => 'privacy:metadata:block_townsquare_preferences:timefilterpast',
             'timefilterfuture' => 'privacy:metadata:block_townsquare_preferences:timefilterfuture',
-            'basicletter' => 'privacy:metadata:block_townsquare_preferences:basicletter',
-            'completionletter' => 'privacy:metadata:block_townsquare_preferences:completionletter',
-            'postletter' => 'privacy:metadata:block_townsquare_preferences:postletter',
             'courses' => 'privacy:metadata:block_townsquare_preferences:courses',
             ], 'privacy:metadata:block_townsquare_preferences');
         return $collection;
@@ -111,9 +108,6 @@ class provider implements
             $data->userid = $result->userid;
             $data->timefilterpast = $result->timefilterpast;
             $data->timefilterfuture = $result->timefilterfuture;
-            $data->basicletter = $result->basicletter;
-            $data->completionletter = $result->completionletter;
-            $data->postletter = $result->postletter;
             $data->courses = $result->courses;
 
             $townsquaredata[] = $data;
