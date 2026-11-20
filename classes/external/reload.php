@@ -16,6 +16,7 @@
 
 namespace block_townsquare\external;
 
+use block_townsquare\output\content;
 use cache;
 use core\exception\coding_exception;
 use core_external\external_api;
@@ -59,6 +60,6 @@ class reload extends external_api {
         // Set the context for the page.
         $PAGE->set_context(\context_user::instance($USER->id));
         cache::make('block_townsquare', 'townsquareevents')->delete('items');
-        return $PAGE->get_renderer('block_townsquare')->render_content();
+        return $PAGE->get_renderer('core')->render(new content());
     }
 }

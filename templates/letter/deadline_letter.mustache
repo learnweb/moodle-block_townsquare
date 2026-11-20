@@ -15,14 +15,13 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_townsquare/letter/deadlineletter
+    @template block_townsquare/letter/deadline_letter
 
     This template renders a deadline letter as a compact row. Several deadlines of the same course and module at the
     same time are shown as a list.
 
     Variables required for this template (more variables are available for testing and future features):
     * contentid - Unique identification for every shown plugin content
-    * isdeadline - Variable for the content template to assure this template is used.
     * coursename - Name of the course
     * courseid - Id of the course
     * instancename - Name of the instance
@@ -38,7 +37,6 @@
     Example context (json):
     {
           "contentid": 0,
-          "isdeadline": true,
           "coursename": "Moodle Engineering",
           "courseid": 3,
           "instancename": "Lesson 1: Quantum Theory",

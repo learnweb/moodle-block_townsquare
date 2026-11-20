@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace block_townsquare\local\letter;
+namespace block_townsquare\output\letter;
 
 use block_townsquare\item\post_item;
+use core\output\renderer_base;
 
 /**
  * A letter for posts. It shows the post as the module of the post provides it.
@@ -41,20 +42,24 @@ class post_letter extends letter {
     }
 
     #[\Override]
-    public function export_letter(): array {
-        global $OUTPUT, $USER;
+    public function get_template_name(renderer_base $renderer): string {
+        return 'block_townsquare/letter/post_letter';
+    }
+
+    #[\Override]
+    public function export_for_template(renderer_base $output): array {
+        global $USER;
 
         // A private reply that the user wrote is always shown as "from", even when it was sent to themselves.
         $isprivatereply = $this->post->privatereplyto !== 0;
         $privatereplyfrom = $isprivatereply && $this->post->authorid === (int) $USER->id;
         $privatereplyto = $isprivatereply && !$privatereplyfrom && $this->post->privatereplyto === (int) $USER->id;
 
-        return $this->export_basics() + [
-            'ispost' => true,
+        return $this->export_basics($output) + [
             'discussionsubject' => $this->post->discussionsubject,
             'message' => $this->post->message,
             'authorname' => $this->post->authorname,
-            'authorpictureurl' => ($this->post->pictureurl ?? $OUTPUT->image_url('u/f2'))->out(false),
+            'authorpictureurl' => ($this->post->pictureurl ?? $output->image_url('u/f2'))->out(false),
             'linktoauthor' => $this->post->authorurl?->out(),
             'linktopost' => $this->post->url->out(),
             'privatereplyfrom' => $privatereplyfrom,

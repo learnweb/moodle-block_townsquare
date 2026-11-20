@@ -36,7 +36,7 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @covers \block_townsquare\townsquareevents::get_posts()
- * @covers \block_townsquare\local\letter\post_letter
+ * @covers \block_townsquare\output\letter\post_letter
  */
 final class postevents_test extends \advanced_testcase {
     // Attributes.
@@ -342,9 +342,11 @@ final class postevents_test extends \advanced_testcase {
      * @return array
      */
     private function get_postletters_from_user(object $user): array {
+        global $PAGE;
         $letters = [];
         foreach ($this->get_postevents_from_user($user) as $index => $postevent) {
-            $letters[] = (new local\letter\post_letter($index, $postevent))->export_letter();
+            $letter = new output\letter\post_letter($index, $postevent);
+            $letters[] = $letter->export_for_template($PAGE->get_renderer('core'));
         }
         return $letters;
     }

@@ -20,51 +20,28 @@
     This template renders the main area for the townsquare block.
 
      Variables required for this template:
-     * content - Array with content
-        * isdeadline - Boolean variable if current content is a deadline
-        * ispost - Boolean variable if current content is a post
+     * timespans - Time spans of the time filter, each with id, timespan (seconds) and label
+     * The variables of block_townsquare/content (lettergroups, courses, reloadlabel)
 
     Example context (json):
     {
-        "lastupdate": "Last update: 14:30",
-        "courses": [
+        "reloadlabel": "Reload (last update: 2:30 PM)",
+        "timespans": [
             {
-                "courseid": 20,
-                "coursename": "Course1"
+                "id": "ts_time_week",
+                "timespan": 604800,
+                "label": "1 week"
             }
         ],
-        "content": [
+        "courses": [
             {
-                "day": "2026-03-31",
-                "letters": [
-                    {
-                        "contentid": 1,
-                        "isdeadline": true,
-                        "coursename": "Moodle Engineering",
-                        "courseid": 3,
-                        "instancename": "Lesson 1: Quantum Theory",
-                        "content": "Lesson 1: Quantum Theory closes",
-                        "created": "20.12.2023",
-                        "linktocourse": "http://localhost/moodle/course/view.php?id=20",
-                        "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
-                    },
-                    {
-                        "contentid": 2,
-                        "ispost": true,
-                        "coursename": "Moodle Engineering",
-                        "courseid": 3,
-                        "instancename": "Exam Questions",
-                        "discussionsubject": "Hour of Exam",
-                        "authorname": "Tamaro Walter",
-                        "authorpictureurl": "http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13",
-                        "message": "<div class=\"text_to_html\"><p>When do we write the exam?</p></div>",
-                        "created": "03.11.2023",
-                        "linktocourse": "http://localhost/moodle/course/view.php?id=20",
-                        "linktoactivity": "http://localhost/moodle/mod/moodleoverflow/view.php?id=66",
-                        "linktopost": "http://localhost/moodle/mod/moodleoverflow/discussion.php?d=4#p6",
-                        "linktoauthor": "http://localhost/moodle/user/view.php?id=2"
-                    }
-                ]
+                "courseid": 3,
+                "coursename": "Moodle Engineering"
+            }
+        ],
+        "lettergroups": [
+            {
+                "lettergroup": "<div class=\"ts-lettergroup mb-2\">Today</div>"
             }
         ]
     }

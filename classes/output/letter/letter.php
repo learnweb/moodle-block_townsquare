@@ -14,9 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace block_townsquare\local\letter;
+namespace block_townsquare\output\letter;
 
 use cm_info;
+use core\output\named_templatable;
+use core\output\renderable;
+use core\output\renderer_base;
 use core_course\output\activity_icon;
 use moodle_url;
 
@@ -29,7 +32,7 @@ use moodle_url;
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class letter {
+abstract class letter implements named_templatable, renderable {
     /** @var int an ID to identify every letter in townsquare */
     protected int $contentid;
 
@@ -54,16 +57,27 @@ abstract class letter {
     }
 
     /**
-     * Export function for the mustache template.
-     * @return array
+     * Returns the timestamp of the letter.
+     * @return int
      */
-    abstract public function export_letter(): array;
+    public function get_time(): int {
+        return $this->time;
+    }
+
+    /**
+     * Returns the activity of the letter.
+     * @return cm_info
+     */
+    public function get_cm(): cm_info {
+        return $this->cm;
+    }
 
     /**
      * Exports what all letters have.
+     * @param renderer_base $output
      * @return array
      */
-    protected function export_basics(): array {
+    protected function export_basics(renderer_base $output): array {
         return [
             'contentid' => $this->contentid,
             'courseid' => $this->cm->course,
@@ -73,7 +87,7 @@ abstract class letter {
             'createdtimestamp' => $this->time,
             'linktocourse' => (new moodle_url('/course/view.php', ['id' => $this->cm->course]))->out(),
             'linktoactivity' => $this->get_activityurl($this->cm->id),
-            'activityicon' => $this->get_activityicon(),
+            'activityicon' => $this->get_activityicon($output),
         ];
     }
 
@@ -88,11 +102,10 @@ abstract class letter {
 
     /**
      * Returns the activity icon of the module for the template core_course/activity_icon.
+     * @param renderer_base $output
      * @return array
      */
-    private function get_activityicon(): array {
-        global $PAGE;
-        $icon = activity_icon::from_modname($this->cm->modname)->set_extra_classes('smaller');
-        return $icon->export_for_template($PAGE->get_renderer('core'));
+    private function get_activityicon(renderer_base $output): array {
+        return activity_icon::from_modname($this->cm->modname)->set_extra_classes('smaller')->export_for_template($output);
     }
 }

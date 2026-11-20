@@ -58,7 +58,6 @@ $string['privacy:metadata:block_townsquare_preferences:timefilterpast'] = 'How f
 $string['privacy:metadata:block_townsquare_preferences:userid'] = 'The user id';
 $string['privatereplyfrom'] = 'Your private reply';
 $string['privatereplyto'] = 'Private reply to you';
-$string['reload_message'] = 'Last update: {$a}';
 $string['reloadwithtime'] = 'Reload (last update: {$a})';
 $string['reset_successmessage'] = 'Your Town Square settings have been reset to default.';
 $string['resetbutton'] = 'Reset Settings';

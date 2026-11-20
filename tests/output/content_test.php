@@ -14,8 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace block_townsquare;
+namespace block_townsquare\output;
 
+use block_townsquare\output\letter\deadline_letter;
+use block_townsquare\output\letter\post_letter;
+use block_townsquare\townsquareevents;
 use stdClass;
 
 /**
@@ -27,15 +30,16 @@ use stdClass;
  */
 
 /**
- * PHPUnit tests for testing the process of create the townsquare letters.
+ * PHPUnit tests for the content of Town Square: the letters and the letter groups.
  *
  * @package   block_townsquare
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\contentcontroller
+ * @covers \block_townsquare\output\content
+ * @covers \block_townsquare\output\lettergroup
  */
-final class contentcontroller_test extends \advanced_testcase {
+final class content_test extends \advanced_testcase {
     // Attributes.
 
     /** @var object The data that will be used for testing
@@ -71,21 +75,20 @@ final class contentcontroller_test extends \advanced_testcase {
         // Set an logged in user.
         $this->setUser($this->testdata->teacher);
 
-        $controller = new contentcontroller();
-        $content = $controller->build_content();
-        $letters = array_merge(...array_column($content, 'letters'));
-
         // The items: the post, the due date, the expected completion (both tomorrow) and the grading due date.
-        $this->assertCount(4, $controller->items);
+        $this->assertCount(4, (new townsquareevents())->get_items());
 
         // The post has its own letter. The due date and the expected completion of the assignment are at the same time,
         // so they are grouped in one letter.
-        $posts = array_values(array_filter($letters, fn($letter) => !empty($letter['ispost'])));
-        $deadlines = array_values(array_filter($letters, fn($letter) => !empty($letter['isdeadline'])));
+        $letters = (new content())->get_letters();
+        $posts = array_filter($letters, fn($letter) => $letter instanceof post_letter);
+        $deadlines = array_filter($letters, fn($letter) => $letter instanceof deadline_letter);
         $this->assertCount(3, $letters);
         $this->assertCount(1, $posts);
         $this->assertCount(2, $deadlines);
 
+        $output = $this->get_renderer();
+        $deadlines = array_map(fn($letter) => $letter->export_for_template($output), $deadlines);
         $grouped = array_values(array_filter($deadlines, fn($letter) => $letter['grouped']));
         $this->assertCount(1, $grouped);
         $names = array_column($grouped[0]['deadlines'], 'name');
@@ -112,9 +115,12 @@ final class contentcontroller_test extends \advanced_testcase {
         $DB->set_field('user', 'timezone', $timezone, ['id' => $this->testdata->teacher->id]);
         $this->setUser($DB->get_record('user', ['id' => $this->testdata->teacher->id]));
 
-        $content = (new contentcontroller())->build_content();
+        $content = new content();
+        $lettergroups = $content->group_by_day($content->get_letters());
+        $output = $this->get_renderer();
+        $exported = array_map(fn($lettergroup) => (object) $lettergroup->export_for_template($output), $lettergroups);
 
-        // The expected values are calculated with PHP, independent of the functions of the controller.
+        // The expected values are calculated with PHP, independent of the functions of the content.
         $usertimezone = new \DateTimeZone($timezone);
         $today = new \DateTime('today', $usertimezone);
         $labels = [
@@ -123,20 +129,22 @@ final class contentcontroller_test extends \advanced_testcase {
             (clone $today)->modify('-1 day')->format('d.m.Y') => get_string('yesterday', 'calendar'),
         ];
 
-        foreach ($content as $group) {
-            $this->assertCount($group->count, $group->letters);
+        foreach ($lettergroups as $index => $lettergroup) {
+            $group = $exported[$index];
+            $this->assertCount($group->count, $lettergroup->get_letters());
             $this->assertEquals($labels[$group->day] ?? '', $group->daylabel);
-            $this->assertEquals($group->daystart < $today->getTimestamp(), $group->ispast);
-            foreach ($group->letters as $letter) {
-                $created = (new \DateTime('@' . $letter['createdtimestamp']))->setTimezone($usertimezone);
+            $this->assertEquals($lettergroup->get_daystart() < $today->getTimestamp(), $group->ispast);
+            foreach ($lettergroup->get_letters() as $letter) {
+                $created = (new \DateTime('@' . $letter->get_time()))->setTimezone($usertimezone);
                 $this->assertEquals($created->format('d.m.Y'), $group->day);
-                $this->assertEquals((clone $created)->setTime(0, 0)->getTimestamp(), $group->daystart);
+                $this->assertEquals((clone $created)->setTime(0, 0)->getTimestamp(), $lettergroup->get_daystart());
             }
         }
 
         // The letters closest to now come first: today and the upcoming days with the earliest letter first, then the
         // past days with the latest letter first.
-        $timestamps = array_merge(...array_map(fn($group) => array_column($group->letters, 'createdtimestamp'), $content));
+        $letters = array_merge(...array_map(fn($lettergroup) => $lettergroup->get_letters(), $lettergroups));
+        $timestamps = array_map(fn($letter) => $letter->get_time(), $letters);
         $upcoming = array_filter($timestamps, fn($timestamp) => $timestamp >= $today->getTimestamp());
         $past = array_filter($timestamps, fn($timestamp) => $timestamp < $today->getTimestamp());
         sort($upcoming);
@@ -144,7 +152,7 @@ final class contentcontroller_test extends \advanced_testcase {
         $this->assertSame(array_merge($upcoming, $past), $timestamps);
 
         // The posts were written today and the assignment is due tomorrow.
-        $daylabels = array_column($content, 'daylabel');
+        $daylabels = array_column($exported, 'daylabel');
         $this->assertContains(get_string('today', 'calendar'), $daylabels);
         $this->assertContains(get_string('tomorrow', 'calendar'), $daylabels);
     }
@@ -194,5 +202,14 @@ final class contentcontroller_test extends \advanced_testcase {
             'gradingduedate' => $gradingduedate,
         ];
         return $this->getDataGenerator()->create_module('assign', $assignrecord, $options);
+    }
+
+    /**
+     * Helper function to get the renderer that renders the letters.
+     * @return \renderer_base
+     */
+    private function get_renderer(): \renderer_base {
+        global $PAGE;
+        return $PAGE->get_renderer('core');
     }
 }

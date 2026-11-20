@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-namespace block_townsquare\local\letter;
+namespace block_townsquare\output\letter;
 
 use block_townsquare\item\deadline_item;
+use core\output\renderer_base;
 
 /**
  * A letter for deadlines.
@@ -45,10 +46,14 @@ class deadline_letter extends letter {
     }
 
     #[\Override]
-    public function export_letter(): array {
+    public function get_template_name(renderer_base $renderer): string {
+        return 'block_townsquare/letter/deadline_letter';
+    }
+
+    #[\Override]
+    public function export_for_template(renderer_base $output): array {
         $grouped = count($this->deadlines) > 1;
-        return $this->export_basics() + [
-            'isdeadline' => true,
+        return $this->export_basics($output) + [
             'content' => $this->deadlines[0]->name,
             'grouped' => $grouped,
             'deadlines' => !$grouped ? [] : array_map(fn($deadline) => [

@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_townsquare/lettergroup
+
+    This template renders a group of letters: the letters of one day with a header that collapses them.
+
+    Variables required for this template:
+    * day - Day of the group (d.m.Y), used as id
+    * daylabel - "Today", "Tomorrow", "Yesterday" or empty
+    * daydate - Formatted date of the day
+    * count - Number of letters of the day
+    * letters - Array with the letters of the day
+       * letter - The rendered letter (see block_townsquare/letter/*)
+    * ispast - If the day is before today
+    * firstpast - If it is the first past day (the heading "Past" is shown before it)
+
+    Example context (json):
+    {
+        "day": "31.03.2026",
+        "daylabel": "Today",
+        "daydate": "Tuesday, 31 March",
+        "count": 1,
+        "ispast": false,
+        "firstpast": false,
+        "letters": [
+            {
+                "letter": "<div class=\"townsquare_letter deadlineletter list-group-item\">Lesson 1: Quantum Theory closes</div>"
+            }
+        ]
+    }
+}}
+{{#firstpast}}
+    {{! Separates the upcoming and the past days. Hidden by block_townsquare/filter/filtercontroller if one of
+        them has no letters to show. }}
+    <div class="ts_past_heading mt-3 mb-2 pt-2 px-2 border-top border-2 fw-bold">
+        {{#str}}past, block_townsquare{{/str}}
+    </div>
+{{/firstpast}}
+<div class="ts-lettergroup mb-2" id="ts-lettergroup-{{day}}"{{#ispast}} data-past="true"{{/ispast}}>
+    <div class="ts_day_header d-flex align-items-center gap-2 px-2 py-1 rounded bg-body-tertiary">
+        <span id="ts-daylabel-{{day}}">
+            {{#daylabel}}
+                <span class="fw-bold">{{daylabel}}</span>
+                <span class="small text-body-secondary">{{daydate}}</span>
+            {{/daylabel}}
+            {{^daylabel}}
+                <span class="fw-bold">{{daydate}}</span>
+            {{/daylabel}}
+        </span>
+        <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis" data-region="ts_day_count">{{count}}</span>
+        {{! Bootstrap collapses the day, Moodle's icons-collapse-expand shows the matching chevron. }}
+        <button type="button" class="btn btn-icon btn-sm ms-auto icons-collapse-expand" data-bs-toggle="collapse"
+                data-bs-target="#ts-letterbox-{{day}}" aria-expanded="true" aria-controls="ts-letterbox-{{day}}"
+                aria-labelledby="ts-daylabel-{{day}}">
+            <span class="expanded-icon">{{#pix}}t/expandedchevron, core{{/pix}}</span>
+            <span class="collapsed-icon">
+                <span class="dir-rtl-hide">{{#pix}}t/collapsedchevron, core{{/pix}}</span>
+                <span class="dir-ltr-hide">{{#pix}}t/collapsedchevron_rtl, core{{/pix}}</span>
+            </span>
+        </button>
+    </div>
+    <div class="ts-letter-box collapse show list-group list-group-flush" id="ts-letterbox-{{day}}" data-groupid="{{day}}">
+        {{#letters}}
+            {{{letter}}}
+        {{/letters}}
+    </div>
+</div>

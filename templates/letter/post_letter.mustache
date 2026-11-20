@@ -15,13 +15,12 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_townsquare/letter/postletter
+    @template block_townsquare/letter/post_letter
 
     This template renders a post letter. The message is shortened to a few lines and can be expanded.
 
     Variables required for this template (more variables are available for testing and future features):
     * contentid - Unique identification for every shown plugin content
-    * ispost - Variable for the content template to assure this template is used.
     * coursename - Name of the course
     * courseid - Id of the course
     * instancename - Name of the activity of the post
@@ -42,7 +41,6 @@
     Example context (json):
     {
         "contentid": 27,
-        "ispost": true,
         "coursename": "Moodle Engineering",
         "courseid": 3,
         "instancename": "Exam Questions",

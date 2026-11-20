@@ -46,7 +46,7 @@ class block_townsquare extends block_base {
         }
 
         $this->content = new stdClass();
-        $this->content->text = $this->page->get_renderer('block_townsquare')->render_main();
+        $this->content->text = $this->page->get_renderer('core')->render(new \block_townsquare\output\main());
 
         // Get the user settings if available.
         $usersettings = $DB->get_record('block_townsquare_preferences', ['userid' => $USER->id]);

@@ -40,7 +40,7 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @covers \block_townsquare\townsquareevents::get_deadlines()
- * @covers \block_townsquare\contentcontroller::build_content()
+ * @covers \block_townsquare\output\content
  * @covers \block_townsquare\observer::course_deleted()
  */
 final class coreevents_test extends \advanced_testcase {
@@ -359,9 +359,12 @@ final class coreevents_test extends \advanced_testcase {
      * @return array
      */
     private function get_letters_from_user($user): array {
+        global $PAGE;
         $this->setUser($user);
-        $content = (new contentcontroller())->build_content();
-        return array_merge(...array_column($content, 'letters'));
+        $content = new output\content();
+        $lettergroups = $content->group_by_day($content->get_letters());
+        $letters = array_merge(...array_map(fn($lettergroup) => $lettergroup->get_letters(), $lettergroups));
+        return array_map(fn($letter) => $letter->export_for_template($PAGE->get_renderer('core')), $letters);
     }
 
 
