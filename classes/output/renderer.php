@@ -40,7 +40,7 @@ class renderer extends plugin_renderer_base {
         $letters = $controller->get_content();
 
         // Get the last update time from the cache.
-        $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('allevents')["lastupdate"];
+        $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('items')["lastupdate"];
         $mustachedata = (object) [
             'content' => $letters,
             'courses' => $controller->courses,
@@ -61,7 +61,7 @@ class renderer extends plugin_renderer_base {
         $letters = $controller->get_content();
 
         // Get the last update time from the cache.
-        $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('allevents')["lastupdate"];
+        $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('items')["lastupdate"];
         $mustachedata = (object) [
             'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i', $lastupdate)),
             'reloadlabel' => self::get_reloadlabel($lastupdate),

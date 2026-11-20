@@ -15,212 +15,50 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace block_townsquare\local\letter;
-use context_module;
-use core_user\fields;
-use dml_exception;
-use stdClass;
-use user_picture;
+
+use block_townsquare\item\post_item;
 
 /**
- * Class that represents a post from the forum or moodleoverflow module.
+ * A letter for posts. It shows the post as the module of the post provides it.
  *
- * Note: The forum module belongs to the core plugins of Moodle.
- *       Townsquare also supports the moodleoverflow plugin, if it is installed.
- * Subclass from letter.
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class post_letter extends letter {
-    // Attributes.
-
-    /** @var object information about the post author. The object contains:
-     * - int id: the id of the author
-     * - string name: full name of the author (first and last name combined)
-     * - string pictureurl: url of the profile picture of the author, empty if there is no picture to show
-     */
-    private object $author;
-
-    /** @var object attributes of the post. The object contains:
-     * - int instanceid: The local ID of the module instance, is the forumid or moodleoverflowid
-     * - int discussionid: The id of the discussion
-     * - int id: the id of the post
-     * - string message: the message of the post
-     * - string discussionsubject: the subject of the discussion
-     * - int postparentid: the id of the parent post
-     * - bool anonymous: if the post is anonymous or not
-     */
-    private object $post;
-
-    /** @var object additional urls that are used in the post letter. The object contains:
-     * -  moodle_url linktopost: url to the discussion
-     * -  moodle_url linktoauthor: url to the user that wrote the post
-     */
-    private object $posturls;
-
-    /** @var bool variable for the mustache template */
-    public bool $ispost = true;
-
-    // Constructor.
+    /** @var post_item The post of the letter */
+    private post_item $post;
 
     /**
-     * Constructor of the post letter class.
-     * Builds the content of the post letter, gathers additional information like links and a picture and gets the post ready
-     * to export it to the mustache template.
-     * @param int $contentid    internal ID in the townsquare block
-     * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
-     *                          The module that provides the post can set $postevent->profilepicture (url of the picture),
-     *                          e.g. to show its own picture for anonymous posts. Otherwise, the picture of the author is used.
+     * Constructor of the post letter.
+     *
+     * @param int $contentid internal ID in the townsquare block
+     * @param post_item $post
      */
-    public function __construct($contentid, $postevent) {
-        parent::__construct(
-            $contentid,
-            $postevent->courseid,
-            $postevent->modulename,
-            $postevent->instancename,
-            $postevent->content,
-            $postevent->timestart,
-            $postevent->coursemoduleid
-        );
-
-        $this->author = new stdClass();
-        $this->post = new stdClass();
-        $this->posturls = new stdClass();
-
-        $this->lettertype = 'post';
-        $this->post->instanceid = $postevent->instanceid;
-        $this->post->discussionid = $postevent->postdiscussion;
-        $this->post->id = $postevent->postid;
-        $this->post->message = $this->format_post($postevent);
-        $this->post->discussionsubject = $postevent->discussionsubject;
-        $this->post->parentid = $postevent->postparentid;
-        $this->post->anonymous = $postevent->anonymous ?? false;
-        $this->author->id = $postevent->postuserid;
-        $this->author->name = $postevent->postuserfirstname . ' ' . $postevent->postuserlastname;
-        $this->posturls->linktopost = $postevent->linktopost;
-        $this->posturls->linktoauthor = $postevent->linktoauthor;
-
-        $this->add_anonymousattribute($postevent);
-        $this->add_privatereplyattribute($postevent);
-        $this->retrieve_profilepicture($postevent);
+    public function __construct(int $contentid, post_item $post) {
+        parent::__construct($contentid, $post->courseid, $post->cmid, $post->time);
+        $this->post = $post;
     }
-
-    // Functions.
 
     #[\Override]
     public function export_letter(): array {
-        global $OUTPUT;
-        return [
-            'contentid' => $this->contentid,
-            'lettertype' => $this->lettertype,
-            'ispost' => $this->ispost,
-            'courseid' => $this->courseid,
-            'coursename' => $this->coursename,
-            'modulename' => $this->modulename,
-            'instancename' => $this->instancename,
-            'discussionsubject' => $this->post->discussionsubject,
-            'anonymous' => $this->post->anonymous,
-            'privatereplyfrom' => $this->post->privatereplyfrom,
-            'privatereplyto' => $this->post->privatereplyto,
-            'authorname' => $this->author->name,
-            'authorpictureurl' => $this->author->pictureurl ?: $OUTPUT->image_url('u/f2')->out(false),
-            'postid' => $this->post->id,
-            'message' => $this->post->message,
-            'created' => $this->get_createdtime(),
-            'createdtimestamp' => $this->created,
-            'linktocourse' => $this->linktocourse->out(),
-            'linktoactivity' => $this->linktoactivity->out(),
-            'linktopost' => $this->posturls->linktopost->out(),
-            'linktoauthor' => $this->posturls->linktoauthor->out(),
-            'activityicon' => $this->get_activityicon(),
-        ];
-    }
+        global $OUTPUT, $USER;
 
-    // Helper functions.
-
-    /**
-     * Method to retrieve the url of the profile picture of the author.
-     *
-     * A picture that is provided by the module of the post is always used. Otherwise, the picture is drawn from the author,
-     * but only if the post is not anonymous.
-     * @param object $postevent
-     * @return void
-     * @throws dml_exception
-     */
-    private function retrieve_profilepicture(object $postevent): void {
-        global $DB, $PAGE;
-
-        if (!empty($postevent->profilepicture)) {
-            $this->author->pictureurl = (string) $postevent->profilepicture;
-            return;
-        }
-
-        // Profile picture is only retrieved if the author is visible.
-        if ($this->post->anonymous) {
-            $this->author->pictureurl = '';
-            return;
-        }
-        $user = new stdClass();
-        $picturefields = fields::get_picture_fields();
-        $user = username_load_fields_from_object(
-            $user,
-            $DB->get_record('user', ['id' => $this->author->id]),
-            null,
-            $picturefields
-        );
-        $user->id = $this->author->id;
-        $userpicture = new user_picture($user);
-        $userpicture->size = 35;
-        $this->author->pictureurl = $userpicture->get_url($PAGE)->out(false);
-    }
-
-    /**
-     * Method to add the anonymous attribute to the post.
-     * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
-     * @return void
-     */
-    private function add_anonymousattribute(object $postevent): void {
-        if ($postevent->modulename != 'moodleoverflow') {
-            $this->post->anonymous = false;
-            return;
-        }
-        $this->post->anonymous = $postevent->anonymous;
-    }
-
-    /**
-     * Method to add a boolean that indicates if the post is a private reply.
-     * @param object $postevent
-     * @return void
-     */
-    private function add_privatereplyattribute(object $postevent): void {
-        global $USER;
-        $isprivatereply = $postevent->modulename == 'forum' && (int) $postevent->postprivatereplyto !== 0;
         // A private reply that the user wrote is always shown as "from", even when it was sent to themselves.
-        $this->post->privatereplyfrom = $isprivatereply && (int) $postevent->postuserid === (int) $USER->id;
-        $this->post->privatereplyto = $isprivatereply && !$this->post->privatereplyfrom
-                && (int) $postevent->postprivatereplyto === (int) $USER->id;
-    }
+        $isprivatereply = $this->post->privatereplyto !== 0;
+        $privatereplyfrom = $isprivatereply && $this->post->authorid === (int) $USER->id;
+        $privatereplyto = $isprivatereply && !$privatereplyfrom && $this->post->privatereplyto === (int) $USER->id;
 
-    /**
-     * Function to format the post message before exporting it to the mustache template.
-     * @param object $postevent
-     * @return string
-     * @throws \coding_exception
-     */
-    private function format_post(object $postevent): string {
-        $context = context_module::instance($postevent->coursemoduleid);
-        $message = file_rewrite_pluginfile_urls(
-            $postevent->content,
-            'pluginfile.php',
-            $context->id,
-            'mod_' . $postevent->modulename,
-            'post',
-            $postevent->postid,
-            ['includetoken' => true]
-        );
-        $options = new stdClass();
-        $options->para = true;
-        $options->context = $context;
-        return format_text($message, $postevent->postmessageformat, $options);
+        return $this->export_basics() + [
+            'ispost' => true,
+            'discussionsubject' => $this->post->discussionsubject,
+            'message' => $this->post->message,
+            'authorname' => $this->post->authorname,
+            'authorpictureurl' => ($this->post->pictureurl ?? $OUTPUT->image_url('u/f2'))->out(false),
+            'linktoauthor' => $this->post->authorurl?->out(),
+            'linktopost' => $this->post->url->out(),
+            'privatereplyfrom' => $privatereplyfrom,
+            'privatereplyto' => $privatereplyto,
+        ];
     }
 }

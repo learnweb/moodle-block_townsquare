@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 $definitions = [
-    // Stores all townsquareevents. Structure: "allevents" => ["events" => array (events), "lastupdate" => int (timestamp)].
+    // Stores the items of townsquareevents. Structure: "items" => ["items" => array (items), "lastupdate" => int (timestamp)].
     'townsquareevents' => [
         'mode' => cache_store::MODE_SESSION,
         'simplekeys' => true,

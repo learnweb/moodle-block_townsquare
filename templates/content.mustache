@@ -52,7 +52,7 @@
                 "letters": [
                     {
                          "contentid": 0,
-                         "isbasic": true,
+                         "isdeadline": true,
                          "coursename": "Moodle Engineering",
                          "courseid": 3,
                          "instancename": "Lesson 1: Quantum Theory",
@@ -106,12 +106,9 @@
             </div>
             <div class="ts-letter-box collapse show list-group list-group-flush" id="ts-letterbox-{{day}}" data-groupid="{{day}}">
                 {{#letters}}
-                    {{#isbasic}}
-                        {{> block_townsquare/letter/basicletter}}
-                    {{/isbasic}}
-                    {{#isactivitycompletion}}
-                        {{> block_townsquare/letter/activitycompletionletter}}
-                    {{/isactivitycompletion}}
+                    {{#isdeadline}}
+                        {{> block_townsquare/letter/deadlineletter}}
+                    {{/isdeadline}}
                     {{#ispost}}
                         {{> block_townsquare/letter/postletter}}
                     {{/ispost}}

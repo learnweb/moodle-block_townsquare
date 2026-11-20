@@ -42,15 +42,10 @@ final class contentcontroller_test extends \advanced_testcase {
      * This Class contains:
      * - A Course
      * - A User
-     * - One forum and moodleoverflow with one post each
+     * - One forum with one post
      * - One assignment with an activity completion
      */
     private $testdata;
-
-    /** @var bool If the moodleoverflow module is available.
-     * This Plugin can support moodleoverflow, but it is not necessary to have it installed.
-     */
-    private bool $modoverflowinstalled;
 
     // Construct functions.
 
@@ -69,50 +64,36 @@ final class contentcontroller_test extends \advanced_testcase {
     // Tests.
 
     /**
-     * Test, if the right letters are created.
+     * Test, if the right letters are created: one for each post and one for each group of deadlines.
      * @return void
      */
     public function test_letters(): void {
         // Set an logged in user.
         $this->setUser($this->testdata->teacher);
 
-        // Create the controller and get the townsquareevents.
         $controller = new contentcontroller();
         $content = $controller->build_content();
-        $events = array_values($controller->events);
+        $letters = array_merge(...array_column($content, 'letters'));
 
-        // Check the lettertype for each letter.
-        $result = true;
-        $contentlength = 0;
+        // The items: the post, the due date, the expected completion (both tomorrow) and the grading due date.
+        $this->assertCount(4, $controller->items);
 
-        foreach ($content as $lettergroup) {
-            foreach ($lettergroup->letters as $letter) {
-                // The letters are sorted by their distance to now. The content id is the index of the event of the letter.
-                $eventtype = $events[$letter['contentid']]->eventtype;
-                $postcheck = $this->check_two_params($eventtype, 'post', $letter['lettertype'], 'post');
-                $completioncheck = $this->check_two_params(
-                    $eventtype,
-                    'expectcompletionon',
-                    $letter['lettertype'],
-                    'activitycompletion'
-                );
-                $basiccheck = ($eventtype != 'post' && $eventtype != 'expectcompletionon') && $letter['lettertype'] == 'basic';
+        // The post has its own letter. The due date and the expected completion of the assignment are at the same time,
+        // so they are grouped in one letter.
+        $posts = array_values(array_filter($letters, fn($letter) => !empty($letter['ispost'])));
+        $deadlines = array_values(array_filter($letters, fn($letter) => !empty($letter['isdeadline'])));
+        $this->assertCount(3, $letters);
+        $this->assertCount(1, $posts);
+        $this->assertCount(2, $deadlines);
 
-                // If one of the checks fails there is a problem while creating the letters.
-                if (!$postcheck && !$completioncheck && !$basiccheck) {
-                    $result = false;
-                    break;
-                }
-                $contentlength++;
-            }
-        }
-
-        if ($this->modoverflowinstalled) {
-            $this->assertEquals(5, $contentlength);
-        } else {
-            $this->assertEquals(4, $contentlength);
-        }
-        $this->assertEquals(true, $result);
+        $grouped = array_values(array_filter($deadlines, fn($letter) => $letter['grouped']));
+        $this->assertCount(1, $grouped);
+        $names = array_column($grouped[0]['deadlines'], 'name');
+        $assignname = $this->testdata->assignment->name;
+        $this->assertEquals([
+            get_string('calendardue', 'assign', $assignname),
+            get_string('completionexpectedfor', 'completion', (object) ['instancename' => $assignname]),
+        ], $names);
     }
 
     /**
@@ -175,7 +156,6 @@ final class contentcontroller_test extends \advanced_testcase {
      * @return void
      */
     private function helper_course_set_up(): void {
-        global $DB;
         // Declare generators.
         $datagenerator = $this->getDataGenerator();
         $forumgenerator = $datagenerator->get_plugin_generator('mod_forum');
@@ -185,29 +165,10 @@ final class contentcontroller_test extends \advanced_testcase {
         $this->testdata->teacher = $datagenerator->create_user();
         $datagenerator->enrol_user($this->testdata->teacher->id, $this->testdata->course->id, 'teacher');
 
-        // Create a forum and a moodleoverflow with posts.
+        // Create a forum with a post.
         $this->testdata->forum = $datagenerator->create_module('forum', ['course' => $this->testdata->course->id]);
         $record = (array)$this->testdata->forum + ['forum' => $this->testdata->forum->id, 'userid' => $this->testdata->teacher->id];
         $this->testdata->fdiscussion = (object)$forumgenerator->create_discussion($record);
-
-        // Check if mod_moodleoverflow and the townsquare support plugin are installed.
-        if (
-            $DB->get_record('modules', ['name' => 'moodleoverflow', 'visible' => 1]) &&
-            array_key_exists('moodleoverflow', \core_plugin_manager::instance()->get_plugins_of_type('townsquareexpansion'))
-        ) {
-            $this->modoverflowinstalled = true;
-            $modoverflowgenerator = $datagenerator->get_plugin_generator('mod_moodleoverflow');
-            $this->testdata->moodleoverflow = $datagenerator->create_module(
-                'moodleoverflow',
-                ['course' => $this->testdata->course->id]
-            );
-            $this->testdata->mdiscussion = $modoverflowgenerator->post_to_forum(
-                $this->testdata->moodleoverflow,
-                $this->testdata->teacher
-            );
-        } else {
-            $this->modoverflowinstalled = false;
-        }
 
         // Create an assign module with activity completion.
         $time = time();
@@ -233,17 +194,5 @@ final class contentcontroller_test extends \advanced_testcase {
             'gradingduedate' => $gradingduedate,
         ];
         return $this->getDataGenerator()->create_module('assign', $assignrecord, $options);
-    }
-
-    /**
-     * Little helper function to reduce cyclomatic complexity. Checks if two params equal values.
-     * @param mixed $param1
-     * @param mixed $equal1
-     * @param mixed $param2
-     * @param mixed $equal2
-     * @return bool
-     */
-    private function check_two_params($param1, $equal1, $param2, $equal2) {
-        return $param1 == $equal1 && $param2 == $equal2;
     }
 }

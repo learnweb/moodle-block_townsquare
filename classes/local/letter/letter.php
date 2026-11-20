@@ -15,151 +15,84 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace block_townsquare\local\letter;
+
+use cm_info;
 use core_course\output\activity_icon;
-use dml_exception;
-use moodle_exception;
 use moodle_url;
 
 /**
- * Class that represents an unspecific type of content.
+ * A letter is one row in Town Square. It prepares an item for its template.
  *
- * This class is used for the basic letter type and is the top-class for more specific letters.
+ * This class contains what all letters have: the activity with its course, the time and the activity icon.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class letter {
-    // Attributes.
-
-    /** @var int an ID to identify every content in townsquare */
+abstract class letter {
+    /** @var int an ID to identify every letter in townsquare */
     protected int $contentid;
 
-    /** @var string Every Letter must save its letter type */
-    protected string $lettertype;
+    /** @var cm_info The activity of the letter */
+    protected cm_info $cm;
 
-    /** @var int course module id of the content module */
-    protected int $cmid;
-
-    /** @var int The course from the letter */
-    protected int $courseid;
-
-    /** @var string The name of the course */
-    protected string $coursename;
-
-    /** @var string The Name of the plugin */
-    protected string $modulename;
-
-    /** @var string The Name of the instance */
-    protected string $instancename;
-
-    /** @var string The content of the letter */
-    protected string $content;
-
-    /** @var int Timestamp When the activity was created */
-    protected int $created;
-
-    /** @var moodle_url Link to the course */
-    protected moodle_url $linktocourse;
-
-    /** @var moodle_url The url to the activity */
-    protected moodle_url $linktoactivity;
-
-    /** @var bool variable for the mustache template */
-    public bool $isbasic = true;
-
-    /** @var array instances that are grouped in this letter.*/
-    public array $subinstances = [];
-
-    /** @var string type of the event.*/
-    public string $eventtype;
-
-    // Constructor.
+    /** @var int Timestamp of the letter */
+    protected int $time;
 
     /**
-     * Constructor for a letter
+     * Constructor for a letter.
      *
-     * @param int $contentid internal ID in the townsquare block.
-     * @param int $courseid Course ID from where the content comes from.
-     * @param string $modulename Name of the module/activity.
-     * @param string $instancename Name of the instance.
-     * @param string $content The content that will be showed in the letter.
-     * @param int $created Timestamp of creation.
-     * @param int $cmid Course module id of the content module.
-     * @param array $subinstances For grouped events, scheme: ["instancename" => string, "linktoactivity" => url]
-     * @param string $eventtype The eventtype from townsquareevents
-     * @throws dml_exception
-     * @throws moodle_exception
+     * @param int $contentid internal ID in the townsquare block
+     * @param int $courseid Id of the course of the activity
+     * @param int $cmid Course module id of the activity
+     * @param int $time Timestamp of the letter
      */
-    public function __construct(
-        int $contentid,
-        int $courseid,
-        string $modulename,
-        string $instancename,
-        string $content,
-        int $created,
-        int $cmid,
-        array $subinstances = [],
-        string $eventtype = ""
-    ) {
+    public function __construct(int $contentid, int $courseid, int $cmid, int $time) {
         $this->contentid = $contentid;
-        $this->lettertype = 'basic';
-        $this->courseid = $courseid;
-        $this->cmid = $cmid;
-        $this->coursename = get_course($courseid)->shortname;
-        $this->modulename = $modulename;
-        $this->instancename = $instancename;
-        $this->content = $content;
-        $this->created = $created;
-        $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
-        $this->linktoactivity = new moodle_url("/mod/{$modulename}/view.php", ['id' => $cmid]);
-        $this->subinstances = $subinstances;
-        $this->eventtype = $eventtype;
+        $this->cm = get_fast_modinfo($courseid)->get_cm($cmid);
+        $this->time = $time;
     }
-
-    // Functions.
 
     /**
      * Export function for the mustache template.
      * @return array
      */
-    public function export_letter(): array {
-        // Change the timestamp to a date.
+    abstract public function export_letter(): array;
+
+    /**
+     * Exports what all letters have.
+     * @return array
+     */
+    protected function export_basics(): array {
         return [
             'contentid' => $this->contentid,
-            'lettertype' => $this->lettertype,
-            'isbasic' => $this->isbasic,
-            'courseid' => $this->courseid,
-            'coursename' => $this->coursename,
-            'instancename' => $this->instancename,
-            'content' => $this->content,
-            'created' => $this->get_createdtime(),
-            'createdtimestamp' => $this->created,
-            'linktocourse' => $this->linktocourse->out(),
-            'linktoactivity' => $this->linktoactivity->out(),
-            'modulename' => $this->modulename,
+            'courseid' => $this->cm->course,
+            'coursename' => $this->cm->get_course()->shortname,
+            'instancename' => $this->cm->name,
+            'created' => userdate($this->time, get_string('strftimetime', 'langconfig')),
+            'createdtimestamp' => $this->time,
+            'linktocourse' => (new moodle_url('/course/view.php', ['id' => $this->cm->course]))->out(),
+            'linktoactivity' => $this->get_activityurl($this->cm->id),
             'activityicon' => $this->get_activityicon(),
-            'subinstances' => $this->subinstances,
-            'hassubinstances' => !empty($this->subinstances),
-            'eventtype' => $this->eventtype,
         ];
     }
 
     /**
-     * Returns the time of the letter in the timezone and time format of the user, e.g. "2:30 PM".
+     * Returns the url to an activity of the module of the letter.
+     * @param int $cmid Course module id of the activity
      * @return string
      */
-    protected function get_createdtime(): string {
-        return userdate($this->created, get_string('strftimetime', 'langconfig'));
+    protected function get_activityurl(int $cmid): string {
+        return (new moodle_url("/mod/{$this->cm->modname}/view.php", ['id' => $cmid]))->out();
     }
 
     /**
      * Returns the activity icon of the module for the template core_course/activity_icon.
      * @return array
      */
-    protected function get_activityicon(): array {
+    private function get_activityicon(): array {
         global $PAGE;
-        $icon = activity_icon::from_modname($this->modulename)->set_extra_classes('smaller');
+        $icon = activity_icon::from_modname($this->cm->modname)->set_extra_classes('smaller');
         return $icon->export_for_template($PAGE->get_renderer('core'));
     }
 }

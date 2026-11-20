@@ -63,76 +63,7 @@ function block_townsquare_get_timeend(): int {
     return time() + get_config('block_townsquare', 'timespan');
 }
 
-/**
- * Merge sort function for townsquare events.
- * @param array $events
- * @return array
- */
-function block_townsquare_mergesort(array $events): array {
-    $length = count($events);
-    if ($length <= 1) {
-        return $events;
-    }
-    $mid = (int) ($length / 2);
-    $left = block_townsquare_mergesort(array_slice($events, 0, $mid));
-    $right = block_townsquare_mergesort(array_slice($events, $mid));
-    return block_townsquare_merge($left, $right);
-}
-
-/**
- * Function that sorts events in descending order by time created (newest event first)
- * @param array $left
- * @param array $right
- * @return array
- */
-function block_townsquare_merge(array $left, array $right): array {
-    $result = [];
-    reset($left);
-    reset($right);
-    $numberofelements = count($left) + count($right);
-    for ($i = 0; $i < $numberofelements; $i++) {
-        if (current($left) && current($right)) {
-            if (current($left)->timestart > current($right)->timestart) {
-                $result[$i] = current($left);
-                next($left);
-            } else {
-                $result[$i] = current($right);
-                next($right);
-            }
-        } else if (current($left)) {
-            $result[$i] = current($left);
-            next($left);
-        } else {
-            $result[$i] = current($right);
-            next($right);
-        }
-    }
-    return $result;
-}
-
 // Filter functions.
-
-/**
- * Filter that checks if the event needs to be filtered out for the current user because it is not available.
- * @param object $event event that is checked
- * @return bool true if the event needs to filtered out, false if not.
- * @throws \core\exception\moodle_exception
- */
-function townsquare_filter_availability(object $event): bool {
-    // If there is no restriction defined, the event is available.
-    if ($event->availability == null) {
-        return false;
-    }
-
-    // If there is a restriction, check if it applies to the user.
-    $modinfo = get_fast_modinfo($event->courseid);
-    $moduleinfo = $modinfo->get_cm($event->coursemoduleid);
-    if ($moduleinfo->uservisible) {
-        return false;
-    }
-
-    return true;
-}
 
 /**
  * Filter that checks if the event needs to be filtered out for the current user because it is already completed.

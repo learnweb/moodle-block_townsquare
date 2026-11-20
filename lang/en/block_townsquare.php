@@ -27,13 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['allcourses'] = 'All courses';
 $string['alltime'] = 'All time';
-$string['anonymousauthor'] = 'Anonymous';
-$string['assignduemessage'] = '{$a->instancename} is due';
-$string['assigngradingduemessage'] = '{$a->instancename} is due to be graded';
-$string['basicgroupletterorigin'] = "Assignment reminders:";
 $string['basicletterorigin'] = 'A notification from {$a->instancename}:';
 $string['basicletters'] = 'Notifications and deadlines';
-$string['completionletterorigin'] = '{$a->modulename} should be completed';
 $string['completionletters'] = 'Activity completions';
 $string['configorientationmarkercolor'] = 'Configuration for the color of the orientation marker';
 $string['configtimespan'] = 'Setting, in which time span townsquare will search for notification in the past and future';

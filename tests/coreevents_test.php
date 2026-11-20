@@ -39,7 +39,8 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::get_coreevents()
+ * @covers \block_townsquare\townsquareevents::get_deadlines()
+ * @covers \block_townsquare\contentcontroller::build_content()
  * @covers \block_townsquare\observer::course_deleted()
  */
 final class coreevents_test extends \advanced_testcase {
@@ -83,7 +84,7 @@ final class coreevents_test extends \advanced_testcase {
         // Iterate through all posts and check if the sort order is correct.
         $result = true;
         for ($i = 0; $i < $count - 1; $i++) {
-            if ($coreevents[$i]->timestart < $coreevents[$i + 1]->timestart) {
+            if ($coreevents[$i]->time < $coreevents[$i + 1]->time) {
                 $result = false;
                 break;
             }
@@ -178,15 +179,16 @@ final class coreevents_test extends \advanced_testcase {
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
 
         // The assignment should not appear.
-        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->coursemoduleid == $pastassignment->cmid)));
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->cmid == $pastassignment->cmid)));
 
         // Test case 2: The student should not see the gradingdue event, the teacher should see it.
         // First the events of the student.
-        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->eventtype == 'gradingdue')));
+        $gradingdue = get_string('calendargradingdue', 'assign', $this->testdata->assignment1->name);
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->name == $gradingdue)));
 
         // Then the events of the teacher.
         $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
-        $this->assertEquals(true, !empty(array_filter($coreevents, fn($event) => $event->eventtype == 'gradingdue')));
+        $this->assertEquals(true, !empty(array_filter($coreevents, fn($event) => $event->name == $gradingdue)));
 
         // Test case 3: Assignments that are not open should not be seen.
         $notopenassignment = $this->create_assignment(
@@ -197,43 +199,49 @@ final class coreevents_test extends \advanced_testcase {
             false
         );
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
-        $this->assertEquals(true, empty(array_filter($coreevents, fn($e) => $e->coursemoduleid == $notopenassignment->cmid)));
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($e) => $e->cmid == $notopenassignment->cmid)));
     }
 
     /**
-     * Test if the assignment groups are build correctly.
+     * Test if the deadlines of the same course and module at the same time are grouped in one letter.
      * @return void
      */
     public function test_assigngroups(): void {
-        // Create 2 assignemnts two on the same time.
+        // Create 2 assignments that are due at the same time.
         $time = time();
         $cid = $this->testdata->course2->id;
         $assignone = $this->create_assignment($cid, $time - 1814400, $time + 907200, $time + 1814400, false);
         $assigntwo = $this->create_assignment($cid, $time - 907200, $time + 907200, $time + 1814400, false);
 
-        // There should be 2 assignemnt events in total for the student (1 grouped and the default from the course set up).
-        $coreevents = $this->get_coreevents_from_user($this->testdata->student2);
-        $groupedevents = array_filter($coreevents, fn($event) => isset($event->subinstances));
-        $this->assertEquals(2, count(array_filter($coreevents, fn($e) => $e->modulename == 'assign' && $e->courseid == $cid)));
-        $this->assertEquals(1, count($groupedevents));
+        // There should be 2 letters for the student: the grouped due dates and the default assignment of the course.
+        $letters = $this->get_letters_from_user($this->testdata->student2);
+        $grouped = array_values(array_filter($letters, fn($letter) => $letter['grouped']));
+        $this->assertCount(2, $letters);
+        $this->assertCount(1, $grouped);
 
-        // Information about the grouped assignments should be stored in the $subinstances array.
-        $subinstances = reset($groupedevents)->subinstances;
-        $this->assertEquals(2, count($subinstances));
-        $namecheck = $subinstances[0]["instancename"] == $assignone->name && $subinstances[1]["instancename"] == $assigntwo->name;
-        $this->assertEquals(true, $namecheck);
+        // The grouped deadlines are sorted by their name.
+        $this->assertEquals([
+            get_string('calendardue', 'assign', $assignone->name),
+            get_string('calendardue', 'assign', $assigntwo->name),
+        ], array_column($grouped[0]['deadlines'], 'name'));
 
-        // The Teacher should have one group more with the grouped grading due event.
-        $coreevents = $this->get_coreevents_from_user($this->testdata->teacher);
-        $groupedevents = array_filter($coreevents, fn($event) => isset($event->subinstances));
-        $this->assertEquals(4, count(array_filter($coreevents, fn($e) => $e->modulename == 'assign' && $e->courseid == $cid)));
-        $this->assertEquals(2, count($groupedevents));
-
-        // In the subinstances the $isdueevent should be set right.
-        $gradingdue = array_values(array_filter($groupedevents, fn($event) => $event->eventtype == 'gradingdue'))[0];
-        $due = array_values(array_filter($groupedevents, fn($event) => $event->eventtype == 'due'))[0];
-        $this->assertEquals(true, empty(array_filter($gradingdue->subinstances, fn($instance) => $instance["dueevent"] == true)));
-        $this->assertEquals(true, empty(array_filter($due->subinstances, fn($instance) => $instance["dueevent"] == false)));
+        // The teacher also sees the grading due dates. The due dates of the two assignments, their grading due dates and
+        // the due and grading due date of the default assignment (both at the same time) are grouped. The letters closest
+        // to now come first.
+        $letters = $this->get_letters_from_user($this->testdata->teacher);
+        $letters = array_values(array_filter($letters, fn($letter) => $letter['courseid'] == $cid));
+        $grouped = array_values(array_filter($letters, fn($letter) => $letter['grouped']));
+        $this->assertCount(3, $letters);
+        $this->assertCount(3, $grouped);
+        $assignment2 = $this->testdata->assignment2->name;
+        $this->assertEquals([
+            get_string('calendardue', 'assign', $assignment2),
+            get_string('calendargradingdue', 'assign', $assignment2),
+        ], array_column($grouped[1]['deadlines'], 'name'));
+        $this->assertEquals([
+            get_string('calendargradingdue', 'assign', $assignone->name),
+            get_string('calendargradingdue', 'assign', $assigntwo->name),
+        ], array_column($grouped[2]['deadlines'], 'name'));
     }
 
     /**
@@ -245,8 +253,10 @@ final class coreevents_test extends \advanced_testcase {
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
         $result = false;
         $count = 0;
+        $completion = get_string('completionexpectedfor', 'completion',
+            (object) ['instancename' => $this->testdata->assignment1->name]);
         foreach ($coreevents as $event) {
-            if ($event->eventtype == 'expectcompletionon') {
+            if ($event->name == $completion) {
                 $result = true;
                 $count++;
             }
@@ -258,7 +268,7 @@ final class coreevents_test extends \advanced_testcase {
         core_completion_external::update_activity_completion_status_manually($this->testdata->assignment1->cmid, true);
 
         $coreevents = $this->get_coreevents_from_user($this->testdata->student1);
-        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->eventtype == 'expectcompletionon')));
+        $this->assertEquals(true, empty(array_filter($coreevents, fn($event) => $event->name == $completion)));
     }
 
     // Helper functions.
@@ -340,7 +350,18 @@ final class coreevents_test extends \advanced_testcase {
     private function get_coreevents_from_user($user): array {
         $this->setUser($user);
         $townsquareevents = new townsquareevents();
-        return $townsquareevents->get_coreevents();
+        return $townsquareevents->get_deadlines();
+    }
+
+    /**
+     * Helper function to get the exported letters of a certain user.
+     * @param object $user The user for whom the letters should be built.
+     * @return array
+     */
+    private function get_letters_from_user($user): array {
+        $this->setUser($user);
+        $content = (new contentcontroller())->build_content();
+        return array_merge(...array_column($content, 'letters'));
     }
 
 

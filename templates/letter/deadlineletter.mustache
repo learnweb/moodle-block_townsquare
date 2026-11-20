@@ -15,29 +15,30 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_townsquare/letter/basicletter
+    @template block_townsquare/letter/deadlineletter
 
-    This template renders a basic letter (notifications and deadlines) as a compact row.
+    This template renders a deadline letter as a compact row. Several deadlines of the same course and module at the
+    same time are shown as a list.
 
     Variables required for this template (more variables are available for testing and future features):
     * contentid - Unique identification for every shown plugin content
-    * isbasic - Variable for the blockcontent template to assure this template is used.
+    * isdeadline - Variable for the content template to assure this template is used.
     * coursename - Name of the course
     * courseid - Id of the course
     * instancename - Name of the instance
-    * content - Content of the letter
-    * created - Time of the notification
-    * createdtimestamp - Timestamp of the notification
+    * content - What happens at the deadline
+    * created - Time of the deadline
+    * createdtimestamp - Timestamp of the deadline
     * linktocourse - Link to the course
     * linktoactivity - Link to the module instance
     * activityicon - Activity icon of the module (see core_course/activity_icon)
-    * hassubinstances - If the letter groups several assignment reminders
-    * subinstances - The grouped assignment reminders
+    * grouped - If the letter shows several deadlines
+    * deadlines - The grouped deadlines, each with name and linktoactivity
 
     Example context (json):
     {
           "contentid": 0,
-          "isbasic": true,
+          "isdeadline": true,
           "coursename": "Moodle Engineering",
           "courseid": 3,
           "instancename": "Lesson 1: Quantum Theory",
@@ -54,44 +55,34 @@
               "purpose": "content",
               "branded": false,
               "extraclasses": "smaller"
-          }
+          },
+          "grouped": false,
+          "deadlines": []
     }
 }}
-<div class="townsquare_letter basicletter list-group-item bg-transparent px-2" id="content-nr-{{contentid}}">
+<div class="townsquare_letter deadlineletter list-group-item bg-transparent px-2" id="content-nr-{{contentid}}">
     <div class="d-flex align-items-start gap-3">
         <div class="flex-shrink-0">{{#activityicon}}{{> core_course/activity_icon}}{{/activityicon}}</div>
         <div class="flex-grow-1 text-break">
             <div>
-                {{#hassubinstances}}
-                    {{#str}} basicgroupletterorigin, block_townsquare{{/str}}
+                {{#grouped}}
                     <ul class="list-unstyled mb-0">
-                        {{#subinstances}}
-                            <li>
-                                {{#dueevent}}
-                                    {{#str}} assignduemessage, block_townsquare,
-                                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
-                                    {{/str}}
-                                {{/dueevent}}
-                                {{^dueevent}}
-                                    {{#str}} assigngradingduemessage, block_townsquare,
-                                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
-                                    {{/str}}
-                                {{/dueevent}}
-                            </li>
-                        {{/subinstances}}
+                        {{#deadlines}}
+                            <li><a href="{{linktoactivity}}">{{name}}</a></li>
+                        {{/deadlines}}
                     </ul>
-                {{/hassubinstances}}
-                {{^hassubinstances}}
+                {{/grouped}}
+                {{^grouped}}
                     {{content}}
-                {{/hassubinstances}}
+                {{/grouped}}
             </div>
             <div class="small text-body-secondary">
                 <span class="townsquareletter_course" data-courseid="{{courseid}}">
                     <a href="{{linktocourse}}">{{coursename}}</a>
                 </span>
-                {{^hassubinstances}}
+                {{^grouped}}
                     &rsaquo; <a href="{{linktoactivity}}">{{instancename}}</a>
-                {{/hassubinstances}}
+                {{/grouped}}
             </div>
         </div>
         <div class="townsquareletter_date small text-body-secondary text-nowrap text-end" data-created="{{createdtimestamp}}">

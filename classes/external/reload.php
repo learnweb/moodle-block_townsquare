@@ -58,7 +58,7 @@ class reload extends external_api {
         require_once($CFG->dirroot . '/lib/filelib.php');
         // Set the context for the page.
         $PAGE->set_context(\context_user::instance($USER->id));
-        cache::make('block_townsquare', 'townsquareevents')->delete('allevents');
+        cache::make('block_townsquare', 'townsquareevents')->delete('items');
         return $PAGE->get_renderer('block_townsquare')->render_content();
     }
 }

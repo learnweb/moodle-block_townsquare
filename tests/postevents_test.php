@@ -35,7 +35,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::get_postevents()
+ * @covers \block_townsquare\townsquareevents::get_posts()
  * @covers \block_townsquare\local\letter\post_letter
  */
 final class postevents_test extends \advanced_testcase {
@@ -75,11 +75,11 @@ final class postevents_test extends \advanced_testcase {
         $timestamp = 9999999999;
         $result = true;
         foreach ($posts as $post) {
-            if ($timestamp < $post->timestart) {
+            if ($timestamp < $post->time) {
                 $result = false;
                 break;
             }
-            $timestamp = $post->timestart;
+            $timestamp = $post->time;
         }
 
         $this->assertTrue($result);
@@ -97,20 +97,9 @@ final class postevents_test extends \advanced_testcase {
         // Test case: disable forum.
         $DB->delete_records('modules', ['name' => 'forum']);
 
-        // Get the post events from the teacher.
+        // Get the post events from the teacher. There should be no more forum posts.
         $posts = $this->get_postevents_from_user($this->testdata->teacher);
-
-        $result = true;
-        // Check if there are no more forum posts.
-        foreach ($posts as $post) {
-            if ($post->modulename == 'forum') {
-                $result = false;
-            }
-        }
-
-        // Two Checks: The number of posts (there are 4 moodleoverflow posts) and the result.
         $this->assertEquals(0, count($posts));
-        $this->assertTrue($result);
     }
 
     /**
@@ -131,7 +120,7 @@ final class postevents_test extends \advanced_testcase {
         $this->assertEquals(3, count($posts));
         $result = false;
         foreach ($posts as $post) {
-            if ($post->content == 'This is a private reply.') {
+            if (str_contains($post->message, 'This is a private reply.')) {
                 $result = true;
             }
         }
@@ -144,7 +133,7 @@ final class postevents_test extends \advanced_testcase {
         $this->assertEquals(1, count($posts));
         $result = true;
         foreach ($posts as $post) {
-            if ($post->content == 'This is a private reply.') {
+            if (str_contains($post->message, 'This is a private reply.')) {
                 $result = false;
             }
         }
@@ -164,7 +153,7 @@ final class postevents_test extends \advanced_testcase {
         $letters = $this->get_postletters_from_user($this->testdata->teacher);
         $this->assertCount(3, $letters);
         foreach ($letters as $letter) {
-            $isprivatereply = $letter['postid'] == $this->testdata->fprivatereply->id;
+            $isprivatereply = str_ends_with($letter['linktopost'], '#p' . $this->testdata->fprivatereply->id);
             $this->assertSame($isprivatereply, $letter['privatereplyto']);
             $this->assertFalse($letter['privatereplyfrom']);
         }
@@ -173,7 +162,7 @@ final class postevents_test extends \advanced_testcase {
         $letters = $this->get_postletters_from_user($this->testdata->student2);
         $this->assertCount(3, $letters);
         foreach ($letters as $letter) {
-            $isprivatereply = $letter['postid'] == $this->testdata->fprivatereply->id;
+            $isprivatereply = str_ends_with($letter['linktopost'], '#p' . $this->testdata->fprivatereply->id);
             $this->assertSame($isprivatereply, $letter['privatereplyfrom']);
             $this->assertFalse($letter['privatereplyto']);
         }
@@ -262,7 +251,7 @@ final class postevents_test extends \advanced_testcase {
         // Check if the first forum post is not in the post events.
         $result = true;
         foreach ($posts as $post) {
-            if ($post->modulename == 'forum' && $post->instanceid == $this->testdata->forum1->id) {
+            if ($post->cmid == $cmid) {
                 $result = false;
             }
         }
@@ -344,16 +333,7 @@ final class postevents_test extends \advanced_testcase {
      */
     private function get_postevents_from_user(object $user): array {
         $this->setUser($user);
-        $townsquareevents = new townsquareevents();
-        $allevents = $townsquareevents->get_all_events_sorted();
-        $postevents = [];
-
-        foreach ($allevents as $event) {
-            if ($event->eventtype == 'post') {
-                $postevents[] = $event;
-            }
-        }
-        return $postevents;
+        return (new townsquareevents())->get_posts();
     }
 
     /**

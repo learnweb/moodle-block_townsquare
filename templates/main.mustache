@@ -21,8 +21,7 @@
 
      Variables required for this template:
      * content - Array with content
-        * isbasic - Boolean variable if current content is a basic notification
-        * isactivitycompletion - Boolean variable if current content is an activity completion
+        * isdeadline - Boolean variable if current content is a deadline
         * ispost - Boolean variable if current content is a post
 
     Example context (json):
@@ -40,17 +39,7 @@
                 "letters": [
                     {
                         "contentid": 1,
-                        "isactivitycompletion": true,
-                        "coursename": "Moodle Engineering",
-                        "courseid": 3,
-                        "instancename": "How difficult was the exam?",
-                        "created": "28.10.2023",
-                        "linktoactivity": "http://localhost/moodle/mod/survey/view.php?id=72",
-                        "linktocourse": "http://localhost/moodle/course/view.php?id=20"
-                    },
-                    {
-                        "contentid": 2,
-                        "isbasic": true,
+                        "isdeadline": true,
                         "coursename": "Moodle Engineering",
                         "courseid": 3,
                         "instancename": "Lesson 1: Quantum Theory",
@@ -60,13 +49,12 @@
                         "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314"
                     },
                     {
-                        "contentid": 3,
+                        "contentid": 2,
                         "ispost": true,
                         "coursename": "Moodle Engineering",
                         "courseid": 3,
                         "instancename": "Exam Questions",
                         "discussionsubject": "Hour of Exam",
-                        "anonymous": false,
                         "authorname": "Tamaro Walter",
                         "authorpictureurl": "http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13",
                         "message": "<div class=\"text_to_html\"><p>When do we write the exam?</p></div>",

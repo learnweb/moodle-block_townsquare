@@ -16,21 +16,23 @@
 
 namespace block_townsquare;
 
+use block_townsquare\item\post_item;
+
 /**
  * Letter Controller of block_townsquare
  *
- * This Class controls access to the townsquareevents class. It retrieves all important events and builds the letters.
+ * This Class controls access to the townsquareevents class. It retrieves all items and builds the letters.
  *
  * @package   block_townsquare
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class contentcontroller {
-    /** @var object Class to retrieve events */
-    public object $townsquareevents;
+    /** @var townsquareevents Class to retrieve the items */
+    public townsquareevents $townsquareevents;
 
-    /** @var array events that are relevant for the townsquare */
-    public array $events;
+    /** @var array items (deadlines and posts) that are relevant for the townsquare, the latest first */
+    public array $items;
 
     /** @var array stores the letters in objects with the day the letters are from.
      * The content is structured in a way that mustache can parse it easily:
@@ -58,33 +60,21 @@ class contentcontroller {
     // Core functions.
 
     /**
-     * Builds the content from events.
+     * Builds the content from the items.
      * @return array
      */
     public function build_content(): array {
         $this->content = [];
-        $this->events = $this->townsquareevents->get_all_events_sorted();
+        $this->items = $this->townsquareevents->get_items();
 
         $index = 0;
         $appearedcourses = [];
 
-        // Build a letter for each event.
-        foreach ($this->events as $event) {
-            match ($event->eventtype) {
-                'post' => $templetter = new local\letter\post_letter($index++, $event),
-                'expectcompletionon' => $templetter = new local\letter\activitycompletion_letter($index++, $event),
-                default => $templetter = new local\letter\letter(
-                    $index++,
-                    $event->courseid,
-                    $event->modulename,
-                    $event->instancename,
-                    $event->content,
-                    $event->timestart,
-                    $event->coursemoduleid,
-                    $event->subinstances ?? [],
-                    $event->eventtype,
-                ),
-            };
+        // Build a letter for each post and each group of deadlines.
+        foreach ($this->group_deadlines($this->items) as $entry) {
+            $templetter = $entry instanceof post_item
+                ? new local\letter\post_letter($index++, $entry)
+                : new local\letter\deadline_letter($index++, $entry);
             $templetter = $templetter->export_letter();
 
             // Group the letters by its day in the timezone of the user.
@@ -108,17 +98,43 @@ class contentcontroller {
                     'courseid' => $templetter['courseid'],
                     'coursename' => $templetter['coursename'],
                 ];
-                $appearedcourses[$event->courseid] = true;
+                $appearedcourses[$templetter['courseid']] = true;
             }
         }
         return $this->sort_by_distance_to_now(array_values($this->content));
     }
 
     /**
+     * Groups the deadlines of the same course and module at the same time, so they are shown in one letter. This is
+     * often the case when exercises are split up (like: week 1 - exercise 1, week 1 - exercise 2, ...).
+     *
+     * @param array $items deadline_item and post_item objects, the latest first
+     * @return array post_item objects and arrays of deadline_item objects, in the order of the items
+     */
+    private function group_deadlines(array $items): array {
+        $entries = [];
+        $groups = [];
+        foreach ($items as $item) {
+            if ($item instanceof post_item) {
+                $entries[] = $item;
+                continue;
+            }
+            $modulename = get_fast_modinfo($item->courseid)->get_cm($item->cmid)->modname;
+            $key = "{$item->courseid}-{$modulename}-{$item->time}";
+            if (!isset($groups[$key])) {
+                $groups[$key] = count($entries);
+                $entries[] = [];
+            }
+            $entries[$groups[$key]][] = $item;
+        }
+        return $entries;
+    }
+
+    /**
      * Sorts the days, so that the letters closest to now come first: today and the upcoming days with the earliest
      * letter first, then the past days with the latest letter first. The first past day gets the heading "Past".
      *
-     * @param array $days Days with their letters, from the latest to the earliest letter (order of the events)
+     * @param array $days Days with their letters, from the latest to the earliest letter (order of the items)
      * @return array
      */
     private function sort_by_distance_to_now(array $days): array {
@@ -178,10 +194,10 @@ class contentcontroller {
     }
 
     /**
-     * Getter for the events
+     * Getter for the items
      * @return array
      */
-    public function get_events(): array {
-        return $this->events;
+    public function get_items(): array {
+        return $this->items;
     }
 }

@@ -18,20 +18,23 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
+use block_townsquare\item\deadline_item;
+use block_townsquare\item\post_item;
 use cache;
-use core_plugin_manager;
 use context_module;
+use core_user\fields;
 use moodle_url;
 use coding_exception;
 use moodle_exception;
 use dml_exception;
+use user_picture;
 
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->dirroot . '/blocks/townsquare/lib.php');
 
 /**
- * Class to get relevant events from courses the user is enrolled to.
+ * Class to get the items (deadlines and posts) from courses the user is enrolled to.
  *
  * @package     block_townsquare
  * @copyright   2023 Tamaro Walter
@@ -63,109 +66,128 @@ class townsquareevents {
     }
 
     /**
-     * Retrieves calendar, post events, merges and sorts them.
-     * @return array
+     * Retrieves the deadlines and posts, the latest first.
+     * @return array deadline_item and post_item objects
      * @throws moodle_exception
      */
-    public function get_all_events_sorted(): array {
-        global $CFG;
-
+    public function get_items(): array {
         // Check if the cache already has data and if the data is still considered up to date.
         $cache = cache::make('block_townsquare', 'townsquareevents');
-        $cached = $cache->get('allevents');
+        $cached = $cache->get('items');
         if ($cached && $cached["lastupdate"] >= time() - BLOCK_TOWNSQUARE_CACHE_TTL) {
-            return $cached["events"];
+            // Activities can be deleted or hidden while the items are cached.
+            return array_values(array_filter($cached["items"], fn($item) => $this->is_visible($item->courseid, $item->cmid)));
         }
 
-        // Get all events.
-        $coreevents = $this->get_coreevents();
-        $postevents = $this->get_postevents();
-
-        // Check if the townsquaresupport plugin is installed.
-        $localplugins = core_plugin_manager::instance()->get_plugins_of_type('local');
-        $subpluginevents = [];
-        if (array_key_exists('townsquaresupport', $localplugins)) {
-            require_once($CFG->dirroot . '/local/townsquaresupport/lib.php');
-            $subpluginevents = \local_townsquaresupport\local_townsquaresupport_get_subplugin_events();
-        }
-
-        // Return the events in a sorted order.
-        $events = block_townsquare_mergesort(array_merge($coreevents, $postevents, $subpluginevents));
+        // Sort the items, the latest first. The order of items with the same time is kept.
+        $items = array_merge($this->get_deadlines(), $this->get_posts());
+        usort($items, fn($a, $b) => $b->time <=> $a->time);
 
         // Set the cache.
-        $cache->set('allevents', ['events' => $events, "lastupdate" => time()]);
-        return $events;
+        $cache->set('items', ['items' => $items, "lastupdate" => time()]);
+        return $items;
     }
 
     /**
-     * Function to get events/notifications from core plugins for the current user.
+     * Function to get the deadlines from the calendar events of core plugins for the current user.
      *
-     * The events are sorted in descending order by time created (newest event first)
-     * @return array
+     * @return deadline_item[]
      * @throws dml_exception|coding_exception|moodle_exception
      */
-    public function get_coreevents(): array {
-        global $DB;
-
-        // Get all events from the database.
-        $coreevents = $this->get_events_from_db($this->timestart, $this->timeend, $this->courses);
-
-        // Filter the events and add the instancename.
-        foreach ($coreevents as $coreevent) {
+    public function get_deadlines(): array {
+        $deadlines = [];
+        foreach ($this->get_events_from_db($this->timestart, $this->timeend, $this->courses) as $event) {
             // Filter out events that are not relevant for the user.
-            $gradingcap = has_capability('mod/assign:grade', context_module::instance($coreevent->coursemoduleid));
+            $gradingcap = has_capability('mod/assign:grade', context_module::instance($event->coursemoduleid));
             if (
-                townsquare_filter_availability($coreevent) ||
-                ($coreevent->modulename == "assign" && ($coreevent->eventtype == "gradingdue" && !$gradingcap)) ||
-                ($coreevent->eventtype == "expectcompletionon" && townsquare_filter_activitycompletions($coreevent))
+                !$this->is_visible($event->courseid, $event->coursemoduleid) ||
+                ($event->modulename == "assign" && ($event->eventtype == "gradingdue" && !$gradingcap)) ||
+                ($event->eventtype == "expectcompletionon" && townsquare_filter_activitycompletions($event))
             ) {
-                unset($coreevents[$coreevent->id]);
                 continue;
             }
 
-            // Add the name of the instance to the event.
-            $coreevent->instancename = $DB->get_field($coreevent->modulename, 'name', ['id' => $coreevent->instance]);
+            $deadlines[] = new deadline_item(
+                courseid: $event->courseid,
+                cmid: $event->coursemoduleid,
+                name: $event->content,
+                time: $event->timestart,
+            );
         }
-
-        // Filter all assignment events and extract them.
-        $assignevents = array_filter($coreevents, fn ($event) => $event->modulename == 'assign');
-        $coreevents = array_diff_key($coreevents, $assignevents);
-
-        // Merge the assignments back to the events.
-        $assignevents = $this->group_assignments($assignevents);
-        return array_values(array_merge($coreevents, $assignevents));
+        return $deadlines;
     }
 
     /**
      * Function to get the newest posts from the forum.
      *
-     * The events are sorted in descending order by time created (newest event first)
-     * @return array;
+     * @return post_item[]
      * @throws moodle_exception
      */
-    public function get_postevents(): array {
-        // Get all post from the database.
-        $forumposts = $this->get_forumposts_from_db($this->courses, $this->timestart);
+    public function get_posts(): array {
+        global $PAGE;
 
-        foreach ($forumposts as $post) {
-            if (townsquare_filter_availability($post)) {
-                unset($forumposts[$post->row_num]);
+        $posts = [];
+        foreach ($this->get_forumposts_from_db($this->courses, $this->timestart) as $post) {
+            if (!$this->is_visible($post->courseid, $post->coursemoduleid)) {
+                continue;
             }
 
-            // Add a links and the authors picture.
-            $post->linktopost = new moodle_url('/mod/forum/discuss.php', ['d' => $post->postdiscussion], 'p' . $post->postid);
-            $post->linktoauthor = new moodle_url('/user/view.php', ['id' => $post->postuserid]);
-        }
+            // Format the message.
+            $context = context_module::instance($post->coursemoduleid);
+            $message = file_rewrite_pluginfile_urls(
+                $post->message,
+                'pluginfile.php',
+                $context->id,
+                'mod_forum',
+                'post',
+                $post->id,
+                ['includetoken' => true]
+            );
+            $message = format_text($message, $post->messageformat, ['para' => true, 'context' => $context]);
 
-        return $forumposts;
+            // The author with its picture.
+            $author = user_picture::unalias($post, null, 'authorid', 'author');
+            $picture = new user_picture($author);
+            $picture->size = 35;
+
+            $posts[] = new post_item(
+                courseid: $post->courseid,
+                cmid: $post->coursemoduleid,
+                discussionsubject: $post->discussionsubject,
+                message: $message,
+                time: $post->created,
+                url: new moodle_url('/mod/forum/discuss.php', ['d' => $post->discussion], 'p' . $post->id),
+                authorname: fullname($author),
+                authorid: $author->id,
+                authorurl: new moodle_url('/user/view.php', ['id' => $author->id]),
+                pictureurl: $picture->get_url($PAGE),
+                privatereplyto: $post->privatereplyto,
+            );
+        }
+        return $posts;
     }
 
     // Helper functions.
 
     /**
-     * Searches for posts in the forum or moodleoverflow module.
+     * Checks if the user can see an activity of a shown course (it is visible and available to the user).
+     * @param int $courseid
+     * @param int $cmid
+     * @return bool
+     * @throws moodle_exception
+     */
+    private function is_visible(int $courseid, int $cmid): bool {
+        if (!in_array($courseid, $this->courses)) {
+            return false;
+        }
+        $cm = get_fast_modinfo($courseid)->get_cms()[$cmid] ?? null;
+        return $cm && $cm->uservisible;
+    }
+
+    /**
+     * Searches for posts in the forum module.
      * The sql query makes sure that the modules are installed and available.
-     * This is a helper function for get_postevents().
+     * This is a helper function for get_posts().
      * @param array $courses The ids of the courses where the posts should be searched.
      * @param int $timestart The timestamp from where the posts should be searched.
      * @return array
@@ -178,29 +200,19 @@ class townsquareevents {
             return [];
         }
         [$insqlcourses, $inparamscourses] = $DB->get_in_or_equal($courses, SQL_PARAMS_NAMED);
-        $params = ['courses' => $courses, 'timestart' => $timestart, 'userid' => $USER->id, 'userid2' => $USER->id ]
-                + $inparamscourses;
+        $params = ['timestart' => $timestart, 'userid' => $USER->id, 'userid2' => $USER->id] + $inparamscourses;
+        $authorfields = fields::for_userpic()->get_sql('u', false, 'author', 'authorid')->selects;
 
-        $sql = "SELECT (ROW_NUMBER() OVER (ORDER BY posts.id)) AS row_num,
-                    'forum' AS modulename,
-                    module.id AS instanceid,
-                    'post' AS eventtype,
+        $sql = "SELECT posts.id,
                     cm.id AS coursemoduleid,
-                    cm.availability AS availability,
-                    module.name AS instancename,
                     discuss.course AS courseid,
-                    discuss.userid AS discussionuserid,
                     discuss.name AS discussionsubject,
-                    u.firstname AS postuserfirstname,
-                    u.lastname AS postuserlastname,
-                    posts.id AS postid,
-                    posts.discussion AS postdiscussion,
-                    posts.parent AS postparentid,
-                    posts.userid AS postuserid,
-                    posts.created AS timestart,
-                    posts.message AS content,
-                    posts.messageformat AS postmessageformat,
-                    posts.privatereplyto AS postprivatereplyto
+                    posts.discussion,
+                    posts.created,
+                    posts.message,
+                    posts.messageformat,
+                    posts.privatereplyto
+                    $authorfields
                 FROM {forum_posts} posts
                 JOIN {forum_discussions} discuss ON discuss.id = posts.discussion
                 JOIN {forum} module ON module.id = discuss.forum
@@ -220,7 +232,7 @@ class townsquareevents {
 
     /**
      * Searches for events in the events table, that are relevant to the timeline.
-     * This is a helper function for get_coreevents().
+     * This is a helper function for get_deadlines().
      * @param int $timestart The time from where the events should be searched. Not equal to timestart in the database events table.
      * @param int $timeend The time until where the events should be searched.
      * @param array $courses The ids of the courses where the events should be searched.
@@ -247,7 +259,7 @@ class townsquareevents {
                 'timenow2' => $this->timenow, ] + $inparamscourses + $inparamsmodules;
 
         // Set the sql statement.
-        $sql = "SELECT e.id, e.name AS content, e.courseid, cm.id AS coursemoduleid, cm.availability AS availability,
+        $sql = "SELECT e.id, e.name AS content, e.courseid, cm.id AS coursemoduleid,
                 e.groupid, e.userid, e.modulename, e.instance, e.eventtype, e.timestart, e.timemodified, e.visible
                 FROM {event} e
                 JOIN {modules} m ON e.modulename = m.name
@@ -265,49 +277,5 @@ class townsquareevents {
                   )
                 ORDER BY e.timestart DESC";
         return $DB->get_records_sql($sql, $params);
-    }
-
-    /**
-     * Checks if there are assignment groups. A group exists if many assignemnts from one course have the same due date.
-     * This is often the case when exercises are split up (like: week 1 - exercise 1, week 1 -  exercise. 2,...)
-     * @param array $assignevents
-     * @return array All events
-     */
-    private function group_assignments(array $assignevents): array {
-        global $DB;
-        $groupedevents = [];
-        // Put each event in a group dependent on the course->eventtype->timestart.
-        foreach ($assignevents as $event) {
-            // Create a complex key where only events that should be one event are stored in the same key.
-            $groupedevents["{$event->courseid}-{$event->eventtype}-{$event->timestart}"][] = $event;
-        }
-
-        // Now group together.
-        $assignevents = [];
-        foreach ($groupedevents as $events) {
-            if (count($events) > 1) {
-                // All events should make one. Take the first as reference and update what needs to be updated.
-                $subinstances = [];
-                foreach ($events as $event) {
-                    $link = (new moodle_url("/mod/{$event->modulename}/view.php", ['id' => $event->coursemoduleid]))->out();
-                    $subinstances[] = [
-                        "instancename" => $DB->get_field($event->modulename, 'name', ['id' => $event->instance]),
-                        "linktoactivity" => $link,
-                        "dueevent" => $event->eventtype == "due",
-                    ];
-                }
-                // Sort subinstances by instance name to maintain consistent order.
-                usort($subinstances, function ($a, $b) {
-                    return strcmp($a['instancename'], $b['instancename']);
-                });
-
-                $assignevent = reset($events);
-                $assignevent->subinstances = $subinstances;
-                $assignevents[] = $assignevent;
-            } else {
-                $assignevents[] = reset($events);
-            }
-        }
-        return $assignevents;
     }
 }

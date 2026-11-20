@@ -17,7 +17,7 @@
  * JavaScript for the letter filter
  *
  * The tabs "Posts" and "Deadlines" show the letters of the types in their data-letters attribute
- * (postletter, basicletter, completionletter). The selected tab is not saved, the block always starts with "Posts".
+ * (postletter, deadlineletter). The selected tab is not saved, the block always starts with "Posts".
  *
  * @module     block_townsquare/filter/letterfilter
  * @copyright  2024 Tamaro Walter
