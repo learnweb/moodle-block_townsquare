@@ -18,6 +18,7 @@ namespace block_townsquare;
 
 defined('MOODLE_INTERNAL') || die();
 
+use block_townsquare\hook\extend_content;
 use block_townsquare\item\deadline_item;
 use block_townsquare\item\post_item;
 use cache;
@@ -80,7 +81,7 @@ class townsquareevents {
         }
 
         // Sort the items, the latest first. The order of items with the same time is kept.
-        $items = array_merge($this->get_deadlines(), $this->get_posts());
+        $items = array_merge($this->get_deadlines(), $this->get_posts(), $this->get_hook_items());
         usort($items, fn($a, $b) => $b->time <=> $a->time);
 
         // Set the cache.
@@ -165,6 +166,29 @@ class townsquareevents {
             );
         }
         return $posts;
+    }
+
+    /**
+     * Collects the posts and deadlines of other plugins (see \block_townsquare\hook\extend_content).
+     * Only items of visible activities in the shown courses and in the time span are used.
+     *
+     * @return array deadline_item and post_item objects
+     * @throws moodle_exception
+     */
+    public function get_hook_items(): array {
+        global $USER;
+        $hook = new extend_content($USER->id, $this->courses, $this->timestart, $this->timeend);
+        \core\di::get(\core\hook\manager::class)->dispatch($hook);
+
+        $posts = array_filter($hook->get_posts(), fn($post) => $post->time > $this->timestart);
+        $deadlines = array_filter(
+            $hook->get_deadlines(),
+            fn($deadline) => $deadline->time >= $this->timestart && $deadline->time <= $this->timeend
+        );
+        return array_values(array_filter(
+            array_merge($posts, $deadlines),
+            fn($item) => $this->is_visible($item->courseid, $item->cmid)
+        ));
     }
 
     // Helper functions.
