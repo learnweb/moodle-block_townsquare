@@ -49,6 +49,7 @@ $string['invalidmodulename'] = 'Module name is unknown or not supported';
 $string['letterfilter'] = 'Letter filter';
 $string['orientationmarkercolor'] = 'Color for the orientation marker';
 $string['orientationmarkercontent'] = 'Hi {$a->username}, welcome to townsquare! Today is the {$a->date}';
+$string['past'] = 'Past';
 $string['pluginname'] = 'Town Square';
 $string['plugintitle'] = 'Townsquare block';
 $string['postletterheader'] = '{$a->authorname} in {$a->discussionname}';

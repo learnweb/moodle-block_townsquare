@@ -92,6 +92,7 @@ class contentcontroller {
             if (!isset($this->content[$day])) {
                 $this->content[$day] = (object) [
                     'day' => $day,
+                    'daystart' => usergetmidnight($templetter['createdtimestamp']),
                     'daylabel' => $this->get_daylabel($day),
                     'daydate' => userdate($templetter['createdtimestamp'], get_string('strftimedayshort', 'langconfig')),
                     'count' => 0,
@@ -110,7 +111,33 @@ class contentcontroller {
                 $appearedcourses[$event->courseid] = true;
             }
         }
-        return array_values($this->content);
+        return $this->sort_by_distance_to_now(array_values($this->content));
+    }
+
+    /**
+     * Sorts the days, so that the letters closest to now come first: today and the upcoming days with the earliest
+     * letter first, then the past days with the latest letter first. The first past day gets the heading "Past".
+     *
+     * @param array $days Days with their letters, from the latest to the earliest letter (order of the events)
+     * @return array
+     */
+    private function sort_by_distance_to_now(array $days): array {
+        $today = usergetmidnight(time());
+        $upcoming = [];
+        $past = [];
+        foreach ($days as $day) {
+            $day->ispast = $day->daystart < $today;
+            if ($day->ispast) {
+                $past[] = $day;
+            } else {
+                $day->letters = array_reverse($day->letters);
+                $upcoming[] = $day;
+            }
+        }
+        if ($past) {
+            $past[0]->firstpast = true;
+        }
+        return array_merge(array_reverse($upcoming), $past);
     }
 
     /**

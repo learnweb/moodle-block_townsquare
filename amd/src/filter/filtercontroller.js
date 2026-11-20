@@ -38,6 +38,7 @@ const Selectors = {
     showAll: '[data-action="block_townsquare/show_all"]',
     courseCheckbox: '.ts_course_checkbox',
     allTime: '#ts_time_all',
+    pastHeading: '.ts_past_heading',
 };
 
 /**
@@ -72,6 +73,7 @@ export function refresh() {
     });
     document.querySelectorAll(Selectors.group).forEach(updateLetterGroup);
     updateEmptyMessage();
+    updatePastHeading();
     updateFilterBar();
 }
 
@@ -125,3 +127,15 @@ function showAll() {
     }
 }
 
+/**
+ * Shows the heading "Past" only if there are upcoming and past days to show (the order of the days is set by the server).
+ */
+function updatePastHeading() {
+    const heading = document.querySelector(Selectors.pastHeading);
+    if (!heading) {
+        return;
+    }
+    const shownGroups = [...document.querySelectorAll(Selectors.group)].filter(group => group.style.display !== 'none');
+    const showHeading = shownGroups.some(group => group.dataset.past) && shownGroups.some(group => !group.dataset.past);
+    heading.classList.toggle('d-none', !showHeading);
+}

@@ -26,8 +26,13 @@
         * daydate - Formatted date of the day
         * count - Number of letters of the day
         * letters - Array with the letters of the day
+        * ispast - If the day is before today
+        * firstpast - If it is the first past day (the heading "Past" is shown before it)
      * reloadlabel - Label of the reload button with the time of the last update
      * courses - Array of courses that show notifications in townsquare (for the course filter after a reload)
+
+    The days are sorted by the server, the letters closest to now come first: today and the upcoming days with the
+    earliest letter first, then the past days with the latest letter first.
 
     Example context (json):
     {
@@ -69,7 +74,14 @@
 {{! The reload button shows the time of the last update. After a reload, its label is copied from data-reloadlabel. }}
 <div class="townsquare_letters flex-grow-1 overflow-y-scroll overflow-x-hidden pe-2" data-reloadlabel="{{reloadlabel}}">
     {{#content}}
-        <div class="ts-lettergroup mb-2" id="ts-lettergroup-{{day}}">
+        {{#firstpast}}
+            {{! Separates the upcoming and the past days. Hidden by block_townsquare/filter/filtercontroller if one of
+                them has no letters to show. }}
+            <div class="ts_past_heading mt-3 mb-2 pt-2 px-2 border-top border-2 fw-bold">
+                {{#str}}past, block_townsquare{{/str}}
+            </div>
+        {{/firstpast}}
+        <div class="ts-lettergroup mb-2" id="ts-lettergroup-{{day}}"{{#ispast}} data-past="true"{{/ispast}}>
             <div class="ts_day_header d-flex align-items-center gap-2 px-2 py-1 rounded bg-body-tertiary">
                 <span id="ts-daylabel-{{day}}">
                     {{#daylabel}}
