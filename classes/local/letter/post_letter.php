@@ -19,6 +19,7 @@ use context_module;
 use core_user\fields;
 use dml_exception;
 use stdClass;
+use user_picture;
 
 /**
  * Class that represents a post from the forum or moodleoverflow module.
@@ -36,7 +37,7 @@ class post_letter extends letter {
     /** @var object information about the post author. The object contains:
      * - int id: the id of the author
      * - string name: full name of the author (first and last name combined)
-     * - object picture: the profile picture of the author
+     * - string pictureurl: url of the profile picture of the author, empty if there is no picture to show
      */
     private object $author;
 
@@ -68,6 +69,8 @@ class post_letter extends letter {
      * to export it to the mustache template.
      * @param int $contentid    internal ID in the townsquare block
      * @param object $postevent a post event with information,for more see classes/townsquareevents.php.
+     *                          The module that provides the post can set $postevent->profilepicture (url of the picture),
+     *                          e.g. to show its own picture for anonymous posts. Otherwise, the picture of the author is used.
      */
     public function __construct($contentid, $postevent) {
         parent::__construct(
@@ -85,7 +88,6 @@ class post_letter extends letter {
         $this->posturls = new stdClass();
 
         $this->lettertype = 'post';
-        $this->lettercolor = block_townsquare_get_colorsetting('postletter');
         $this->post->instanceid = $postevent->instanceid;
         $this->post->discussionid = $postevent->postdiscussion;
         $this->post->id = $postevent->postid;
@@ -100,13 +102,14 @@ class post_letter extends letter {
 
         $this->add_anonymousattribute($postevent);
         $this->add_privatereplyattribute($postevent);
-        $this->retrieve_profilepicture();
+        $this->retrieve_profilepicture($postevent);
     }
 
     // Functions.
 
     #[\Override]
     public function export_letter(): array {
+        global $OUTPUT;
         return [
             'contentid' => $this->contentid,
             'lettertype' => $this->lettertype,
@@ -120,32 +123,41 @@ class post_letter extends letter {
             'privatereplyfrom' => $this->post->privatereplyfrom,
             'privatereplyto' => $this->post->privatereplyto,
             'authorname' => $this->author->name,
-            'authorpicture' => $this->author->picture,
+            'authorpictureurl' => $this->author->pictureurl ?: $OUTPUT->image_url('u/f2')->out(false),
             'postid' => $this->post->id,
             'message' => $this->post->message,
-            'created' => date('G:i', $this->created),
+            'created' => $this->get_createdtime(),
             'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
             'linktopost' => $this->posturls->linktopost->out(),
             'linktoauthor' => $this->posturls->linktoauthor->out(),
-            'postlettercolor' => $this->lettercolor,
+            'activityicon' => $this->get_activityicon(),
         ];
     }
 
     // Helper functions.
 
     /**
-     * Method to retrieve the profile picture of the author.
+     * Method to retrieve the url of the profile picture of the author.
+     *
+     * A picture that is provided by the module of the post is always used. Otherwise, the picture is drawn from the author,
+     * but only if the post is not anonymous.
+     * @param object $postevent
      * @return void
      * @throws dml_exception
      */
-    private function retrieve_profilepicture(): void {
-        global $DB, $OUTPUT;
+    private function retrieve_profilepicture(object $postevent): void {
+        global $DB, $PAGE;
+
+        if (!empty($postevent->profilepicture)) {
+            $this->author->pictureurl = (string) $postevent->profilepicture;
+            return;
+        }
 
         // Profile picture is only retrieved if the author is visible.
         if ($this->post->anonymous) {
-            $this->author->picture = '';
+            $this->author->pictureurl = '';
             return;
         }
         $user = new stdClass();
@@ -157,7 +169,9 @@ class post_letter extends letter {
             $picturefields
         );
         $user->id = $this->author->id;
-        $this->author->picture = $OUTPUT->user_picture($user, ['courseid' => $this->courseid, 'link' => false]);
+        $userpicture = new user_picture($user);
+        $userpicture->size = 35;
+        $this->author->pictureurl = $userpicture->get_url($PAGE)->out(false);
     }
 
     /**

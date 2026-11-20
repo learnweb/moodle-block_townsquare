@@ -17,7 +17,7 @@
 {{!
     @template block_townsquare/letter/basicletter
 
-    This template renders a basic letter.
+    This template renders a basic letter (notifications and deadlines) as a compact row.
 
     Variables required for this template (more variables are available for testing and future features):
     * contentid - Unique identification for every shown plugin content
@@ -26,10 +26,13 @@
     * courseid - Id of the course
     * instancename - Name of the instance
     * content - Content of the letter
-    * created - Date of the notification
+    * created - Time of the notification
+    * createdtimestamp - Timestamp of the notification
     * linktocourse - Link to the course
     * linktoactivity - Link to the module instance
-    * basiclettercolor - Color of the letter
+    * activityicon - Activity icon of the module (see core_course/activity_icon)
+    * hassubinstances - If the letter groups several assignment reminders
+    * subinstances - The grouped assignment reminders
 
     Example context (json):
     {
@@ -39,58 +42,61 @@
           "courseid": 3,
           "instancename": "Lesson 1: Quantum Theory",
           "content": "Lesson 1: Quantum Theory closes",
-          "created": "20.12.2023",
+          "created": "14:00",
+          "createdtimestamp": 1703080800,
           "linktocourse": "http://localhost/moodle/course/view.php?id=20",
           "linktoactivity": "http://localhost/moodle/mod/lesson/view.php?id=314",
-          "basiclettercolor": "#0f6cbf"
+          "activityicon": {
+              "icon": "http://localhost/moodle/theme/image.php/boost/lesson/1/monologo",
+              "iconclass": "activityicon",
+              "modname": "lesson",
+              "pluginname": "Lesson",
+              "purpose": "content",
+              "branded": false,
+              "extraclasses": "smaller"
+          }
     }
 }}
-<div class="townsquare_letter basicletter card mb-3 ms-3" id="content-nr-{{contentid}}"
-     style="border-color: {{basiclettercolor}}{{^basiclettercolor}}#0f6cbf{{/basiclettercolor}}">
-    <div class="townsquareletter_header basicletter_header card-header"
-         style="background-color: {{basiclettercolor}}{{^basiclettercolor}}#0f6cbf{{/basiclettercolor}}">
-        <div class="townsquareletter_top basicletter_top">
-            <div class="townsquareletter_course basicletter_course" data-courseid="{{courseid}}">
-                {{#str}} coursetitle, moodle, {"course":
-                    {{#quote}} <a href='{{linktocourse}}' class="townsquareletter_courselink">{{coursename}}</a> {{/quote}} }
-                {{/str}}
-            </div>
-            <div class="townsquareletter_date basicletter_date" data-created="{{createdtimestamp}}">
-                {{created}}
-            </div>
-        </div>
-    </div>
-    <div class="townsquareletter_body basicletter_body card-body">
-        <div class="basicletter_origin">
-            <b>
+<div class="townsquare_letter basicletter list-group-item bg-transparent px-2" id="content-nr-{{contentid}}">
+    <div class="d-flex align-items-start gap-3">
+        <div class="flex-shrink-0">{{#activityicon}}{{> core_course/activity_icon}}{{/activityicon}}</div>
+        <div class="flex-grow-1 text-break">
+            <div>
                 {{#hassubinstances}}
                     {{#str}} basicgroupletterorigin, block_townsquare{{/str}}
+                    <ul class="list-unstyled mb-0">
+                        {{#subinstances}}
+                            <li>
+                                {{#dueevent}}
+                                    {{#str}} assignduemessage, block_townsquare,
+                                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
+                                    {{/str}}
+                                {{/dueevent}}
+                                {{^dueevent}}
+                                    {{#str}} assigngradingduemessage, block_townsquare,
+                                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
+                                    {{/str}}
+                                {{/dueevent}}
+                            </li>
+                        {{/subinstances}}
+                    </ul>
                 {{/hassubinstances}}
                 {{^hassubinstances}}
-                    {{#str}} basicletterorigin, block_townsquare,
-                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
-                    {{/str}}
+                    {{content}}
                 {{/hassubinstances}}
-            </b>
+            </div>
+            <div class="small text-body-secondary">
+                <span class="townsquareletter_course" data-courseid="{{courseid}}">
+                    <a href="{{linktocourse}}">{{coursename}}</a>
+                </span>
+                {{^hassubinstances}}
+                    &rsaquo; <a href="{{linktoactivity}}">{{instancename}}</a>
+                {{/hassubinstances}}
+            </div>
         </div>
-        <div class="basicletter_content">
-            {{#subinstances}}
-                {{#dueevent}}
-                    {{#str}} assignduemessage, block_townsquare,
-                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
-                    {{/str}}
-                {{/dueevent}}
-                {{^dueevent}}
-                    {{#str}} assigngradingduemessage, block_townsquare,
-                        { "instancename": {{#quote}} <a href='{{linktoactivity}}'>{{instancename}}</a> {{/quote}} }
-                    {{/str}}
-                {{/dueevent}}
-                <br>
-            {{/subinstances}}
-            {{^subinstances}}
-                {{content}}
-            {{/subinstances}}
+        <div class="townsquareletter_date small text-body-secondary text-nowrap text-end" data-created="{{createdtimestamp}}">
+            {{created}}
+            <div class="d-none" data-region="ts_relativetime" data-timestamp="{{createdtimestamp}}"></div>
         </div>
-
     </div>
 </div>

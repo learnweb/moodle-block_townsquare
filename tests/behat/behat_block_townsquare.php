@@ -170,4 +170,82 @@ class behat_block_townsquare extends behat_base {
         $element = $this->find('css', '#ts_reload_button');
         $element->click();
     }
+
+    /**
+     * Makes the course filter checkboxes visible.
+     *
+     * @Given /^I open the townsquare course filter$/
+     * @return void
+     */
+    public function i_open_the_townsquare_course_filter(): void {
+        $this->open_dropdown('#ts_course_filter_button');
+    }
+
+    /**
+     * Makes the time filter buttons visible.
+     *
+     * @Given /^I open the townsquare time filter$/
+     * @return void
+     */
+    public function i_open_the_townsquare_time_filter(): void {
+        $this->open_dropdown('#ts_time_filter_button');
+    }
+
+    /**
+     * Selects a time span of the time filter, e.g. "1 week" or "All time".
+     *
+     * @Given /^I select the townsquare time span "(?P<timespan_string>(?:[^"]|\\")*)"$/
+     * @param string $timespan
+     * @return void
+     */
+    public function i_select_the_townsquare_time_span(string $timespan): void {
+        $this->open_dropdown('#ts_time_filter_button');
+        $xpath = "//*[@id='ts_time_filter_button']/following-sibling::div[contains(@class, 'dropdown-menu')]" .
+            "//label[normalize-space(.) = " . behat_context_helper::escape($timespan) . "]";
+        $this->find('xpath', $xpath)->click();
+    }
+
+    /**
+     * Clicks on the save button of the townsquare filter settings.
+     *
+     * @Given /^I save the townsquare settings$/
+     * @return void
+     */
+    public function i_save_the_townsquare_settings(): void {
+        $this->click_settings_button('#ts_usersettings_savebutton');
+    }
+
+    /**
+     * Clicks on the reset button of the townsquare filter settings.
+     *
+     * @Given /^I reset the townsquare settings$/
+     * @return void
+     */
+    public function i_reset_the_townsquare_settings(): void {
+        $this->click_settings_button('#ts_usersettings_resetbutton');
+    }
+
+    /**
+     * Clicks on a button of the settings (save or reset). The buttons are in a dropdown menu.
+     *
+     * @param string $selector CSS selector of the button
+     * @return void
+     */
+    private function click_settings_button(string $selector): void {
+        $this->open_dropdown('#ts_settings_menu_button');
+        $this->find('css', $selector)->click();
+    }
+
+    /**
+     * Opens a dropdown of the filter bar if it is not open yet.
+     *
+     * @param string $selector CSS selector of the dropdown toggle button
+     * @return void
+     */
+    private function open_dropdown(string $selector): void {
+        $button = $this->find('css', $selector);
+        if ($button->getAttribute('aria-expanded') !== 'true') {
+            $button->click();
+        }
+    }
 }

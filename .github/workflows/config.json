@@ -1,0 +1,15 @@
+{
+    "moodle-testmatrix": {
+        "MOODLE_501_STABLE": {
+            "php": ["8.2", "8.3", "8.4"]
+        },
+        "MOODLE_502_STABLE": {
+            "php": ["8.3", "8.4"],
+            "db": ["pgsql", "mariadb", "mysqli"]
+        },
+        "MOODLE_503_STABLE": {
+            "php": ["8.3", "8.4"],
+            "db": ["pgsql", "mariadb", "mysqli"]
+        }
+    }
+}

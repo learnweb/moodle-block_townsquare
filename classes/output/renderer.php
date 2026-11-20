@@ -36,7 +36,6 @@ class renderer extends plugin_renderer_base {
      * @throws moodle_exception
      */
     public function render_main(): string {
-        global $CFG;
         $controller = new contentcontroller();
         $letters = $controller->get_content();
 
@@ -45,10 +44,9 @@ class renderer extends plugin_renderer_base {
         $mustachedata = (object) [
             'content' => $letters,
             'courses' => $controller->courses,
-            'savehelpicon' => ['text' => get_string('savehelpicontext', 'block_townsquare')],
-            'resethelpicon' => ['text' => get_string('resethelpicontext', 'block_townsquare')],
-            'newsidepanel' => $CFG->branch >= 500,
             'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i', $lastupdate)),
+            'reloadlabel' => self::get_reloadlabel($lastupdate),
+            'timespans' => self::get_timespans(),
         ];
         return $this->render_from_template('block_townsquare/main', $mustachedata);
     }
@@ -59,14 +57,48 @@ class renderer extends plugin_renderer_base {
      */
     public function render_content(): string {
         // Get the content first to fill the cache. This should not be moved.
-        $letters = (new contentcontroller())->get_content();
+        $controller = new contentcontroller();
+        $letters = $controller->get_content();
 
         // Get the last update time from the cache.
         $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('allevents')["lastupdate"];
         $mustachedata = (object) [
             'lastupdate' => get_string('reload_message', 'block_townsquare', date('G:i', $lastupdate)),
+            'reloadlabel' => self::get_reloadlabel($lastupdate),
             'content' => $letters,
+            // The course filter is updated with the courses of the reloaded content.
+            'courses' => $controller->courses,
         ];
         return $this->render_from_template('block_townsquare/content', $mustachedata);
+    }
+
+    /**
+     * Returns the time spans of the time filter. A time span covers the same time before and after now.
+     *
+     * @return array
+     */
+    private static function get_timespans(): array {
+        $timespans = ['twodays' => 2 * DAYSECS, 'fivedays' => 5 * DAYSECS, 'week' => WEEKSECS, 'month' => 30 * DAYSECS];
+        $result = [];
+        foreach ($timespans as $name => $seconds) {
+            $result[] = [
+                'id' => "ts_time_{$name}",
+                'timespan' => $seconds,
+                'label' => get_string("timespan_{$name}", 'block_townsquare'),
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * Returns the label of the reload button, e.g. "Reload (last update: 2:30 PM)".
+     * The time is shown in the timezone and time format of the user.
+     *
+     * @param int $lastupdate Timestamp of the last update
+     * @return string
+     */
+    private static function get_reloadlabel(int $lastupdate): string {
+        $time = userdate($lastupdate, get_string('strftimetime', 'langconfig'));
+        return get_string('reloadwithtime', 'block_townsquare', $time);
     }
 }

@@ -52,7 +52,6 @@ class block_townsquare extends block_base {
         $usersettings = $DB->get_record('block_townsquare_preferences', ['userid' => $USER->id]);
 
         // Load all javascripts.
-        $this->page->requires->js_call_amd('block_townsquare/lettergroup', 'init');
         $this->page->requires->js_call_amd('block_townsquare/postletter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/reload', 'init');
         $this->page->requires->js_call_amd('block_townsquare/filter/coursefilter', 'init');
@@ -61,6 +60,7 @@ class block_townsquare extends block_base {
         $this->page->requires->js_call_amd('block_townsquare/filter/timefilter', 'init');
         $this->page->requires->js_call_amd('block_townsquare/db/usersettings_reset', 'init');
         $this->page->requires->js_call_amd('block_townsquare/db/usersettings_save', 'init', [$usersettings]);
+        $this->page->requires->js_call_amd('block_townsquare/relativetime', 'init');
         return $this->content;
     }
 

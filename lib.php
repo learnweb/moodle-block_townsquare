@@ -28,11 +28,6 @@ define('BLOCK_TOWNSQUARE_TIME_THREEMONTHS', 7889229); // 91.31 days.
 define('BLOCK_TOWNSQUARE_TIME_SIXMONTHS', 15778463); // 182,62 days.
 define('BLOCK_TOWNSQUARE_CACHE_TTL', 1800); // 30 minutes.
 
-// Color constants from bootstrap.
-define('BLOCK_TOWNSQUARE_BASICLETTER_DEFAULTCOLOR', '#0f6cbf');
-define('BLOCK_TOWNSQUARE_POSTLETTER_DEFAULTCOLOR', '#f7634d');
-define('BLOCK_TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR', '#ca3120');
-
 /**
  * Gets the id of all courses where the current user is enrolled
  * @return array

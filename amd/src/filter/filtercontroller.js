@@ -14,70 +14,128 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * JavaScript to show/hide letters based on all filters
+ * JavaScript to show/hide letters based on all filters.
+ *
+ * Every filter marks the letters it approves with a class and calls refresh() afterwards. refresh() shows the letters
+ * that are approved by all filters and updates everything that depends on the visible letters or the filter settings.
  *
  * @module     block_townsquare/filter/filtercontroller
  * @copyright  2024 Tamaro Walter
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Get all letters from townsquare.
-const letters = document.querySelectorAll('.townsquare_letter');
+import {update as updateFilterBar} from 'block_townsquare/filter/filterbar';
+
+const Selectors = {
+    letter: '.townsquare_letter',
+    group: '.ts-lettergroup',
+    groupLetters: '.ts-letter-box > *',
+    dayCount: '[data-region="ts_day_count"]',
+    activeTab: '.ts_letter_tabs .nav-link[aria-pressed="true"]',
+    emptyMessage: '.ts_empty',
+    emptyHint: '[data-region="ts_empty_hint"]',
+    emptyFiltered: '[data-region="ts_empty_filtered"]',
+    showAll: '[data-action="block_townsquare/show_all"]',
+    courseCheckbox: '.ts_course_checkbox',
+    allTime: '#ts_time_all',
+    pastHeading: '.ts_past_heading',
+};
 
 /**
  * Init function. Controls the visibility of letters based on the approval of all filters.
  */
 export function init() {
-    // First step: activate every letter by adding the filter classes.
-    letters.forEach(function(letter) {
-        letter.classList.add('ts_coursefilter_approved');
-        letter.classList.add('ts_timefilter_approved');
-        letter.classList.add('ts_letterfilter_approved');
-    });
-
-    // Add a mutation listener to each letter.
-    letters.forEach(function(letter) {
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.attributeName === 'class') {
-                    // If the class of the letter changes, check if the letter should be shown or hidden.
-                    let coursefilter = letter.classList.contains('ts_coursefilter_approved');
-                    let timefilter = letter.classList.contains('ts_timefilter_approved');
-                    let letterfilter = letter.classList.contains('ts_letterfilter_approved');
-
-                    // If all filters approve the letter, show the letter.
-                    letter.style.display = (coursefilter && timefilter && letterfilter) ? 'block' : 'none';
-
-                    // Check if the letters group should be visible or not.
-                    updatelettergroup(letter);
-                }
-            });
-        });
-
-        observer.observe(letter, {attributes: true});
+    setup();
+    refresh();
+    document.addEventListener('click', e => {
+        if (e.target.closest(Selectors.showAll)) {
+            showAll();
+        }
     });
 }
 
 /**
- * Helper function that checks if a letter group should still be visible. Is used if a filter is applied
- * that could change the visibility of one letter and therefore the letters group.
- * @param {HTMLElement} letter
+ * Activates every letter by adding the filter classes.
+ * Is also used after the content was reloaded, as the reload replaces all letters.
  */
-function updatelettergroup(letter) {
-    // Get the letters group.
-    const group = letter.closest('.ts-lettergroup');
-    if (!group) {
+export function setup() {
+    document.querySelectorAll(Selectors.letter).forEach(function(letter) {
+        letter.classList.add('ts_coursefilter_approved', 'ts_timefilter_approved', 'ts_letterfilter_approved');
+    });
+}
+
+/**
+ * Shows the letters that are approved by all filters and hides the others. Is called by every filter after it was applied.
+ */
+export function refresh() {
+    document.querySelectorAll(Selectors.letter).forEach(function(letter) {
+        letter.style.display = isApproved(letter) ? 'block' : 'none';
+    });
+    document.querySelectorAll(Selectors.group).forEach(updateLetterGroup);
+    updateEmptyMessage();
+    updatePastHeading();
+    updateFilterBar();
+}
+
+/**
+ * Checks if a letter is approved by all filters.
+ * @param {HTMLElement} letter
+ * @returns {boolean}
+ */
+function isApproved(letter) {
+    return letter.classList.contains('ts_coursefilter_approved') &&
+        letter.classList.contains('ts_timefilter_approved') &&
+        letter.classList.contains('ts_letterfilter_approved');
+}
+
+/**
+ * Shows a letter group only if at least one of its letters is visible and updates the number of visible letters
+ * in the day header.
+ * @param {HTMLElement} group
+ */
+function updateLetterGroup(group) {
+    const visibleCount = [...group.querySelectorAll(Selectors.groupLetters)].filter(isApproved).length;
+    group.style.display = visibleCount > 0 ? 'block' : 'none';
+    group.querySelector(Selectors.dayCount).textContent = visibleCount;
+}
+
+/**
+ * Shows the message of the selected tab if it has no letters to show, so that an empty tab looks intended.
+ * If the course or time filter is set, the message offers to show all letters.
+ */
+function updateEmptyMessage() {
+    const anyVisible = [...document.querySelectorAll(Selectors.letter)].some(isApproved);
+    const activeTab = document.querySelector(Selectors.activeTab)?.id;
+    const filtered = [...document.querySelectorAll(Selectors.courseCheckbox)].some(checkbox => !checkbox.checked) ||
+        !document.querySelector(Selectors.allTime).checked;
+    document.querySelectorAll(Selectors.emptyMessage).forEach(message => {
+        message.classList.toggle('d-none', anyVisible || message.dataset.tab !== activeTab);
+        message.querySelector(Selectors.emptyHint).classList.toggle('d-none', filtered);
+        message.querySelector(Selectors.emptyFiltered).classList.toggle('d-none', !filtered);
+    });
+}
+
+/**
+ * Selects all courses and all time in the filters (not saved). The filters react to the change events.
+ */
+function showAll() {
+    document.querySelectorAll(`${Selectors.courseCheckbox}:not(:checked)`).forEach(checkbox => checkbox.click());
+    const allTime = document.querySelector(Selectors.allTime);
+    if (!allTime.checked) {
+        allTime.checked = true;
+        allTime.dispatchEvent(new Event('change'));
+    }
+}
+
+/**
+ * Shows the heading "Past" only if there are upcoming and past days to show (the order of the days is set by the server).
+ */
+function updatePastHeading() {
+    const heading = document.querySelector(Selectors.pastHeading);
+    if (!heading) {
         return;
     }
-
-    // Check every group letters visibility.
-    const letters = group.querySelectorAll('.ts-letter-box > *');
-    const anyVisible = Array.from(letters).some(el =>
-        el.classList.contains('ts_coursefilter_approved') &&
-        el.classList.contains('ts_timefilter_approved') &&
-        el.classList.contains('ts_letterfilter_approved')
-    );
-
-    // Group only gets shown if at least one element is visible.
-    group.style.display = anyVisible ? 'block' : 'none';
+    const shownGroups = [...document.querySelectorAll(Selectors.group)].filter(group => group.style.display !== 'none');
+    const showHeading = shownGroups.some(group => group.dataset.past) && shownGroups.some(group => !group.dataset.past);
+    heading.classList.toggle('d-none', !showHeading);
 }

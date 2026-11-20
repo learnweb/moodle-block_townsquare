@@ -79,7 +79,7 @@ final class contentcontroller_test extends \advanced_testcase {
         // Create the controller and get the townsquareevents.
         $controller = new contentcontroller();
         $content = $controller->build_content();
-        $events = $controller->events;
+        $events = array_values($controller->events);
 
         // Check the lettertype for each letter.
         $result = true;
@@ -87,7 +87,8 @@ final class contentcontroller_test extends \advanced_testcase {
 
         foreach ($content as $lettergroup) {
             foreach ($lettergroup->letters as $letter) {
-                $eventtype = current($events)->eventtype;
+                // The letters are sorted by their distance to now. The content id is the index of the event of the letter.
+                $eventtype = $events[$letter['contentid']]->eventtype;
                 $postcheck = $this->check_two_params($eventtype, 'post', $letter['lettertype'], 'post');
                 $completioncheck = $this->check_two_params(
                     $eventtype,
@@ -103,7 +104,6 @@ final class contentcontroller_test extends \advanced_testcase {
                     break;
                 }
                 $contentlength++;
-                next($events);
             }
         }
 
@@ -113,6 +113,59 @@ final class contentcontroller_test extends \advanced_testcase {
             $this->assertEquals(4, $contentlength);
         }
         $this->assertEquals(true, $result);
+    }
+
+    /**
+     * Test, if the letters are grouped by the days in the timezone of the user, if the days are labeled and if the
+     * letters closest to now come first.
+     * @return void
+     */
+    public function test_days(): void {
+        global $DB;
+
+        // The timezones of the server (UTC+14) and the user (UTC-11) are 25 hours apart, so every letter is on another
+        // day for the server than for the user. Both have no daylight saving time, so that the assignment that is due in
+        // 24 hours is always due tomorrow.
+        $this->setTimezone('Pacific/Kiritimati', 'Pacific/Kiritimati');
+        $timezone = 'Pacific/Pago_Pago';
+        $DB->set_field('user', 'timezone', $timezone, ['id' => $this->testdata->teacher->id]);
+        $this->setUser($DB->get_record('user', ['id' => $this->testdata->teacher->id]));
+
+        $content = (new contentcontroller())->build_content();
+
+        // The expected values are calculated with PHP, independent of the functions of the controller.
+        $usertimezone = new \DateTimeZone($timezone);
+        $today = new \DateTime('today', $usertimezone);
+        $labels = [
+            $today->format('d.m.Y') => get_string('today', 'calendar'),
+            (clone $today)->modify('+1 day')->format('d.m.Y') => get_string('tomorrow', 'calendar'),
+            (clone $today)->modify('-1 day')->format('d.m.Y') => get_string('yesterday', 'calendar'),
+        ];
+
+        foreach ($content as $group) {
+            $this->assertCount($group->count, $group->letters);
+            $this->assertEquals($labels[$group->day] ?? '', $group->daylabel);
+            $this->assertEquals($group->daystart < $today->getTimestamp(), $group->ispast);
+            foreach ($group->letters as $letter) {
+                $created = (new \DateTime('@' . $letter['createdtimestamp']))->setTimezone($usertimezone);
+                $this->assertEquals($created->format('d.m.Y'), $group->day);
+                $this->assertEquals((clone $created)->setTime(0, 0)->getTimestamp(), $group->daystart);
+            }
+        }
+
+        // The letters closest to now come first: today and the upcoming days with the earliest letter first, then the
+        // past days with the latest letter first.
+        $timestamps = array_merge(...array_map(fn($group) => array_column($group->letters, 'createdtimestamp'), $content));
+        $upcoming = array_filter($timestamps, fn($timestamp) => $timestamp >= $today->getTimestamp());
+        $past = array_filter($timestamps, fn($timestamp) => $timestamp < $today->getTimestamp());
+        sort($upcoming);
+        rsort($past);
+        $this->assertSame(array_merge($upcoming, $past), $timestamps);
+
+        // The posts were written today and the assignment is due tomorrow.
+        $daylabels = array_column($content, 'daylabel');
+        $this->assertContains(get_string('today', 'calendar'), $daylabels);
+        $this->assertContains(get_string('tomorrow', 'calendar'), $daylabels);
     }
 
     // Helper functions.

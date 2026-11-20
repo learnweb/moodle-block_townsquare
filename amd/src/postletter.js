@@ -30,52 +30,67 @@ const Selectors = {
     },
 };
 
+// Observes clamped messages, as a message that is hidden during the setup can not be measured.
+let resizeObserver = null;
+
 /**
- * Init function. It limits the height of posts that are too long and adds a "show more" button to them if the user wants to see
- * the full text.
+ * Init function. Long messages are shortened with a line clamp (data-clamp, see styles.css) and get a "show more" button
+ * if the user wants to see the full text.
  */
 export function init() {
     setup();
     document.addEventListener('click', e => {
-        if (e.target.closest(Selectors.actions.seemorebutton)) {
-            // Get the id of the clicked element.
-            const button = e.target;
-            const letterid = Number(button.dataset.parentid);
-            const element = document.querySelector(`.postletter_message[data-contentid="${letterid}"]`);
-            if (element) {
-                // Get the letter group that gets expanded/shrunken. To synchronize both animations, a delta is needed.
-                const group = element.closest('.ts-letter-box');
-                const delta = element.scrollHeight - 90;
-
-                if (button.getAttribute('showmore') === 'true') {
-                    element.style.maxHeight = `${element.scrollHeight}px`;
-                    group.style.maxHeight = `${group.scrollHeight + delta}px`;
-                    changeButtonString(button, false);
-                } else {
-                    element.style.maxHeight = '90px';
-                    group.style.maxHeight = `${group.scrollHeight - delta}px`;
-                    changeButtonString(button, true);
-                }
-            }
+        const button = e.target.closest(Selectors.actions.seemorebutton);
+        if (!button) {
+            return;
         }
+        const letterid = Number(button.dataset.parentid);
+        const element = document.querySelector(`.postletter_message[data-contentid="${letterid}"]`);
+        if (!element) {
+            return;
+        }
+        const showmore = button.getAttribute('showmore') === 'true';
+        toggleClamp(element, showmore);
+        changeButtonString(button, !showmore);
     });
 }
 
 /**
- * Setup function.
+ * Setup function. Shows the "show more" button only for messages that are too long.
  */
 export function setup() {
     prefetchStrings('moodle', ['showmore', 'showless']);
+    resizeObserver?.disconnect();
+    resizeObserver = new ResizeObserver(entries => entries.forEach(entry => updateClampButton(entry.target)));
+
     document.querySelectorAll('.postletter_message').forEach((element) => {
-        const button = document.querySelector(`.townsquare_showmore[data-parentid="${element.dataset.contentid}"]`);
-        if (button) {
-            if (element.scrollHeight >= 90) {
-                button.setAttribute('showmore', 'true');
-            } else {
-                button.style.display = "none";
-            }
-        }
+        updateClampButton(element);
+        resizeObserver.observe(element);
     });
+}
+
+/**
+ * Shows the "show more" button of a clamped message only if the message is cut.
+ * @param {HTMLElement} element The message element
+ */
+function updateClampButton(element) {
+    const button = document.querySelector(`.townsquare_showmore[data-parentid="${element.dataset.contentid}"]`);
+    if (!button || element.dataset.clamp !== 'true' || element.clientHeight === 0) {
+        // Expanded or hidden messages keep their button state.
+        return;
+    }
+    const isCut = element.scrollHeight > element.clientHeight + 1;
+    button.classList.toggle('d-none', !isCut);
+    button.setAttribute('showmore', 'true');
+}
+
+/**
+ * Expands or shortens a message.
+ * @param {HTMLElement} element The message element
+ * @param {boolean} expand
+ */
+function toggleClamp(element, expand) {
+    element.dataset.clamp = expand ? 'false' : 'true';
 }
 
 /**

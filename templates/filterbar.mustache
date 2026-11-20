@@ -1,0 +1,126 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_townsquare/filterbar
+
+    This template renders the filter bar above the townsquare content: letter type tabs, the course and time filter
+    dropdowns and a menu to save or reset the filter settings.
+
+    The tabs show the letters of the types in data-letters (see block_townsquare/filter/letterfilter). The selected tab
+    is not saved in the user settings.
+
+    Variables required for this template:
+    * courses - Array of courses that show notifications in townsquare
+    * timespans - Time spans of the time filter, before and after now (id, timespan in seconds, label)
+    * reloadlabel - Label of the reload button with the time of the last update
+
+    Example context (json):
+    {
+        "reloadlabel": "Reload (last update: 2:30 PM)",
+        "timespans": [
+            {"id": "ts_time_week", "timespan": 604800, "label": "1 week"}
+        ],
+        "courses" : [
+            {
+                "courseid": 20,
+                "coursename": "Course1"
+            }
+        ]
+    }
+}}
+<div class="mb-2" id="ts_filter">
+    <div class="d-flex flex-wrap align-items-center column-gap-2 border-bottom">
+        {{! Toggle buttons that look like tabs. They filter the one feed below, so they are not ARIA tabs. }}
+        <div class="nav nav-underline ts_letter_tabs flex-nowrap" role="group" aria-label="{{#str}}letterfilter, block_townsquare{{/str}}">
+            <button type="button" class="nav-link active" id="ts_tab_posts" aria-pressed="true" data-letters="postletter">
+                {{#str}}postletters, block_townsquare{{/str}}
+            </button>
+            <button type="button" class="nav-link" id="ts_tab_deadlines" aria-pressed="false"
+                    data-letters="basicletter completionletter">
+                {{#str}}tab_deadlines, block_townsquare{{/str}}
+            </button>
+        </div>
+
+        <div class="d-flex align-items-center ms-auto">
+            <div class="dropdown">
+                <button class="btn btn-link text-body-secondary text-decoration-none dropdown-toggle"
+                        type="button" id="ts_course_filter_button"
+                        data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    {{#pix}}i/course, core{{/pix}}
+                    <span class="visually-hidden">{{#str}}coursefilter, block_townsquare{{/str}}:</span>
+                    <span data-region="ts_course_label"
+                          data-all="{{#str}}allcourses, block_townsquare{{/str}}"
+                          data-some="{{#str}}selectedcourses, block_townsquare, {"selected": "{selected}", "total": "{total}"}{{/str}}">
+                        {{#str}}allcourses, block_townsquare{{/str}}
+                    </span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end p-3 overflow-y-auto ts_course_menu">
+                    {{> block_townsquare/courselist}}
+                </div>
+            </div>
+
+            <div class="dropdown">
+                <button class="btn btn-link text-body-secondary text-decoration-none dropdown-toggle"
+                        type="button" id="ts_time_filter_button"
+                        data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    {{#pix}}i/calendar, core{{/pix}}
+                    <span class="visually-hidden">{{#str}}timefilter, block_townsquare{{/str}}:</span>
+                    <span data-region="ts_time_label" data-all="{{#str}}alltime, block_townsquare{{/str}}">
+                        {{#str}}alltime, block_townsquare{{/str}}
+                    </span>
+                </button>
+                {{! One time span for both directions: the letters of the last and the next days. }}
+                <div class="dropdown-menu dropdown-menu-end p-3 text-nowrap">
+                    <div class="small text-body-secondary mb-2" id="ts_time_header">{{#str}}timefilterheader, block_townsquare{{/str}}</div>
+                    <div class="btn-group-vertical btn-group-sm w-100" role="radiogroup" aria-labelledby="ts_time_header">
+                        <input type="radio" class="btn-check ts_time_button" name="ts_time" id="ts_time_all"
+                               data-timespan="15778463" checked>
+                        <label class="btn btn-outline-secondary" for="ts_time_all">{{#str}}alltime, block_townsquare{{/str}}</label>
+                        {{#timespans}}
+                            <input type="radio" class="btn-check ts_time_button" name="ts_time" id="{{id}}"
+                                   data-timespan="{{timespan}}">
+                            <label class="btn btn-outline-secondary" for="{{id}}">{{label}}</label>
+                        {{/timespans}}
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-icon btn-sm ms-1" id="ts_reload_button" data-action="ts_reload"
+                    aria-label="{{reloadlabel}}" title="{{reloadlabel}}">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+
+            <div class="dropdown">
+                <button class="btn btn-icon btn-sm" type="button" id="ts_settings_menu_button" data-bs-toggle="dropdown"
+                        aria-expanded="false" aria-label="{{#str}}filtersettings, block_townsquare{{/str}}"
+                        title="{{#str}}filtersettings, block_townsquare{{/str}}">
+                    {{#pix}}i/moremenu, core{{/pix}}
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <button type="button" class="dropdown-item" id="ts_usersettings_savebutton"
+                            title="{{#str}}savehelpicontext, block_townsquare{{/str}}">
+                        {{#pix}}e/save, core{{/pix}}{{#str}}savebutton, block_townsquare{{/str}}
+                    </button>
+                    <button type="button" class="dropdown-item" id="ts_usersettings_resetbutton"
+                            title="{{#str}}resethelpicontext, block_townsquare{{/str}}">
+                        {{#pix}}t/reset, core{{/pix}}{{#str}}resetbutton, block_townsquare{{/str}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -87,15 +87,20 @@ class contentcontroller {
             };
             $templetter = $templetter->export_letter();
 
-            // Group the letters by its day.
-            $day = date('d.m.Y', $templetter['createdtimestamp']);
+            // Group the letters by its day in the timezone of the user.
+            $day = $this->get_day($templetter['createdtimestamp']);
             if (!isset($this->content[$day])) {
                 $this->content[$day] = (object) [
                     'day' => $day,
+                    'daystart' => usergetmidnight($templetter['createdtimestamp']),
+                    'daylabel' => $this->get_daylabel($day),
+                    'daydate' => userdate($templetter['createdtimestamp'], get_string('strftimedayshort', 'langconfig')),
+                    'count' => 0,
                     'letters' => [],
                 ];
             }
             $this->content[$day]->letters[] = $templetter;
+            $this->content[$day]->count++;
 
             // Collect the courses shown in the townsquare to be able to filter them afterwards.
             if (!array_key_exists($templetter['courseid'], $appearedcourses)) {
@@ -106,7 +111,60 @@ class contentcontroller {
                 $appearedcourses[$event->courseid] = true;
             }
         }
-        return array_values($this->content);
+        return $this->sort_by_distance_to_now(array_values($this->content));
+    }
+
+    /**
+     * Sorts the days, so that the letters closest to now come first: today and the upcoming days with the earliest
+     * letter first, then the past days with the latest letter first. The first past day gets the heading "Past".
+     *
+     * @param array $days Days with their letters, from the latest to the earliest letter (order of the events)
+     * @return array
+     */
+    private function sort_by_distance_to_now(array $days): array {
+        $today = usergetmidnight(time());
+        $upcoming = [];
+        $past = [];
+        foreach ($days as $day) {
+            $day->ispast = $day->daystart < $today;
+            if ($day->ispast) {
+                $past[] = $day;
+            } else {
+                $day->letters = array_reverse($day->letters);
+                $upcoming[] = $day;
+            }
+        }
+        if ($past) {
+            $past[0]->firstpast = true;
+        }
+        return array_merge(array_reverse($upcoming), $past);
+    }
+
+    /**
+     * Returns the day of a timestamp in the timezone of the user, e.g. "16.11.2026". Is used to group the letters.
+     *
+     * @param int $timestamp
+     * @return string
+     */
+    private function get_day(int $timestamp): string {
+        return userdate($timestamp, '%d.%m.%Y', 99, false);
+    }
+
+    /**
+     * Returns "Today", "Tomorrow" or "Yesterday" for a day, otherwise an empty string.
+     *
+     * @param string $day Day in the format of get_day()
+     * @return string
+     */
+    private function get_daylabel(string $day): string {
+        // A day has 23 to 25 hours (daylight saving time), so the days next to today are found from its midnight.
+        $today = usergetmidnight(time());
+        return match ($day) {
+            $this->get_day($today) => get_string('today', 'calendar'),
+            $this->get_day($today + DAYSECS + 2 * HOURSECS) => get_string('tomorrow', 'calendar'),
+            $this->get_day($today - 2 * HOURSECS) => get_string('yesterday', 'calendar'),
+            default => '',
+        };
     }
 
     // Getter.

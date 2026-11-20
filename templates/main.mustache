@@ -21,14 +21,12 @@
 
      Variables required for this template:
      * content - Array with content
-        * isorientationmarker - Boolean variable if current content is a orientationmarker
         * isbasic - Boolean variable if current content is a basic notification
         * isactivitycompletion - Boolean variable if current content is an activity completion
         * ispost - Boolean variable if current content is a post
 
     Example context (json):
     {
-        "newsidepanel": true,
         "lastupdate": "Last update: 14:30",
         "courses": [
             {
@@ -70,7 +68,7 @@
                         "discussionsubject": "Hour of Exam",
                         "anonymous": false,
                         "authorname": "Tamaro Walter",
-                        "authorpicture": "<img src=\"http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13\" class=\"userpicture\" width=\"35\" height=\"35\" alt=\"\">",
+                        "authorpictureurl": "http://localhost/moodle/pluginfile.php/5/user/icon/boost/f2?rev=13",
                         "message": "<div class=\"text_to_html\"><p>When do we write the exam?</p></div>",
                         "created": "03.11.2023",
                         "linktocourse": "http://localhost/moodle/course/view.php?id=20",
@@ -83,19 +81,10 @@
         ]
     }
 }}
-<div id="townsquare_root" class="townsquare_root container-fluid">
-    <div class="row townsquare_main">
-        <div class="col-md-3 townsquare_sidepanel">
-            {{#newsidepanel}}
-                {{> block_townsquare/sidepanel/sidepanel}}
-            {{/newsidepanel}}
-            {{^newsidepanel}}
-                {{> block_townsquare/sidepanel/sidepanel_old}}
-            {{/newsidepanel}}
-        </div>
+<div id="townsquare_root">
+    {{> block_townsquare/filterbar}}
 
-        <div class="col-md-9 townsquare_content">
-            {{> block_townsquare/content}}
-        </div>
+    <div class="townsquare_content d-flex flex-column overflow-hidden" id="ts_feed">
+        {{> block_townsquare/content}}
     </div>
 </div>

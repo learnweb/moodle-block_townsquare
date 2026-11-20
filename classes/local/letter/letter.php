@@ -15,14 +15,10 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 namespace block_townsquare\local\letter;
+use core_course\output\activity_icon;
 use dml_exception;
 use moodle_exception;
 use moodle_url;
-
-defined('MOODLE_INTERNAL') || die;
-
-global $CFG;
-require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
  * Class that represents an unspecific type of content.
@@ -72,9 +68,6 @@ class letter {
     /** @var bool variable for the mustache template */
     public bool $isbasic = true;
 
-    /** @var string color of the letter. Only used by mustache */
-    public string $lettercolor;
-
     /** @var array instances that are grouped in this letter.*/
     public array $subinstances = [];
 
@@ -120,7 +113,6 @@ class letter {
         $this->created = $created;
         $this->linktocourse = new moodle_url('/course/view.php', ['id' => $this->courseid]);
         $this->linktoactivity = new moodle_url("/mod/{$modulename}/view.php", ['id' => $cmid]);
-        $this->lettercolor = block_townsquare_get_colorsetting('basicletter');
         $this->subinstances = $subinstances;
         $this->eventtype = $eventtype;
     }
@@ -141,14 +133,33 @@ class letter {
             'coursename' => $this->coursename,
             'instancename' => $this->instancename,
             'content' => $this->content,
-            'created' => date('G:i', $this->created),
+            'created' => $this->get_createdtime(),
             'createdtimestamp' => $this->created,
             'linktocourse' => $this->linktocourse->out(),
             'linktoactivity' => $this->linktoactivity->out(),
-            'basiclettercolor' => $this->lettercolor,
+            'modulename' => $this->modulename,
+            'activityicon' => $this->get_activityicon(),
             'subinstances' => $this->subinstances,
             'hassubinstances' => !empty($this->subinstances),
             'eventtype' => $this->eventtype,
         ];
+    }
+
+    /**
+     * Returns the time of the letter in the timezone and time format of the user, e.g. "2:30 PM".
+     * @return string
+     */
+    protected function get_createdtime(): string {
+        return userdate($this->created, get_string('strftimetime', 'langconfig'));
+    }
+
+    /**
+     * Returns the activity icon of the module for the template core_course/activity_icon.
+     * @return array
+     */
+    protected function get_activityicon(): array {
+        global $PAGE;
+        $icon = activity_icon::from_modname($this->modulename)->set_extra_classes('smaller');
+        return $icon->export_for_template($PAGE->get_renderer('core'));
     }
 }

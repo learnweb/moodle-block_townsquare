@@ -1,171 +1,40 @@
-/* Style for the blockcontent template*/
-.townsquare_header {
-    background-color: #f8f9fa;
-    border-radius: 0.375rem;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.75rem;
-    border-bottom: 1px solid #dee2e6;
-}
-
-@media (max-width: 767.98px) {
-    .townsquare_header {
-        margin-top: 0.5rem;
-    }
-}
-
-@keyframes ts-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.ts-reloading i {
-    animation: ts-spin 0.6s linear infinite;
-    transform-origin: center center;
-}
-
-#ts_reload_button {
-    outline: none;
-    user-select: none;
-}
-
-#ts_reload_button i {
-    display: inline-block;
-}
-
-#ts_reload_button:active {
-    transform: none;
-}
-
-.townsquare_sidepanel.col-md-3 {
-    background-color: #eee;
-    border-radius: 0.5rem;
-    padding-left: 0;
-    padding-right: 0;
-}
-
+/* The letters scroll within this height. */
 .townsquare_content {
     max-height: 750px;
+}
+
+/* The course menu is as wide as the longest course name (within limits) and scrolls if there are many courses. */
+.ts_course_menu {
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    max-height: 50vh;
+}
+
+/* The day headers stick to the top of the list while scrolling through their day. */
+.ts_day_header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Long posts are shortened to four lines (see amd/src/postletter.js). */
+.postletter_message[data-clamp="true"] {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Formatting of the post messages. */
+.postletter_message[data-clamp] p:last-child {
+    margin-bottom: 0;
+}
+
+.postletter_message[data-clamp] pre {
+    white-space: pre-wrap;
+}
+
+.postletter_message[data-clamp] img {
     max-width: 100%;
-    border-radius: 0.5rem;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-
+    height: auto;
 }
-
-.townsquare_letters {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    flex: 1;
-}
-
-/* Style for the side panel filter */
-.ts_usersettings {
-    padding-left: 0.5em;
-}
-
-.ts_usersettings_button {
-    display: flex;
-    margin: 0.5em;
-}
-
-.ts_usersettings_message {
-    background-color: #eee;
-    display: none;
-}
-
-.ts_button_transition {
-    transition: background-color 1.0s ease, color 1.0s ease;
-}
-
-/* Style for all letter or content templates */
-
-.townsquareletter_header.card-header {
-    padding-top: 0.4rem;
-    padding-bottom: 0.4rem;
-}
-
-.townsquareletter_body.card-body {
-    padding-top: 0.7rem;
-    padding-bottom: 0.6rem;
-}
-
-.townsquareletter_top {
-    display: flex;
-}
-
-.townsquareletter_course {
-    flex: 1;
-}
-
-.townsquareletter_courselink:hover {
-    color: #fff;
-    text-decoration: underline;
-}
-.townsquareletter_courselink {
-    color: #fff;
-    text-decoration: none;
-}
-
-.townsquareletter_course,
-.townsquareletter_date {
-    color: #fff;
-    text-shadow: 1px 1px 2px #000;
-}
-
-.townsquare_showmore {
-    cursor: pointer;
-    background-color: #6a737b;
-}
-
-/* Styles for individual letters */
-
-/* basicletter Style*/
-
-/* postletter Style */
-
-.postletter_origin {
-    margin-bottom: 0.4rem;
-}
-
-.postletter_message {
-    max-height: 90px; /*4 lines with font-size 15px and line-height 1.5*/
-    overflow: hidden;
-    display: block;
-    transition: max-height 0.3s ease;
-}
-
-/* actvitiycompletionletter Style*/
-
-/* Style for the orientation marker */
-
-.orientationmarker {
-    padding-top: 0.3rem;
-    padding-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.orientationmarker_date {
-    margin-right: 0.75rem;
-}
-
-.orientationmarker_line {
-    flex: 1;
-    height: 1px;
-    background-color: #0e0e0e;
-}
-
-.orientationmarker-collapse {
-    cursor: pointer;
-}
-
-.ts-letter-box {
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-}
-/*# sourceMappingURL=styles.css.map */

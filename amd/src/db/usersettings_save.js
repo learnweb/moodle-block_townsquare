@@ -27,21 +27,15 @@
 import Ajax from 'core/ajax';
 import {getString} from "core/str";
 import Notification from 'core/notification';
-import {convertTimeToId} from 'block_townsquare/locallib';
 
 // Get the save button for the user settings.
 const savebutton = document.getElementById('ts_usersettings_savebutton');
 
-// Get the buttons from the time filter.
-const alltimebutton = document.getElementById('ts_time_all');
-const futureradiobuttons = document.querySelectorAll('.ts_future_time_button');
-const pastradiobuttons = document.querySelectorAll('.ts_past_time_button');
+// The radio buttons of the time filter.
+const timeButtonSelector = '.ts_time_button';
 
-// Get the checkboxes from the letter filter.
-const letterCheckboxes = document.querySelectorAll('.ts_letter_checkbox');
-
-// Get the checkboxes from the course filter.
-const courseCheckboxes = document.querySelectorAll('.ts_course_checkbox');
+// The checkboxes of the course filter are not kept in a constant, because a reload replaces them.
+const courseCheckboxSelector = '.ts_course_checkbox';
 
 /**
  * Init function. This functions adapts the filter settings to the user settings from the database. If the user changes settings
@@ -59,9 +53,8 @@ export function init(settingsfromdb) {
     savebutton.addEventListener('click', async function() {
 
         // First step: collect the current settings.
-        // Get the relevant time spans of the time filter and the setting of the letter filter checkboxes.
+        // Get the relevant time spans of the time filter.
         let timespans = collecttimefiltersettings();
-        let letterfilter = collectletterfiltersettings();
         let courses = collectcoursesettings(settingsfromdb.courses);
 
         const data = {
@@ -69,9 +62,6 @@ export function init(settingsfromdb) {
             args: {
                 timefilterpast: timespans.timepast,
                 timefilterfuture: timespans.timefuture,
-                basicletter: letterfilter.basicletter,
-                completionletter: letterfilter.completionletter,
-                postletter: letterfilter.postletter,
                 courses: courses,
             },
         };
@@ -94,57 +84,18 @@ export function init(settingsfromdb) {
  */
 function executeusersettings(settingsfromdb) {
 
-    // First step: set the time filter settings.
-    // Change the time into the correct radio button id.
-    let futurebuttonid = convertTimeToId(settingsfromdb.timefilterfuture, true);
-    let pastbuttonid = convertTimeToId(settingsfromdb.timefilterpast, false);
+    // First step: set the time filter. Older settings can have different time spans for the past and the future,
+    // then the longer one is used.
+    const timespan = Math.max(Number(settingsfromdb.timefilterpast), Number(settingsfromdb.timefilterfuture));
+    const timebutton = [...document.querySelectorAll(timeButtonSelector)]
+        .find(button => Number(button.dataset.timespan) === timespan) ?? document.getElementById('ts_time_all');
+    timebutton.checked = true;
+    timebutton.dispatchEvent(new Event('change'));
 
-    // If the time span is a combination of past and future, go through the two radio buttons and activate the filter.
-    if (futurebuttonid !== "ts_time_all") {
-        alltimebutton.checked = false;
-        futureradiobuttons.forEach(function(button) {
-            if (button.id === futurebuttonid) {
-                button.checked = true;
-                button.parentNode.classList.add('active');
-                button.dispatchEvent(new Event('change'));
-            }
-        });
-        pastradiobuttons.forEach(function(button) {
-            if (button.id === pastbuttonid) {
-                button.checked = true;
-                button.parentNode.classList.add('active');
-                button.dispatchEvent(new Event('change'));
-            }
-        });
-    } else {
-        // If the time span is set to all time, activate the all time button.
-        alltimebutton.checked = true;
-        alltimebutton.parentNode.classList.add('active');
-        alltimebutton.dispatchEvent(new Event('change'));
-        futureradiobuttons.forEach(button => {
-            button.checked = false;
-        });
-        pastradiobuttons.forEach(button => {
-            button.checked = false;
-        });
-    }
-
-    // Second step: set the letter filter settings.
-    // Per default all checkboxes are checked. If the setting is 0, uncheck the checkbox.
-    letterCheckboxes.forEach(function(checkbox) {
-        let basiclettercheck = checkbox.id === 'basicletter' && settingsfromdb.basicletter === "0";
-        let completionlettercheck = checkbox.id === 'completionletter' && settingsfromdb.completionletter === "0";
-        let postlettercheck = checkbox.id === 'postletter' && settingsfromdb.postletter === "0";
-
-        if (basiclettercheck || completionlettercheck || postlettercheck) {
-            checkbox.click();
-        }
-    });
-
-    // Third step: set the course filter settings.
+    // Second step: set the course filter settings.
     let coursessettings = JSON.parse(settingsfromdb.courses);
 
-    courseCheckboxes.forEach(function(checkbox) {
+    document.querySelectorAll(courseCheckboxSelector).forEach(function(checkbox) {
         let courseid = Number(checkbox.dataset.courseid);
         if (coursessettings.hasOwnProperty(courseid)) {
             // If the setting is false, uncheck the checkbox.
@@ -153,31 +104,6 @@ function executeusersettings(settingsfromdb) {
             }
         }
     });
-}
-
-/**
- * Function to collect the letter filter settings.
- * @returns {{basicletter: number, completionletter: number, postletter: number}}
- */
-function collectletterfiltersettings() {
-    let settings = {'basicletter': 0, 'completionletter': 0, 'postletter': 0};
-
-    letterCheckboxes.forEach(function(checkbox) {
-        if (checkbox.checked) {
-            switch (checkbox.id) {
-                case "basicletter":
-                    settings.basicletter = 1;
-                    break;
-                case "completionletter":
-                    settings.completionletter = 1;
-                    break;
-                case "postletter":
-                    settings.postletter = 1;
-            }
-        }
-    });
-    // Calculate the setting number. It is a number between 0 and 7, and each letter represents a bit.
-    return settings;
 }
 
 /**
@@ -192,7 +118,7 @@ function collectcoursesettings(coursesettingsfromdb) {
     let settings = coursesettingsfromdb ? JSON.parse(coursesettingsfromdb) : {};
 
     // Build a JSON in the format courseid => coursename.
-    courseCheckboxes.forEach(function(checkbox) {
+    document.querySelectorAll(courseCheckboxSelector).forEach(function(checkbox) {
         settings[Number(checkbox.dataset.courseid)] = checkbox.checked;
     });
 
@@ -201,36 +127,10 @@ function collectcoursesettings(coursesettingsfromdb) {
 }
 
 /**
- * Function to collect the time filter settings.
+ * Function to collect the time filter settings. The time span is the same for the past and the future.
  * @returns {{timepast: number, timefuture: number}}
  */
 function collecttimefiltersettings() {
-    let settings = {timepast: 0, timefuture: 0};
-    let settingsset = false;
-
-    // Get the relevant time spans of the time filter.
-    // Check if the alltimebutton is set.
-    if (alltimebutton.checked || alltimebutton.parentNode.classList.contains('active')) {
-        settings.timepast = Number(alltimebutton.dataset.timespan);
-        settings.timefuture = Number(alltimebutton.dataset.timespan);
-        settingsset = true;
-    }
-
-    if (settingsset) {
-        return settings;
-    }
-
-    // If the alltimebutton is not set, check which of the future/past buttons is set.
-    futureradiobuttons.forEach(function(button) {
-        if (button.checked || button.parentNode.classList.contains('active')) {
-            settings.timefuture = Number(button.dataset.timespan);
-        }
-    });
-
-    pastradiobuttons.forEach(function(button) {
-        if (button.checked || button.parentNode.classList.contains('active')) {
-            settings.timepast = Number(button.dataset.timespan);
-        }
-    });
-    return settings;
+    const timespan = Number(document.querySelector(`${timeButtonSelector}:checked`).dataset.timespan);
+    return {timepast: timespan, timefuture: timespan};
 }

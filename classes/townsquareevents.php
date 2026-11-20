@@ -29,7 +29,6 @@ use dml_exception;
 global $CFG;
 require_once($CFG->dirroot . '/calendar/lib.php');
 require_once($CFG->dirroot . '/blocks/townsquare/lib.php');
-require_once($CFG->dirroot . '/blocks/townsquare/locallib.php');
 
 /**
  * Class to get relevant events from courses the user is enrolled to.
@@ -126,9 +125,6 @@ class townsquareevents {
 
             // Add the name of the instance to the event.
             $coreevent->instancename = $DB->get_field($coreevent->modulename, 'name', ['id' => $coreevent->instance]);
-
-            // Modify the content of the event if needed.
-            block_townsquare_check_coreevent($coreevent);
         }
 
         // Filter all assignment events and extract them.

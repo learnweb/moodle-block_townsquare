@@ -114,9 +114,6 @@ final class coreevents_test extends \advanced_testcase {
         $preference = [
             'timefilterpast' => 432000,
             'timefilterfuture' => 432000,
-            'basicletter' => 1,
-            'completionletter' => 1,
-            'postletter' => 1,
         ];
         $teacherpref = $DB->insert_record('block_townsquare_preferences', $preference + [
             'userid' => $this->testdata->teacher->id,
@@ -134,7 +131,7 @@ final class coreevents_test extends \advanced_testcase {
         $teachersetting = $DB->get_record('block_townsquare_preferences', ['id' => $teacherpref]);
         $expected = json_encode((object) [$this->testdata->course1->id => true, $similarid => true]);
         $this->assertEquals($expected, $teachersetting->courses);
-        $this->assertEquals(1, $teachersetting->postletter);
+        $this->assertEquals(432000, $teachersetting->timefilterpast);
 
         // The record without a course filter setting should stay untouched.
         $this->assertNull($DB->get_field('block_townsquare_preferences', 'courses', ['id' => $studentpref]));

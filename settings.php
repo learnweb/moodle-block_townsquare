@@ -41,28 +41,4 @@ if ($ADMIN->fulltree) {
         BLOCK_TOWNSQUARE_TIME_THREEMONTHS,
         $options
     ));
-
-    // Color setting for the color that will be used on basic letters.
-    $settings->add(new admin_setting_configcolourpicker(
-        'block_townsquare/basiclettercolor',
-        get_string('basiclettercolor', 'block_townsquare'),
-        get_string('configbasiclettercolor', 'block_townsquare'),
-        BLOCK_TOWNSQUARE_BASICLETTER_DEFAULTCOLOR
-    ));
-
-    // Color setting for the color that will be used on post letters.
-    $settings->add(new admin_setting_configcolourpicker(
-        'block_townsquare/postlettercolor',
-        get_string('postlettercolor', 'block_townsquare'),
-        get_string('configpostlettercolor', 'block_townsquare'),
-        BLOCK_TOWNSQUARE_POSTLETTER_DEFAULTCOLOR
-    ));
-
-    // Color setting for the color that will be used on completion letters.
-    $settings->add(new admin_setting_configcolourpicker(
-        'block_townsquare/completionlettercolor',
-        get_string('completionlettercolor', 'block_townsquare'),
-        get_string('configcompletionlettercolor', 'block_townsquare'),
-        BLOCK_TOWNSQUARE_COMPLETIONLETTER_DEFAULTCOLOR
-    ));
 }
