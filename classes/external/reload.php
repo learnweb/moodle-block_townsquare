@@ -16,8 +16,8 @@
 
 namespace block_townsquare\external;
 
+use block_townsquare\local\service\items;
 use block_townsquare\output\content;
-use cache;
 use core\exception\coding_exception;
 use core_external\external_api;
 use core_external\external_function_parameters;
@@ -59,7 +59,8 @@ class reload extends external_api {
         require_once($CFG->dirroot . '/lib/filelib.php');
         // Set the context for the page.
         $PAGE->set_context(\context_user::instance($USER->id));
-        cache::make('block_townsquare', 'townsquareevents')->delete('items');
-        return $PAGE->get_renderer('core')->render(new content());
+        items::purge_cache();
+        $items = new items();
+        return $PAGE->get_renderer('core')->render(new content($items->get(), $items->get_lastupdate()));
     }
 }

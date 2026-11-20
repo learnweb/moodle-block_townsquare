@@ -28,6 +28,18 @@ use core\output\renderer_base;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class main implements named_templatable, renderable {
+    /**
+     * Constructor.
+     *
+     * @param array $items deadline_item and post_item objects, the latest first
+     * @param int $lastupdate Time when the items were collected
+     */
+    public function __construct(
+        private array $items,
+        private int $lastupdate,
+    ) {
+    }
+
     #[\Override]
     public function get_template_name(renderer_base $renderer): string {
         return 'block_townsquare/main';
@@ -35,7 +47,8 @@ class main implements named_templatable, renderable {
 
     #[\Override]
     public function export_for_template(renderer_base $output): array {
-        return (new content())->export_for_template($output) + ['timespans' => $this->get_timespans()];
+        $content = new content($this->items, $this->lastupdate);
+        return $content->export_for_template($output) + ['timespans' => $this->get_timespans()];
     }
 
     /**

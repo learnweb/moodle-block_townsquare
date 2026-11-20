@@ -24,6 +24,8 @@
 
 namespace block_townsquare;
 
+use block_townsquare\item\post_item;
+use block_townsquare\local\service\items;
 use coding_exception;
 use dml_exception;
 use stdClass;
@@ -35,7 +37,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::get_posts()
+ * @covers \block_townsquare\local\source\forum_posts
  * @covers \block_townsquare\output\letter\post_letter
  */
 final class postevents_test extends \advanced_testcase {
@@ -327,13 +329,13 @@ final class postevents_test extends \advanced_testcase {
 
     /**
      * Helper function to get the post events from a certain user.
-     * @param object $user The user for whom the events should be collected (townsquareevents.php uses $USER).
-     *
-     * @return array
+     * @param object $user The user for whom the posts should be collected (the service uses $USER).
+     * @return post_item[]
      */
     private function get_postevents_from_user(object $user): array {
         $this->setUser($user);
-        return (new townsquareevents())->get_posts();
+        items::purge_cache();
+        return array_values(array_filter((new items())->get(), fn($item) => $item instanceof post_item));
     }
 
     /**

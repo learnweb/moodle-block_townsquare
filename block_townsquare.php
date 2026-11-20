@@ -46,7 +46,9 @@ class block_townsquare extends block_base {
         }
 
         $this->content = new stdClass();
-        $this->content->text = $this->page->get_renderer('core')->render(new \block_townsquare\output\main());
+        $items = new \block_townsquare\local\service\items();
+        $main = new \block_townsquare\output\main($items->get(), $items->get_lastupdate());
+        $this->content->text = $this->page->get_renderer('core')->render($main);
 
         // Get the user settings if available.
         $usersettings = $DB->get_record('block_townsquare_preferences', ['userid' => $USER->id]);

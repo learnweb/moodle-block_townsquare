@@ -21,6 +21,8 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/completionlib.php');
 
+use block_townsquare\item\deadline_item;
+use block_townsquare\local\service\items;
 use core_completion_external;
 use stdClass;
 
@@ -39,7 +41,7 @@ use stdClass;
  * @copyright 2023 Tamaro Walter
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @covers \block_townsquare\townsquareevents::get_deadlines()
+ * @covers \block_townsquare\local\source\calendar_deadlines
  * @covers \block_townsquare\output\content
  * @covers \block_townsquare\observer::course_deleted()
  */
@@ -343,14 +345,14 @@ final class coreevents_test extends \advanced_testcase {
     }
 
     /**
-     * Helper function to get the events from a certain user.
-     * @param object $user  The user for whom the events should be collected (townsquareevents.php uses $USER).
-     * @return array
+     * Helper function to get the deadlines of a certain user.
+     * @param object $user The user for whom the deadlines should be collected (the service uses $USER).
+     * @return deadline_item[]
      */
     private function get_coreevents_from_user($user): array {
         $this->setUser($user);
-        $townsquareevents = new townsquareevents();
-        return $townsquareevents->get_deadlines();
+        items::purge_cache();
+        return array_values(array_filter((new items())->get(), fn($item) => $item instanceof deadline_item));
     }
 
     /**
@@ -361,7 +363,9 @@ final class coreevents_test extends \advanced_testcase {
     private function get_letters_from_user($user): array {
         global $PAGE;
         $this->setUser($user);
-        $content = new output\content();
+        items::purge_cache();
+        $items = new items();
+        $content = new output\content($items->get(), $items->get_lastupdate());
         $lettergroups = $content->group_by_day($content->get_letters());
         $letters = array_merge(...array_map(fn($lettergroup) => $lettergroup->get_letters(), $lettergroups));
         return array_map(fn($letter) => $letter->export_for_template($PAGE->get_renderer('core')), $letters);

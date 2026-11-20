@@ -18,7 +18,7 @@ namespace block_townsquare\output;
 
 use block_townsquare\output\letter\deadline_letter;
 use block_townsquare\output\letter\post_letter;
-use block_townsquare\townsquareevents;
+use block_townsquare\local\service\items;
 use stdClass;
 
 /**
@@ -76,11 +76,12 @@ final class content_test extends \advanced_testcase {
         $this->setUser($this->testdata->teacher);
 
         // The items: the post, the due date, the expected completion (both tomorrow) and the grading due date.
-        $this->assertCount(4, (new townsquareevents())->get_items());
+        $items = new items();
+        $this->assertCount(4, $items->get());
 
         // The post has its own letter. The due date and the expected completion of the assignment are at the same time,
         // so they are grouped in one letter.
-        $letters = (new content())->get_letters();
+        $letters = (new content($items->get(), $items->get_lastupdate()))->get_letters();
         $posts = array_filter($letters, fn($letter) => $letter instanceof post_letter);
         $deadlines = array_filter($letters, fn($letter) => $letter instanceof deadline_letter);
         $this->assertCount(3, $letters);
@@ -115,7 +116,8 @@ final class content_test extends \advanced_testcase {
         $DB->set_field('user', 'timezone', $timezone, ['id' => $this->testdata->teacher->id]);
         $this->setUser($DB->get_record('user', ['id' => $this->testdata->teacher->id]));
 
-        $content = new content();
+        $items = new items();
+        $content = new content($items->get(), $items->get_lastupdate());
         $lettergroups = $content->group_by_day($content->get_letters());
         $output = $this->get_renderer();
         $exported = array_map(fn($lettergroup) => (object) $lettergroup->export_for_template($output), $lettergroups);

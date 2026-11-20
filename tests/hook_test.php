@@ -19,6 +19,7 @@ namespace block_townsquare;
 use block_townsquare\hook\extend_content;
 use block_townsquare\item\deadline_item;
 use block_townsquare\item\post_item;
+use block_townsquare\local\service\items;
 use block_townsquare\output\content;
 use block_townsquare\output\letter\deadline_letter;
 use block_townsquare\output\letter\post_letter;
@@ -33,7 +34,7 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @covers \block_townsquare\hook\extend_content
- * @covers \block_townsquare\townsquareevents::get_hook_items()
+ * @covers \block_townsquare\local\service\items
  */
 final class hook_test extends \advanced_testcase {
     /** @var stdClass The data that will be used for testing.
@@ -72,14 +73,14 @@ final class hook_test extends \advanced_testcase {
             $hooks[] = $hook;
         });
 
-        $townsquareevents = new townsquareevents();
-        $townsquareevents->get_hook_items();
+        $items = new items();
+        $items->get();
 
         $this->assertCount(1, $hooks);
         $this->assertEquals($this->testdata->student->id, $hooks[0]->userid);
         $this->assertEquals([$this->testdata->course1->id], $hooks[0]->courseids);
-        $this->assertEquals($townsquareevents->timestart, $hooks[0]->timestart);
-        $this->assertEquals($townsquareevents->timeend, $hooks[0]->timeend);
+        $this->assertEquals($items->timestart, $hooks[0]->timestart);
+        $this->assertEquals($items->timeend, $hooks[0]->timeend);
     }
 
     /**
@@ -110,7 +111,8 @@ final class hook_test extends \advanced_testcase {
         });
 
         $output = $PAGE->get_renderer('core');
-        $letters = (new content())->get_letters();
+        $items = new items();
+        $letters = (new content($items->get(), $items->get_lastupdate()))->get_letters();
         $posts = array_values(array_filter($letters, fn($letter) => $letter instanceof post_letter));
         $deadlines = array_values(array_filter($letters, fn($letter) => $letter instanceof deadline_letter));
         $posts = array_map(fn($letter) => $letter->export_for_template($output), $posts);
@@ -134,9 +136,9 @@ final class hook_test extends \advanced_testcase {
      */
     public function test_items_are_checked(): void {
         $testdata = $this->testdata;
-        $townsquareevents = new townsquareevents();
-        $timestart = $townsquareevents->timestart;
-        $timeend = $townsquareevents->timeend;
+        $items = new items();
+        $timestart = $items->timestart;
+        $timeend = $items->timeend;
 
         $this->redirectHook(extend_content::class, function (extend_content $hook) use ($testdata, $timestart, $timeend) {
             $post = fn($cm, $name, $time) => new post_item(
@@ -160,8 +162,8 @@ final class hook_test extends \advanced_testcase {
             $hook->add_deadline($deadline($testdata->page, 'too late', $timeend + 1));
         });
 
-        $items = $townsquareevents->get_hook_items();
-        $names = array_map(fn($item) => $item instanceof post_item ? $item->message : $item->name, $items);
-        $this->assertEquals(['shown post', 'shown deadline'], $names);
+        // The items are sorted, the latest first.
+        $names = array_map(fn($item) => $item instanceof post_item ? $item->message : $item->name, $items->get());
+        $this->assertEquals(['shown deadline', 'shown post'], $names);
     }
 }

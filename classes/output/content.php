@@ -20,8 +20,6 @@ use block_townsquare\item\post_item;
 use block_townsquare\output\letter\deadline_letter;
 use block_townsquare\output\letter\letter;
 use block_townsquare\output\letter\post_letter;
-use block_townsquare\townsquareevents;
-use cache;
 use core\output\named_templatable;
 use core\output\renderable;
 use core\output\renderer_base;
@@ -34,6 +32,18 @@ use core\output\renderer_base;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class content implements named_templatable, renderable {
+    /**
+     * Constructor.
+     *
+     * @param array $items deadline_item and post_item objects, the latest first
+     * @param int $lastupdate Time when the items were collected
+     */
+    public function __construct(
+        private array $items,
+        private int $lastupdate,
+    ) {
+    }
+
     #[\Override]
     public function get_template_name(renderer_base $renderer): string {
         return 'block_townsquare/content';
@@ -55,9 +65,8 @@ class content implements named_templatable, renderable {
             $this->group_by_day($letters)
         );
 
-        // The reload button shows the time of the last update. The letters were built before, so the cache is filled.
-        $lastupdate = cache::make('block_townsquare', 'townsquareevents')->get('items')['lastupdate'];
-        $lastupdate = userdate($lastupdate, get_string('strftimetime', 'langconfig'));
+        // The reload button shows the time of the last update.
+        $lastupdate = userdate($this->lastupdate, get_string('strftimetime', 'langconfig'));
         return [
             'lettergroups' => $lettergroups,
             'courses' => array_values($courses),
@@ -72,7 +81,7 @@ class content implements named_templatable, renderable {
      */
     public function get_letters(): array {
         $letters = [];
-        foreach ($this->group_deadlines((new townsquareevents())->get_items()) as $index => $entry) {
+        foreach ($this->group_deadlines($this->items) as $index => $entry) {
             $letters[] = $entry instanceof post_item ? new post_letter($index, $entry) : new deadline_letter($index, $entry);
         }
         return $letters;
